@@ -11,6 +11,10 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+No unreleased changes yet.
+
+## 0.1.11 - 2026-07-03
+
 ### Added
 
 - Added documentation explaining how hardware profile scripts choose model recommendations from the local Ollama model list and catalog order.
@@ -29,6 +33,7 @@ This project follows a simple changelog format:
 ### Fixed
 
 - Fixed runtime validation config/context path handling so relative paths are resolved before the runner changes into the target repository.
+
 ## 0.1.10 - 2026-07-02
 
 ### Added

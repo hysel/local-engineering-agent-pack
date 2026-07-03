@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, and Milestone 6 applied tooling and adaptive models are complete. Broader multi-repository validation remains in the backlog.
+The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, and Milestone 8 real repository validation are complete. Broader multi-repository validation remains in the backlog.
 
 ## Stage Status
 
@@ -17,6 +17,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 6: Applied Tooling And Adaptive Models | Complete | Tool-use modes, approved write guidance, scoped edit guidance, model selection strategy, hardware profiling, model tiers, and local override safety guidance are complete. |
 | Milestone 7: Cross-Platform Contributor Experience | Complete | Linux and macOS validation/test wrappers are available, and Linux wrapper execution is covered in CI. |
 | Milestone 8: Real Repository Validation | Complete | The pack repository and one private application-style repository have been validated with the runtime runner; practical MCP workflow examples are documented. |
+| Milestone 9: Distribution And Install Experience | Planned | Add safer install/update workflows for copying the pack into target repositories and validating the installed result. |
 
 ## Milestone 1: Minimum Usable Pack
 
@@ -235,3 +236,23 @@ Exit criteria:
 - Runtime outputs are reviewed and sanitized before documentation updates.
 - Follow-up work is tracked for generic or unsupported prompt findings.
 - MCP examples are based on validated usage rather than speculation.
+
+## Milestone 9: Distribution And Install Experience
+
+Goal: Make the pack easier and safer to install, update, validate, and reuse across target repositories.
+
+Scope:
+
+- Add an install or update script for copying `.continue` assets into a target repository.
+- Back up an existing target `.continue` folder before replacement or merge.
+- Add a dry-run mode that shows what would change before copying files.
+- Add install validation that confirms copied config, prompts, rules, agents, and templates resolve correctly.
+- Document Windows, Linux, and macOS install/update commands.
+- Keep local overrides, private endpoints, tokens, and machine-specific config out of install outputs.
+
+Exit criteria:
+
+- A user can install or update the pack in a target repository with one documented command.
+- Existing target `.continue` content is not overwritten without backup or explicit approval.
+- The installed pack can be validated after copy.
+- Install documentation stays beginner-friendly and cross-platform.

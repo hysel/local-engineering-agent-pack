@@ -156,3 +156,12 @@
 - [x] Add a prompt-quality fixture for non-application repositories.
 - [x] Validate against an application repository when a suitable target is available.
 - [x] Add project-specific MCP examples after validated real-world usage.
+
+## Milestone 9: Distribution And Install Experience
+
+- [ ] Add an install or update script for copying `.continue` assets into a target repository.
+- [ ] Add backup behavior for existing target `.continue` folders.
+- [ ] Add dry-run output before copying files.
+- [ ] Add install validation for copied config, prompts, rules, agents, and templates.
+- [ ] Document Windows, Linux, and macOS install/update commands.
+- [ ] Ensure install outputs exclude local overrides, private endpoints, tokens, and machine-specific config.
