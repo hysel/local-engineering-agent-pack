@@ -21,6 +21,9 @@ This project follows a simple changelog format:
 ### Changed
 
 - Reworked the README quick start to cover Windows, Linux, and macOS setup and validation paths.
+- Added a README quick-start note explaining that model helper scripts use `config/model-recommendations.tsv`.
+- Added README path-selection, day-to-day usage, safe first prompt, and common-problem guidance.
+- Added README hardware expectation and do-not-commit safety guidance.
 
 ### Fixed
 
