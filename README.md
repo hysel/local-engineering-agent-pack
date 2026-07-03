@@ -95,6 +95,7 @@ Most first-time problems are one of these:
 - Start with review and planning prompts before asking for changes.
 - Do not commit private IP addresses, tokens, local paths, or raw company code into this pack.
 - Keep machine-specific settings in local files, not in `.continue/config.yaml`.
+- Use `docs/local-config-safety.md` before adding local endpoints, model experiments, or hardware details.
 - Treat AI output as a draft. Review it before changing code.
 - Use `git status` before and after AI-assisted work so you know what changed.
 - Use `docs/tool-use-modes.md` before asking the assistant to modify a reviewed project.
@@ -204,6 +205,8 @@ Default local model assumptions:
 
 For smaller machines or higher-risk workflows, use `docs/local-model-selection.md` before changing models.
 
+For private endpoints, local model experiments, or machine-specific settings, use `docs/local-config-safety.md` before editing committed config files.
+
 To collect a sanitized hardware profile for local model selection on Windows:
 
 ```powershell
@@ -275,6 +278,7 @@ Runtime status:
 - `docs/tool-use-modes.md`
 - `docs/approved-tool-backed-changes.md`
 - `docs/scoped-edits.md`
+- `docs/local-config-safety.md`
 - `docs/local-model-selection.md`
 - `docs/local-model-reliability.md`
 - `docs/banned-output-patterns.md`

@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, and Milestone 5 prompt quality hardening are complete. Broader multi-repository validation remains in the backlog.
+The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, and Milestone 6 applied tooling and adaptive models are complete. Broader multi-repository validation remains in the backlog.
 
 ## Stage Status
 
@@ -14,7 +14,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Release Hardening: 0.1.3 | Complete | Contributor guidance, release tagging guidance, validation automation, sanitized fixtures, and version updates are complete. |
 | Milestone 4: Runtime Validation And CI | Complete | GitHub Actions validation, runtime validation tracking docs, context generation, sanitized fixture-based validation, and legacy migration validation notes are complete. |
 | Milestone 5: Prompt Quality Hardening | Complete | Prompt-specific fixtures, pass/fail checks, local-model reliability guardrails, banned-output guidance, and stronger static validation are complete. |
-| Milestone 6: Applied Tooling And Adaptive Models | In progress | Tool-use modes, approved write guidance, scoped edit guidance, model selection strategy, hardware profiling, and model tiers are complete; local override safety remains planned. |
+| Milestone 6: Applied Tooling And Adaptive Models | Complete | Tool-use modes, approved write guidance, scoped edit guidance, model selection strategy, hardware profiling, model tiers, and local override safety guidance are complete. |
 
 ## Milestone 1: Minimum Usable Pack
 
@@ -178,7 +178,7 @@ Scope:
 - Define a model-selection strategy based on local hardware signals such as available RAM, GPU VRAM, model size, context needs, and workflow risk. Done.
 - Add a hardware-profile helper or documented command sequence for collecting local model-selection inputs. Done.
 - Define recommended Ollama model tiers for low, medium, and high resource machines. Done.
-- Keep machine-specific endpoints, model experiments, and hardware details out of committed shared config.
+- Keep machine-specific endpoints, model experiments, and hardware details out of committed shared config. Done.
 
 Exit criteria:
 

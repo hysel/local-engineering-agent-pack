@@ -136,6 +136,7 @@ $requiredFiles = @(
     "docs/tool-use-modes.md",
     "docs/approved-tool-backed-changes.md",
     "docs/scoped-edits.md",
+    "docs/local-config-safety.md",
     "docs/local-model-selection.md",
     "docs/local-model-reliability.md",
     "docs/banned-output-patterns.md",

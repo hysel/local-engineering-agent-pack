@@ -21,6 +21,7 @@ This project follows a simple changelog format:
 
 - Added model recommendations to hardware profile scripts based on detected resource tier and installed Ollama models.
 - Added a version-controlled model recommendation catalog that scripts can use for future model updates without changing script logic.
+- Added local configuration safety guidance for keeping private endpoints, local paths, hardware output, and model experiments out of committed config.
 
 ## 0.1.7 - 2026-07-02
 
