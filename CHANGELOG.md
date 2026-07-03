@@ -11,6 +11,8 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+## 0.1.10 - 2026-07-02
+
 ### Added
 
 - Added Linux and macOS validation/test wrapper scripts for contributors who prefer shell commands.
