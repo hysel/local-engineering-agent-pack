@@ -9,7 +9,7 @@ This project follows a simple changelog format:
 - `Fixed` for corrections
 - `Removed` for deprecated or deleted behavior
 
-## Unreleased
+## 0.1.12 - 2026-07-03
 
 ### Added
 
