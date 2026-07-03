@@ -10,6 +10,17 @@ The goal of this pack is to provide a reusable engineering assistant setup for C
 
 It is designed for teams that want AI support to follow consistent engineering standards instead of relying on ad hoc prompts.
 
+## Which Path Should I Use?
+
+| If you want to... | Start here |
+| --- | --- |
+| Install the pack in a project | `Quick Start` |
+| Pick the right local model | `docs/local-model-selection.md` |
+| Let Continue edit files | `docs/tool-use-modes.md` and `docs/scoped-edits.md` |
+| Use MCP tools | `docs/mcp-setup.md` and `docs/mcp-examples.md` |
+| Validate this pack | `Quick Validation` |
+| Fix setup problems | `Common Problems` and `docs/troubleshooting.md` |
+
 ## Quick Start
 
 Use this path if you are new to Continue, Ollama, or command-line tools. The steps work on Windows, Linux, and macOS.
@@ -44,6 +55,8 @@ npx --version
 
 The default model is large. If your machine cannot run it, use `docs/local-model-selection.md` to choose a smaller model.
 
+The model helper scripts use `config/model-recommendations.tsv` as the curated model priority list. You usually do not need to edit it during setup. Update it only after validating a better local model for your hardware and workflow.
+
 Windows PowerShell:
 
 ```powershell
@@ -57,6 +70,32 @@ Linux or macOS:
 ollama pull qwen3-coder:30b
 ollama pull nomic-embed-text
 ```
+
+## Minimum Recommended Hardware
+
+The default coding model is `qwen3-coder:30b`. It is intended for higher-resource machines.
+
+If you are unsure whether your machine can run it well, run the hardware profile script before changing the config:
+
+Windows PowerShell:
+
+```powershell
+.\scripts\get-local-model-profile.windows.ps1
+```
+
+Linux:
+
+```bash
+./scripts/get-local-model-profile.linux.sh
+```
+
+macOS:
+
+```bash
+./scripts/get-local-model-profile.macos.sh
+```
+
+Then use `docs/local-model-selection.md` to choose the final model. Treat the script recommendation as a starting point, not proof that the model is safe for approved edits.
 
 ### 3. Copy this pack into your project
 
@@ -117,10 +156,55 @@ Start with one of these:
 Good first request:
 
 ```text
-Run repository discovery for this project. Do not modify files.
+Run repository discovery for this project.
+Do not modify files.
+
+Identify:
+1. The project type
+2. The major files and folders
+3. The current architecture
+4. The main risks
+5. The suggested next steps
 ```
 
-### 7. Validate the pack files
+## Using The Pack Day To Day
+
+Use this flow after the pack is installed and Continue can see the model.
+
+1. Start with read-only discovery or planning.
+2. Review the response and check whether the assistant used real project evidence.
+3. Ask for an implementation plan before approving changes.
+4. Approve one small change at a time.
+5. Run the smallest useful validation after each change.
+6. Use `git status` to confirm exactly what changed.
+
+Good day-to-day prompts:
+
+```text
+Create an implementation plan for this change.
+Do not modify files yet.
+List affected files, risks, tests, rollback, and definition of done.
+```
+
+```text
+Review the current changes.
+Focus on bugs, regressions, missing tests, security risks, and maintainability.
+Do not modify files.
+```
+
+```text
+Use approved write mode for this task only.
+Edit only the files needed for the approved plan.
+After editing, explain the diff and tell me what validation you ran.
+```
+
+Before approving write mode, read:
+
+- `docs/tool-use-modes.md`
+- `docs/scoped-edits.md`
+- `docs/approved-tool-backed-changes.md`
+
+## Quick Validation
 
 Run the validation script from this repository after copying or editing the pack.
 
@@ -147,17 +231,19 @@ macOS:
 
 The Linux and macOS validation scripts require PowerShell 7+ through the `pwsh` command.
 
-### 8. If something fails
+## Common Problems
 
 Use the detailed guides in `docs/`, starting with `docs/troubleshooting.md`.
 
-Most first-time problems are one of these:
-
-- Ollama is not running.
-- The model was not downloaded.
-- Continue cannot find `.continue/config.yaml`.
-- The `cn` command is not installed, so you should use `npx @continuedev/cli` instead.
-- Linux or macOS is missing PowerShell 7+ for the validation wrappers.
+| Problem | What to try first |
+| --- | --- |
+| Continue does not show a model | Confirm Continue is using `.continue/config.yaml`, then run `ollama list`. |
+| Ollama connection error | Start Ollama and confirm `ollama list` works in a terminal. |
+| The default model is too slow or will not load | Run the hardware profile script and follow `docs/local-model-selection.md`. |
+| `cn` is not recognized | Use `npx @continuedev/cli --config .continue/config.yaml` or install the Continue CLI globally. |
+| The assistant prints raw JSON tool calls | Use a stronger tool-capable model or the runtime-context fallback in `docs/troubleshooting.md`. |
+| Linux or macOS validation fails with `pwsh` missing | Install PowerShell 7+, then rerun the wrapper script. |
+| Duplicate rules appear in Continue | Make sure the rules are not installed in both the global Continue config and the project-local `.continue` folder. |
 
 ## Beginner Safety Rules
 
@@ -169,6 +255,20 @@ Most first-time problems are one of these:
 - Use `git status` before and after AI-assisted work so you know what changed.
 - Use `docs/tool-use-modes.md` before asking the assistant to modify a reviewed project.
 - Use `docs/scoped-edits.md` to turn an approved plan into one small, reviewable change at a time.
+
+## Do Not Commit These
+
+Keep these out of committed files:
+
+- `.continue/config.local.yaml`
+- Private IP addresses, internal hostnames, or local-network endpoints
+- API keys, GitHub tokens, SonarQube tokens, or other secrets
+- Usernames, home-directory paths, or machine-specific paths
+- Raw runtime validation output
+- Private repository names or customer names
+- Hardware profiles that include sensitive machine details
+
+Use `docs/local-config-safety.md` before adding local endpoints, model experiments, hardware details, or tool configuration.
 
 ## Intended Capabilities
 
