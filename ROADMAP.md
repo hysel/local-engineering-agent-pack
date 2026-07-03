@@ -267,13 +267,17 @@ Goal: Improve guidance for ARM-based machines whose local model behavior differs
 Scope:
 
 - Detect and report CPU architecture in hardware profile outputs when available.
+- Add architecture fields to Windows, Linux, and macOS hardware profile text and JSON output.
 - Document Apple Silicon, Windows ARM, and Linux ARM as separate local-model scenarios.
+- Document Linux distro assumptions and optional GPU detection dependencies.
 - Document the difference between Ollama/GGUF models and MLX models on Apple Silicon.
 - Keep Ollama as the default beginner setup path.
 - Add advanced Mac guidance for MLX model serving through an OpenAI-compatible local endpoint.
 - Evaluate whether the macOS hardware profile script should detect `mlx-lm` or other MLX tooling.
 - Evaluate whether Linux ARM profiles should identify NVIDIA Jetson or other ARM GPU acceleration paths.
+- Evaluate fallback behavior on minimal Linux distributions where `lspci`, `nvidia-smi`, or `rocm-smi` are unavailable.
 - Add conservative guidance for Windows ARM machines where local LLM acceleration may vary by hardware and tooling.
+- Review whether ARM architecture should affect recommendation tiering before changing `config/model-recommendations.tsv`.
 - Decide whether MLX recommendations belong in `config/model-recommendations.tsv` or a provider-specific catalog.
 - Decide whether ARM-specific recommendations belong in the shared TSV catalog or a provider-specific catalog.
 - Document how unified memory and shared memory change model-size recommendations compared with dedicated GPU VRAM.
@@ -282,6 +286,7 @@ Scope:
 Exit criteria:
 
 - ARM users understand the differences between Apple Silicon, Windows ARM, and Linux ARM local-model options.
+- Hardware profile scripts expose architecture consistently enough for future recommendation logic.
 - Mac users understand when to use the default Ollama path versus an advanced MLX path.
 - MLX guidance explains Continue compatibility through a local API server rather than assuming Ollama model discovery.
 - Recommendation logic does not confuse Ollama-installed models with MLX-hosted models or other provider-specific ARM models.

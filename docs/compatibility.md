@@ -115,6 +115,26 @@ When adding commands:
 - Label shell-specific examples.
 - Avoid paths that depend on one user's home directory.
 
+### Linux Distribution Assumptions
+
+The Linux shell wrappers are intended to work on mainstream Linux distributions when these basics are available:
+
+- `bash`
+- standard POSIX-style shell utilities such as `cd`, `dirname`, `cat`, and `command`
+- PowerShell 7+ through the `pwsh` command
+
+The validation, test, and install wrappers are thin wrappers around PowerShell scripts. Their distro compatibility mostly depends on whether PowerShell 7 is available for the distribution.
+
+The Linux hardware profile script is best effort and depends more heavily on local packages, drivers, and hardware:
+
+- NVIDIA GPU details require `nvidia-smi`.
+- AMD GPU details use `rocm-smi` when available.
+- PCI fallback details use `lspci` when available.
+- OS details usually come from `/etc/os-release` when present.
+- ARM and Jetson-style systems may require additional detection logic.
+
+Minimal distributions, containers, embedded devices, and locked-down servers may not include every optional detection command. In those cases, the script should still provide partial output and users should treat model recommendations as conservative starting points.
+
 ## Line Endings
 
 Git may report LF-to-CRLF normalization warnings on Windows.

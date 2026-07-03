@@ -19,6 +19,8 @@ This project follows a simple changelog format:
 - Added roadmap and TODO tracking for ARM, Apple Silicon, and MLX model support.
 - Added VS Code and VSCodium compatibility guidance and roadmap tracking.
 - Added a local-model tool-use validation checklist and roadmap tracking for model tool-use evidence.
+- Added roadmap tracking for ARM architecture detection in hardware profile scripts.
+- Added Linux distribution compatibility assumptions and optional GPU detection dependency guidance.
 
 ### Changed
 

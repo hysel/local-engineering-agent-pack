@@ -169,12 +169,16 @@
 ## Milestone 10: ARM And Apple Silicon Model Support
 
 - [ ] Detect and report CPU architecture in hardware profile outputs when available.
+- [ ] Add architecture fields to Windows, Linux, and macOS hardware profile text and JSON output.
 - [ ] Document Apple Silicon, Windows ARM, and Linux ARM local-model differences.
+- [ ] Document Linux distro assumptions and optional GPU detection dependencies.
 - [ ] Document Ollama/GGUF versus MLX model differences for Apple Silicon.
 - [ ] Add advanced Mac guidance for MLX models served through an OpenAI-compatible local endpoint.
 - [ ] Evaluate `mlx-lm` detection in the macOS hardware profile script.
 - [ ] Evaluate Linux ARM detection for NVIDIA Jetson or other ARM GPU acceleration paths.
+- [ ] Evaluate fallback behavior on minimal Linux distributions where optional GPU tools are unavailable.
 - [ ] Add conservative Windows ARM local-model guidance.
+- [ ] Review whether ARM architecture should affect recommendation tiering before changing `config/model-recommendations.tsv`.
 - [ ] Decide whether MLX or ARM recommendations belong in the shared TSV catalog or provider-specific catalogs.
 - [ ] Document unified-memory and shared-memory guidance for model sizing.
 - [ ] Keep ARM/MLX endpoints, private model names, and machine-specific paths out of committed config.
