@@ -17,7 +17,10 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 6: Applied Tooling And Adaptive Models | Complete | Tool-use modes, approved write guidance, scoped edit guidance, model selection strategy, hardware profiling, model tiers, and local override safety guidance are complete. |
 | Milestone 7: Cross-Platform Contributor Experience | Complete | Linux and macOS validation/test wrappers are available, and Linux wrapper execution is covered in CI. |
 | Milestone 8: Real Repository Validation | Complete | The pack repository and one private application-style repository have been validated with the runtime runner; practical MCP workflow examples are documented. |
-| Milestone 9: Distribution And Install Experience | Planned | Add safer install/update workflows for copying the pack into target repositories and validating the installed result. |
+| Milestone 9: Distribution And Install Experience | Complete | Install/update workflows are implemented with dry-run, backup, local-config exclusion, install validation, and Windows/Linux/macOS commands. |
+| Milestone 10: ARM And Apple Silicon Model Support | Planned | Document ARM-specific local model guidance across Apple Silicon, Windows ARM, and Linux ARM, including MLX as an advanced Mac path. |
+| Milestone 11: Editor Surface Compatibility | Planned | Validate and document VS Code and VSCodium differences for Continue config loading, Agent mode, tool execution, and duplicate-rule behavior. |
+| Milestone 12: Model Tool-Use Validation Evidence | Planned | Define repeatable evidence for marking models as tool-validated across providers, editors, and operating systems. |
 
 ## Milestone 1: Minimum Usable Pack
 
@@ -243,16 +246,83 @@ Goal: Make the pack easier and safer to install, update, validate, and reuse acr
 
 Scope:
 
-- Add an install or update script for copying `.continue` assets into a target repository.
-- Back up an existing target `.continue` folder before replacement or merge.
-- Add a dry-run mode that shows what would change before copying files.
-- Add install validation that confirms copied config, prompts, rules, agents, and templates resolve correctly.
-- Document Windows, Linux, and macOS install/update commands.
-- Keep local overrides, private endpoints, tokens, and machine-specific config out of install outputs.
+- Add an install or update script for copying `.continue` assets into a target repository. Done for PowerShell.
+- Back up an existing target `.continue` folder before replacement or merge. Done.
+- Add a dry-run mode that shows what would change before copying files. Done.
+- Add install validation that confirms copied config, prompts, rules, agents, and templates resolve correctly. Done.
+- Document Windows, Linux, and macOS install/update commands. Done.
+- Keep local overrides, private endpoints, tokens, and machine-specific config out of install outputs. Done for local config override exclusion.
 
 Exit criteria:
 
-- A user can install or update the pack in a target repository with one documented command.
-- Existing target `.continue` content is not overwritten without backup or explicit approval.
-- The installed pack can be validated after copy.
-- Install documentation stays beginner-friendly and cross-platform.
+- A user can install or update the pack in a target repository with one documented command. Done.
+- Existing target `.continue` content is not overwritten without backup or explicit approval. Done.
+- The installed pack can be validated after copy. Done.
+- Install documentation stays beginner-friendly and cross-platform. Done.
+
+## Milestone 10: ARM And Apple Silicon Model Support
+
+Goal: Improve guidance for ARM-based machines whose local model behavior differs from traditional x64 workstations with dedicated GPU VRAM.
+
+Scope:
+
+- Detect and report CPU architecture in hardware profile outputs when available.
+- Document Apple Silicon, Windows ARM, and Linux ARM as separate local-model scenarios.
+- Document the difference between Ollama/GGUF models and MLX models on Apple Silicon.
+- Keep Ollama as the default beginner setup path.
+- Add advanced Mac guidance for MLX model serving through an OpenAI-compatible local endpoint.
+- Evaluate whether the macOS hardware profile script should detect `mlx-lm` or other MLX tooling.
+- Evaluate whether Linux ARM profiles should identify NVIDIA Jetson or other ARM GPU acceleration paths.
+- Add conservative guidance for Windows ARM machines where local LLM acceleration may vary by hardware and tooling.
+- Decide whether MLX recommendations belong in `config/model-recommendations.tsv` or a provider-specific catalog.
+- Decide whether ARM-specific recommendations belong in the shared TSV catalog or a provider-specific catalog.
+- Document how unified memory and shared memory change model-size recommendations compared with dedicated GPU VRAM.
+- Keep ARM/MLX local endpoints, model experiments, private model names, and machine-specific paths out of committed shared config.
+
+Exit criteria:
+
+- ARM users understand the differences between Apple Silicon, Windows ARM, and Linux ARM local-model options.
+- Mac users understand when to use the default Ollama path versus an advanced MLX path.
+- MLX guidance explains Continue compatibility through a local API server rather than assuming Ollama model discovery.
+- Recommendation logic does not confuse Ollama-installed models with MLX-hosted models or other provider-specific ARM models.
+- ARM and Apple Silicon memory guidance is conservative and clearly documented.
+
+## Milestone 11: Editor Surface Compatibility
+
+Goal: Make setup and troubleshooting clearer for users running Continue in VS Code, VSCodium, or the Continue CLI.
+
+Scope:
+
+- Document known VS Code and VSCodium differences for Continue extension availability, versioning, and command behavior.
+- Validate project-local `.continue/config.yaml` loading in both editor surfaces when available.
+- Validate Agent mode and tool execution separately in VS Code and VSCodium.
+- Document how global Continue config can conflict with project-local rules.
+- Keep `npx @continuedev/cli --config .continue/config.yaml` as a fallback validation path.
+- Add troubleshooting notes for duplicate rules, missing models, missing prompts, and raw JSON tool-call output.
+
+Exit criteria:
+
+- Users can tell whether Continue is using the intended project-local config.
+- Duplicate-rule troubleshooting is documented for both global and project-local config scenarios.
+- Editor-specific behavior is documented without making the default config editor-specific.
+- CLI fallback instructions remain available for confusing editor behavior.
+
+## Milestone 12: Model Tool-Use Validation Evidence
+
+Goal: Make model tool-use recommendations evidence-based instead of relying only on model names, hardware tier, or installed-model detection.
+
+Scope:
+
+- Define a repeatable read-only tool-use validation checklist.
+- Record model, provider, editor surface, Continue version, operating system, and MCP state for validation runs.
+- Distinguish candidate model recommendations from tool-validated model status.
+- Add a sanitized evidence template for model tool-use validation results.
+- Decide whether validated model evidence should live in docs, examples, or a separate catalog.
+- Keep private endpoints, local paths, private repository names, and raw transcripts out of committed evidence.
+
+Exit criteria:
+
+- Users know that hardware/profile scripts recommend candidates, not proven tool-safe models.
+- A model is considered tool-validated only after a read-only tool test passes.
+- Approved write mode remains blocked until tool execution is proven in the intended editor/provider setup.
+- Sanitized validation evidence can be recorded without exposing private machine or repository details.

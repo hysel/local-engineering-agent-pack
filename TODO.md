@@ -159,9 +159,40 @@
 
 ## Milestone 9: Distribution And Install Experience
 
-- [ ] Add an install or update script for copying `.continue` assets into a target repository.
-- [ ] Add backup behavior for existing target `.continue` folders.
-- [ ] Add dry-run output before copying files.
-- [ ] Add install validation for copied config, prompts, rules, agents, and templates.
-- [ ] Document Windows, Linux, and macOS install/update commands.
-- [ ] Ensure install outputs exclude local overrides, private endpoints, tokens, and machine-specific config.
+- [x] Add an install or update script for copying `.continue` assets into a target repository.
+- [x] Add backup behavior for existing target `.continue` folders.
+- [x] Add dry-run output before copying files.
+- [x] Add install validation for copied config, prompts, rules, agents, and templates.
+- [x] Document Windows, Linux, and macOS install/update commands.
+- [x] Ensure install outputs exclude local overrides, private endpoints, tokens, and machine-specific config.
+
+## Milestone 10: ARM And Apple Silicon Model Support
+
+- [ ] Detect and report CPU architecture in hardware profile outputs when available.
+- [ ] Document Apple Silicon, Windows ARM, and Linux ARM local-model differences.
+- [ ] Document Ollama/GGUF versus MLX model differences for Apple Silicon.
+- [ ] Add advanced Mac guidance for MLX models served through an OpenAI-compatible local endpoint.
+- [ ] Evaluate `mlx-lm` detection in the macOS hardware profile script.
+- [ ] Evaluate Linux ARM detection for NVIDIA Jetson or other ARM GPU acceleration paths.
+- [ ] Add conservative Windows ARM local-model guidance.
+- [ ] Decide whether MLX or ARM recommendations belong in the shared TSV catalog or provider-specific catalogs.
+- [ ] Document unified-memory and shared-memory guidance for model sizing.
+- [ ] Keep ARM/MLX endpoints, private model names, and machine-specific paths out of committed config.
+
+## Milestone 11: Editor Surface Compatibility
+
+- [ ] Document VS Code and VSCodium Continue extension differences.
+- [ ] Validate project-local `.continue/config.yaml` loading in VS Code when available.
+- [ ] Validate project-local `.continue/config.yaml` loading in VSCodium when available.
+- [ ] Validate Agent mode and tool execution behavior separately by editor.
+- [ ] Document duplicate-rule troubleshooting for global plus project-local config conflicts.
+- [ ] Keep Continue CLI `npx` fallback instructions available for editor-specific issues.
+
+## Milestone 12: Model Tool-Use Validation Evidence
+
+- [ ] Define repeatable read-only tool-use validation steps.
+- [ ] Record model, provider, editor surface, Continue version, operating system, and MCP state for validation runs.
+- [ ] Distinguish candidate model recommendations from tool-validated model status.
+- [ ] Add a sanitized evidence template for model tool-use validation results.
+- [ ] Decide where validated model evidence should live.
+- [ ] Keep private endpoints, local paths, private repository names, and raw transcripts out of committed evidence.

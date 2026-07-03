@@ -244,6 +244,60 @@ macOS:
 
 The Linux and macOS validation scripts require PowerShell 7+ through the `pwsh` command.
 
+## Install Or Update A Target Repository
+
+Use the installer to copy this pack into the repository you want to review.
+
+Preview what would be copied:
+
+Windows PowerShell:
+
+```powershell
+.\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project" -DryRun
+```
+
+Linux:
+
+```bash
+./scripts/install-continue-pack.linux.sh --target-repo /path/to/your-project --dry-run
+```
+
+macOS:
+
+```bash
+./scripts/install-continue-pack.macos.sh --target-repo /path/to/your-project --dry-run
+```
+
+Install or update the target repository:
+
+Windows PowerShell:
+
+```powershell
+.\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project"
+```
+
+Linux:
+
+```bash
+./scripts/install-continue-pack.linux.sh --target-repo /path/to/your-project
+```
+
+macOS:
+
+```bash
+./scripts/install-continue-pack.macos.sh --target-repo /path/to/your-project
+```
+
+The installer:
+
+- Copies the pack's `.continue` files into the target repository.
+- Excludes local config overrides such as `.continue/config.local.yaml`.
+- Backs up an existing target `.continue` folder before replacing it.
+- Validates that copied config file references resolve.
+- Refuses to install into this pack repository itself.
+
+Linux and macOS installer wrappers require PowerShell 7+ through the `pwsh` command.
+
 ## Common Problems
 
 Use the detailed guides in `docs/`, starting with `docs/troubleshooting.md`.

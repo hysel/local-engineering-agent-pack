@@ -190,3 +190,5 @@ Use one of these safer fallbacks:
 - Ask the model: `Do not use tools. Do not output JSON. Use only the attached context.`
 
 Do not use approved write mode until read-only tool execution works reliably.
+
+For the model-level validation checklist, use `docs/local-model-reliability.md`.

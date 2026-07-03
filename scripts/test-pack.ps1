@@ -255,6 +255,104 @@ Invoke-PackTest "runtime context generation fails for missing target repository"
     Assert-True -Condition ($result.Output -match "Target repository path does not exist") -Message "Missing target error should be reported."
 }
 
+Invoke-PackTest "install script dry run does not modify target repository" {
+    $tempRepo = Join-Path ([System.IO.Path]::GetTempPath()) "continue-install-dry-run-test-$([guid]::NewGuid())"
+
+    try {
+        New-Item -ItemType Directory -Force -Path $tempRepo | Out-Null
+
+        $result = Invoke-CommandCapture `
+            -FilePath (Join-Path $repoRoot "scripts/install-continue-pack.ps1") `
+            -Arguments @("-TargetRepo", $tempRepo, "-DryRun")
+
+        Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "Install dry run should succeed."
+        Assert-True -Condition ($result.Output -match "Dry run only") -Message "Dry-run output should identify that no files were changed."
+        Assert-True -Condition (-not (Test-Path -LiteralPath (Join-Path $tempRepo ".continue"))) -Message "Dry run should not create .continue."
+    }
+    finally {
+        Remove-Item -LiteralPath $tempRepo -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+Invoke-PackTest "install script backs up existing .continue and excludes local config" {
+    $tempRepo = Join-Path ([System.IO.Path]::GetTempPath()) "continue-install-test-$([guid]::NewGuid())"
+
+    try {
+        $targetContinue = Join-Path $tempRepo ".continue"
+        New-Item -ItemType Directory -Force -Path $targetContinue | Out-Null
+        "old config" | Set-Content -LiteralPath (Join-Path $targetContinue "config.yaml")
+
+        $sourceLocalConfig = Join-Path $repoRoot ".continue/config.local.test.yaml"
+        "local: true" | Set-Content -LiteralPath $sourceLocalConfig
+
+        try {
+            $result = Invoke-CommandCapture `
+                -FilePath (Join-Path $repoRoot "scripts/install-continue-pack.ps1") `
+                -Arguments @("-TargetRepo", $tempRepo)
+
+            Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "Install should succeed."
+            Assert-True -Condition ($result.Output -match "Install complete\.") -Message "Install success message should be present."
+            Assert-True -Condition (Test-Path -LiteralPath (Join-Path $targetContinue "config.yaml")) -Message "Installed config should exist."
+            Assert-True -Condition (Test-Path -LiteralPath (Join-Path $targetContinue "prompts/repository-discovery.md")) -Message "Installed prompts should exist."
+            Assert-True -Condition (-not (Test-Path -LiteralPath (Join-Path $targetContinue "config.local.test.yaml"))) -Message "Local config overrides should not be installed."
+
+            $backupDirs = Get-ChildItem -LiteralPath $tempRepo -Directory -Filter ".continue.backup-*"
+            Assert-Equal -Actual $backupDirs.Count -Expected 1 -Message "Install should create one backup folder."
+            Assert-True -Condition (Test-Path -LiteralPath (Join-Path $backupDirs[0].FullName "config.yaml")) -Message "Backup should contain previous config."
+        }
+        finally {
+            Remove-Item -LiteralPath $sourceLocalConfig -Force -ErrorAction SilentlyContinue
+        }
+    }
+    finally {
+        Remove-Item -LiteralPath $tempRepo -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+Invoke-PackTest "install script refuses to target pack repository" {
+    $result = Invoke-CommandCapture `
+        -FilePath (Join-Path $repoRoot "scripts/install-continue-pack.ps1") `
+        -Arguments @("-TargetRepo", $repoRoot)
+
+    Assert-True -Condition ($result.ExitCode -ne 0) -Message "Install should fail when targeting the pack repository."
+    Assert-True -Condition ($result.Output -match "Target repository must be different") -Message "Expected self-targeting error should be reported."
+}
+
+Invoke-PackTest "install script accepts shell-friendly argument aliases" {
+    $tempRepo = Join-Path ([System.IO.Path]::GetTempPath()) "continue-install-alias-test-$([guid]::NewGuid())"
+
+    try {
+        New-Item -ItemType Directory -Force -Path $tempRepo | Out-Null
+
+        $result = Invoke-CommandCapture `
+            -FilePath (Join-Path $repoRoot "scripts/install-continue-pack.ps1") `
+            -Arguments @("--target-repo", $tempRepo, "--dry-run")
+
+        Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "Install dry run with shell-friendly aliases should succeed."
+        Assert-True -Condition ($result.Output -match "Dry run only") -Message "Dry-run output should be present."
+        Assert-True -Condition (-not (Test-Path -LiteralPath (Join-Path $tempRepo ".continue"))) -Message "Alias dry run should not create .continue."
+    }
+    finally {
+        Remove-Item -LiteralPath $tempRepo -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+Invoke-PackTest "install wrapper scripts exist and call PowerShell installer" {
+    $wrapperNames = @(
+        "install-continue-pack.linux.sh",
+        "install-continue-pack.macos.sh"
+    )
+
+    foreach ($wrapperName in $wrapperNames) {
+        $wrapperPath = Join-Path $repoRoot "scripts/$wrapperName"
+        Assert-True -Condition (Test-Path -LiteralPath $wrapperPath) -Message "$wrapperName should exist."
+
+        $content = Get-Content -LiteralPath $wrapperPath -Raw
+        Assert-True -Condition ($content -match "install-continue-pack\.ps1") -Message "$wrapperName should call the PowerShell installer."
+        Assert-True -Condition ($content -match "pwsh") -Message "$wrapperName should require pwsh."
+    }
+}
+
 Invoke-PackTest "review prompts include configuration-pack guardrails" {
     $promptNames = @(
         "architecture-review.md",

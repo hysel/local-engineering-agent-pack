@@ -42,6 +42,37 @@ Recommended use:
 - Use smaller models only for review, planning, summarization, or context-file workflows unless tool execution is proven.
 - Keep model experiments in local config until they are validated.
 
+## Tool-Use Validation Checklist
+
+Treat a model as tool-validated only after it passes a read-only tool test in the intended editor, provider, and operating system.
+
+Record:
+
+- Model name and tag.
+- Provider or server, such as Ollama or an OpenAI-compatible local endpoint.
+- Editor surface, such as VS Code, VSCodium, or Continue CLI.
+- Continue extension or CLI version when available.
+- Operating system.
+- Whether MCP was enabled.
+
+A model passes the basic read-only tool check when:
+
+- It executes a read-only file or repository inspection tool instead of printing JSON.
+- It produces a normal final answer after tool execution.
+- It separates observed evidence from assumptions.
+- It does not ask to modify files during a read-only prompt.
+- It does not suggest clicking Apply on raw JSON.
+
+Before approved write mode, also confirm:
+
+- The model asks before write actions.
+- The requested edit scope is narrow and names affected files.
+- The model can explain the planned change before editing.
+- The model can summarize the diff after editing.
+- The model can name validation and rollback steps.
+
+Do not treat hardware-tier recommendations or installed-model detection as tool validation. The recommendation catalog helps choose a candidate model; it does not prove tool behavior.
+
 ## Reliability Tiers
 
 Use these tiers when deciding how much trust to place in a local-model response.

@@ -11,7 +11,19 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
-No unreleased changes yet.
+### Added
+
+- Added a PowerShell install/update script with dry-run, backup, local-config exclusion, and install validation.
+- Added tests for installer dry-run behavior, backup behavior, local-config exclusion, and self-target protection.
+- Added Linux and macOS installer wrappers that call the canonical PowerShell installer.
+- Added roadmap and TODO tracking for ARM, Apple Silicon, and MLX model support.
+- Added VS Code and VSCodium compatibility guidance and roadmap tracking.
+- Added a local-model tool-use validation checklist and roadmap tracking for model tool-use evidence.
+
+### Changed
+
+- Documented the current PowerShell install/update workflow in the README.
+- Documented Windows, Linux, and macOS install/update commands in the README.
 
 ## 0.1.11 - 2026-07-03
 

@@ -19,6 +19,32 @@ Compatibility expectations:
 - MCP remains optional and disabled by default.
 - MCP workflows require Continue agent mode.
 
+## Editor Surfaces
+
+The pack should work in both VS Code and VSCodium when the Continue extension can load the project-local `.continue/config.yaml`.
+
+Expected differences:
+
+- VS Code usually installs extensions from Microsoft's Marketplace.
+- VSCodium usually installs extensions from Open VSX.
+- Continue extension versions may differ between the two editors.
+- Command palette names and availability may differ by extension version.
+- User/global Continue config locations can differ by editor and operating system.
+- Marketplace, authentication, telemetry, GitHub, and MCP-related flows may behave differently.
+
+Recommended setup:
+
+- Prefer the project-local `.continue/config.yaml` after installing this pack into a target repository.
+- Avoid loading the same rules from both a global Continue config and the project-local `.continue` folder.
+- Record the editor name, Continue extension version, operating system, and model when debugging behavior.
+- Validate Agent mode and tool execution separately in VS Code and VSCodium when a workflow depends on tools.
+- Keep `npx @continuedev/cli --config .continue/config.yaml` as a fallback when editor behavior is unclear.
+
+Known risk:
+
+- Duplicate rule warnings usually mean the same rule files are being loaded from more than one config source.
+- Raw JSON tool-call output usually indicates a model/tool-execution mismatch, not a file patch.
+
 ## Ollama And Local Models
 
 Default model assumptions:
@@ -98,6 +124,7 @@ These warnings do not automatically indicate a content problem, but contributors
 ## Validation Checklist
 
 - [ ] Continue loads `.continue/config.yaml`.
+- [ ] VS Code or VSCodium is using the intended project-local config.
 - [ ] Required prompt, rule, agent, and template files exist.
 - [ ] Local Ollama models are available or documented as setup prerequisites.
 - [ ] No committed machine-specific endpoint values are present.
