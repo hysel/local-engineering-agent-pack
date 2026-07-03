@@ -95,6 +95,26 @@ The helpers report:
 
 It does not collect hostnames, IP addresses, usernames, local filesystem paths, secrets, or custom Ollama endpoint values.
 
+## How Model Recommendations Work
+
+The helper scripts use a rule-based recommendation. They do not benchmark models, download models, query online model rankings, or prove that a model is safe for edits.
+
+The process is:
+
+1. Detect the local hardware profile.
+2. Classify the machine as a low, medium, or high resource candidate.
+3. Ask Ollama for the models installed on the local LLM server.
+4. Read `config/model-recommendations.tsv`.
+5. Scan rows for the detected tier from top to bottom.
+6. Recommend the first installed model whose name matches the row pattern.
+7. Use the tier fallback when no installed model matches.
+
+In other words, the recommendation depends on both the local machine and the models available on the local Ollama server.
+
+The catalog is an opinionated starting point. The "right" model still needs validation for the workflow you want to run. Before approved write mode, run a read-only prompt and confirm that the model can follow instructions, use tools when needed, avoid raw tool-call JSON, and produce evidence-based output.
+
+When updating `config/model-recommendations.tsv`, remember that order matters. Put the preferred model patterns first within each tier, keep one fallback row per tier, and avoid machine-specific endpoints, local paths, or private model names.
+
 For automation or sanitized notes, use JSON output.
 
 Windows:

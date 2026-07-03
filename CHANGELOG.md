@@ -11,6 +11,10 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+### Added
+
+- Added documentation explaining how hardware profile scripts choose model recommendations from the local Ollama model list and catalog order.
+
 ## 0.1.10 - 2026-07-02
 
 ### Added

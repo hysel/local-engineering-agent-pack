@@ -1,5 +1,6 @@
 # Tier|MatchPattern|FallbackModel|RecommendedUse|ValidationNote
 # Ordered top to bottom within each tier. MatchPattern is checked against installed Ollama model names.
+# The first matching installed model wins; this file is a curated priority list, not a live benchmark.
 # Leave MatchPattern empty for the tier fallback.
 High|^qwen3-coder:30b$||Use for coding, planning, review, and tool-backed workflows after tool-call validation.|Run a read-only tool test before approved write mode.
 High|qwen3.*coder.*30b||Use for coding, planning, review, and tool-backed workflows after tool-call validation.|Run a read-only tool test before approved write mode.
