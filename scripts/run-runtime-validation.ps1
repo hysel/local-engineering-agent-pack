@@ -28,6 +28,8 @@ if (-not (Test-Path -LiteralPath $ConfigPath)) {
     throw "Continue config path does not exist: $ConfigPath"
 }
 
+$ConfigPath = (Resolve-Path -LiteralPath $ConfigPath).Path
+
 $promptRoot = Join-Path $packRoot ".continue/prompts"
 $runtimeDoc = Join-Path $packRoot "docs/runtime-validation.md"
 $outputRoot = Join-Path $packRoot "runtime-validation-output"
@@ -44,6 +46,8 @@ if (-not $ContextPath) {
 if (-not (Test-Path -LiteralPath $ContextPath)) {
     throw "Runtime context path does not exist: $ContextPath"
 }
+
+$ContextPath = (Resolve-Path -LiteralPath $ContextPath).Path
 
 $workflows = @(
     @{

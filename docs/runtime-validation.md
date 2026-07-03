@@ -60,6 +60,7 @@ Do not record private repository names, customer names, internal hostnames, priv
 | 2026-07-02 | Private .NET sample repository | VSCodium Continue Agent mode with Ollama local-network endpoint override | Tool-enabled repository discovery setup | Partial pass: default config reached the model, but Agent mode printed raw JSON tool calls instead of executing tools; generated runtime context fallback produced a file-aware response | Document raw JSON tool-call failure, duplicate-rule causes, Windows `file://C:/...` path behavior, and context-file fallback. |
 | 2026-07-02 | Private .NET sample repository | VSCodium Continue Agent mode with Ollama local-network endpoint override and `qwen3-coder:30b` | Tool-enabled repository discovery setup | Pass: switching to `qwen3-coder:30b` enabled tool execution where `qwen2.5-coder:7b` produced raw JSON tool-call text | Update default model guidance for tool-enabled workflows and keep smaller models as context-file fallback candidates. |
 | 2026-07-02 | Pack repository self-validation | Continue CLI through `npx @continuedev/cli` with generated runtime context | All runtime validation workflows | Partial pass: runner completed every workflow and produced final text instead of tool-call JSON, but several outputs were generic or mismatched to a configuration/documentation repository | Add prompt guidance for configuration-pack repositories, evidence discipline, and avoiding app-code recommendations when no application surface exists. |
+| 2026-07-03 | Private .NET Framework Excel-DNA add-in repository | Continue CLI with local-network Ollama endpoint override and `qwen3-coder:30b` | All runtime validation workflows | Partial pass: all workflows completed with final text and no tool-call-only JSON, but several outputs remained generic or made claims that require source-level confirmation | Record sanitized findings, improve evidence discipline, and validate future prompt changes against this application-style repository. |
 
 ## Workflow Checklist
 
@@ -129,6 +130,14 @@ $Pack = "C:\path\to\continue-enterprise-engineering-pack"
 & "$Pack\scripts\run-runtime-validation.ps1" -TargetRepo (Get-Location).Path
 ```
 
+When using a local-only config file, pass an explicit config path. The runner resolves the path before changing into the target repository:
+
+```powershell
+$Pack = "C:\path\to\continue-enterprise-engineering-pack"
+$Config = "$Pack\.continue\config.local.yaml"
+& "$Pack\scripts\run-runtime-validation.ps1" -TargetRepo (Get-Location).Path -ConfigPath $Config
+```
+
 To append a sanitized summary template to this document:
 
 ```powershell
@@ -165,6 +174,60 @@ Do not modify files.
 - Validate against additional application repositories when suitable repositories are available.
 - Add project-specific MCP examples after validated real-world usage.
 - Revalidate legacy dependency migration with a stronger model or a context file that summarizes project-file risks instead of including raw XML.
+
+## 2026-07-03 Private Excel-DNA Add-In Runtime Validation
+
+Repository type: Private .NET Framework Excel-DNA add-in repository
+Model setup: Local-network Ollama endpoint override with `qwen3-coder:30b`
+Continue surface: Continue CLI through `npx @continuedev/cli` with generated runtime context
+
+### Workflows Run
+
+- Repository discovery
+- Architecture review
+- Code review
+- Implementation planning
+- Bug investigation
+- Security review
+- Performance review
+- Documentation review
+- AI framework self-review
+- Refactoring planning
+- Product review
+- Release readiness
+
+### Result
+
+Partial pass.
+
+All runtime validation workflows completed and produced final text. None of the workflow outputs were raw tool-call-only JSON. This validates the context-file runtime path against an application-style repository that includes project files, add-in configuration, package references, source code, and build assets.
+
+The strongest outputs were repository discovery, documentation review, release-readiness review, and code/security review. They identified the repository as a .NET Framework Excel-DNA add-in, recognized package-management and Excel-DNA packaging concerns, and called out missing tests, setup documentation, release evidence, and credential/input-handling risks.
+
+### What Worked
+
+- The runner completed all workflows with the local-network Ollama config.
+- The model produced final text instead of tool-call JSON.
+- Repository discovery correctly recognized the Excel-DNA add-in shape and major build/dependency assets.
+- Documentation review produced useful onboarding, build, debugging, testing, and deployment documentation gaps.
+- Release readiness correctly treated missing tests, documentation, rollback guidance, and security evidence as blockers.
+- Code and security review identified high-value risk areas such as credential handling, external API calls, input validation, local data storage, logging, dependencies, and missing tests.
+
+### Gaps
+
+- Some outputs still included generic recommendations that need source-level confirmation before being treated as findings.
+- Repository discovery incorrectly stated that top-level documentation was absent, despite documentation files existing in the target repository.
+- Some reviews inferred implementation details from package references and file names rather than confirmed source evidence.
+- The implementation-plan workflow produced a plausible audit-logging plan, but the scenario was generic and not strongly grounded in actual write-operation evidence.
+- Security findings need sharper evidence labels so suspected risks are not presented as confirmed vulnerabilities unless the source context proves them.
+
+### Follow-up
+
+- Strengthen review prompts to require explicit evidence labels for source-level claims.
+- Improve generated runtime context to summarize top-level documentation presence more clearly.
+- Add or update fixtures for application repositories where package references imply risks but source evidence is limited.
+- Rerun targeted code/security/release-readiness validation after prompt changes.
+- Defer project-specific MCP examples until at least one validated workflow benefits from live repository/file context beyond generated context.
 
 ## 2026-07-02 Pack Repository Self-Validation
 
