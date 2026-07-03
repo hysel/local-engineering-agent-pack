@@ -31,6 +31,21 @@ json_escape() {
   printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
+json_number_or_null() {
+  case "$1" in
+    ''|Unknown|Shared)
+      printf 'null'
+      ;;
+    *)
+      if printf '%s' "$1" | grep -Eq '^[0-9]+([.][0-9]+)?$'; then
+        printf '%s' "$1"
+      else
+        printf 'null'
+      fi
+      ;;
+  esac
+}
+
 gb_from_bytes() {
   awk -v bytes="$1" 'BEGIN { printf "%.1f", bytes / 1024 / 1024 / 1024 }'
 }
@@ -215,13 +230,13 @@ if [ "$AS_JSON" = true ]; then
   printf '  "GeneratedAt": "%s",\n' "$(json_escape "$GENERATED")"
   printf '  "Platform": "macOS",\n'
   printf '  "OperatingSystem": "%s",\n' "$(json_escape "$OS_SUMMARY")"
-  printf '  "SystemRamGb": "%s",\n' "$(json_escape "$RAM_GB")"
+  printf '  "SystemRamGb": %s,\n' "$(json_number_or_null "$RAM_GB")"
   printf '  "Cpu": "%s",\n' "$(json_escape "$CPU")"
   printf '  "Gpus": [\n'
   for i in "${!GPU_NAMES[@]}"; do
     [ "$i" -gt 0 ] && printf ',\n'
-    printf '    {"Name":"%s","VramGb":"%s","Source":"%s","Vendor":"%s","MemoryType":"%s"}' \
-      "$(json_escape "${GPU_NAMES[$i]}")" "$(json_escape "${GPU_VRAMS[$i]}")" "$(json_escape "${GPU_SOURCES[$i]}")" "$(json_escape "${GPU_VENDORS[$i]}")" "$(json_escape "${GPU_MEMORY_TYPES[$i]}")"
+    printf '    {"Name":"%s","VramGb":%s,"Source":"%s","Vendor":"%s","MemoryType":"%s"}' \
+      "$(json_escape "${GPU_NAMES[$i]}")" "$(json_number_or_null "${GPU_VRAMS[$i]}")" "$(json_escape "${GPU_SOURCES[$i]}")" "$(json_escape "${GPU_VENDORS[$i]}")" "$(json_escape "${GPU_MEMORY_TYPES[$i]}")"
   done
   printf '\n  ],\n'
   printf '  "OllamaStatus": "%s",\n' "$(json_escape "$OLLAMA_STATUS")"
