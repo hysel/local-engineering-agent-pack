@@ -231,6 +231,9 @@ For real code changes, also confirm the assistant can read file contents, not
 just list files. If it cannot read the files it wants to change, stop and fix
 tool access before approving implementation.
 
+After any approved write, verify the diff yourself. If the assistant says it
+changed a file but `git diff -- <file>` is empty, the write did not apply.
+
 Before approving write mode, read:
 
 - `docs/tool-use-modes.md`

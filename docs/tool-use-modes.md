@@ -96,6 +96,8 @@ Expected behavior:
 - The assistant inspects the relevant files.
 - The assistant successfully reads the exact files it plans to change before editing.
 - The assistant uses Continue edit/apply tools to change the approved files.
+- The assistant verifies the edit with changed file content, `git diff`, or another available diff/status tool before claiming success.
+- If no changed content or diff is observed after an edit attempt, the assistant says `WRITE_NOT_APPLIED` and stops.
 - The assistant does not only describe the change.
 - The assistant does not infer implementation details from repository type or typical framework patterns when it could not read the target files.
 - If read tools are unavailable, the assistant says `READ_TOOLS_UNAVAILABLE` clearly and stops before proposing edits.
@@ -184,6 +186,7 @@ Expected result:
 
 - Continue creates or edits the file through a write/apply tool.
 - `git status --short` shows only `continue-agent-write-test.md`.
+- `git diff` or a file reread confirms the requested content exists.
 - The assistant reports the file change instead of asking the user to create it manually.
 
 Clean up after the test:

@@ -32,6 +32,7 @@ This project follows a simple changelog format:
 - Added an approved-write smoke test for validating Continue edit/apply tool behavior before trusting Agent mode to modify projects.
 - Changed global Continue config generation to omit `rules:` by default so project-local `.continue/rules` do not produce duplicate rule warnings.
 - Added read-content tool validation guidance so Agent mode cannot treat file-listing success as enough evidence for real code changes.
+- Added post-edit diff verification guidance so Agent mode cannot claim a file changed when no changed content or diff exists.
 
 ### Changed
 
@@ -39,6 +40,7 @@ This project follows a simple changelog format:
 - Clarified approved write mode so models must use edit/apply tools after explicit approval or report that write tools are unavailable.
 - Added `-GlobalConfigIncludeRules` and `--global-config-include-rules` for explicit global-only rule loading when needed.
 - Added `READ_TOOLS_UNAVAILABLE` guidance for cases where the model can list files but cannot read the source or config files it wants to change.
+- Added `WRITE_NOT_APPLIED` guidance for cases where the model claims an edit but the file content or git diff does not show it.
 
 ## 0.1.12 - 2026-07-03
 

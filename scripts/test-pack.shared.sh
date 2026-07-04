@@ -197,6 +197,8 @@ test_model_tool_use_validation_doc() {
     grep -q "raw JSON" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
     grep -q "read file contents" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
     grep -q "READ_TOOLS_UNAVAILABLE" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
+    grep -q "WRITE_NOT_APPLIED" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
+    grep -q "non-empty diff" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
     grep -q "active shell and operating system" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
     grep -q "continue-agent-write-test.md" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
     grep -q "I can't directly edit files" "$REPO_ROOT/docs/model-tool-use-validation.md" &&
@@ -207,6 +209,7 @@ test_model_tool_use_validation_doc() {
     grep -q "Editor surface" "$REPO_ROOT/examples/model-tool-use-validation.md" &&
     grep -q "MCP state" "$REPO_ROOT/examples/model-tool-use-validation.md" &&
     grep -q "Read-content tool execution" "$REPO_ROOT/examples/model-tool-use-validation.md" &&
+    grep -q "non-empty diff" "$REPO_ROOT/examples/model-tool-use-validation.md" &&
     grep -q "Platform-aware command use" "$REPO_ROOT/examples/model-tool-use-validation.md" &&
     grep -q "Sanitization Checklist" "$REPO_ROOT/examples/model-tool-use-validation.md"
 }
@@ -214,6 +217,8 @@ test_model_tool_use_validation_doc() {
 test_tool_use_docs_define_platform_aware_write_behavior() {
   grep -q "Match commands to the user's active operating system and shell" "$REPO_ROOT/.continue/rules/general.md" &&
     grep -q "READ_TOOLS_UNAVAILABLE" "$REPO_ROOT/.continue/rules/general.md" &&
+    grep -q "WRITE_NOT_APPLIED" "$REPO_ROOT/.continue/rules/general.md" &&
+    grep -q "git diff" "$REPO_ROOT/.continue/rules/general.md" &&
     grep -q "typical" "$REPO_ROOT/.continue/rules/general.md" &&
     grep -q "Select-String" "$REPO_ROOT/.continue/rules/general.md" &&
     grep -q "write tools are unavailable" "$REPO_ROOT/.continue/rules/general.md" &&
@@ -221,15 +226,20 @@ test_tool_use_docs_define_platform_aware_write_behavior() {
     grep -q "Platform-Aware Commands" "$REPO_ROOT/docs/tool-use-modes.md" &&
     grep -q "READ_TOOLS_UNAVAILABLE" "$REPO_ROOT/docs/tool-use-modes.md" &&
     grep -q "WRITE_TOOLS_UNAVAILABLE" "$REPO_ROOT/docs/tool-use-modes.md" &&
+    grep -q "WRITE_NOT_APPLIED" "$REPO_ROOT/docs/tool-use-modes.md" &&
     grep -q "continue-agent-write-test.md" "$REPO_ROOT/docs/tool-use-modes.md" &&
     grep -q "Safe write smoke-test prompt" "$REPO_ROOT/docs/approved-tool-backed-changes.md" &&
+    grep -q "git diff" "$REPO_ROOT/docs/approved-tool-backed-changes.md" &&
     grep -q "Remove-Item" "$REPO_ROOT/docs/approved-tool-backed-changes.md" &&
     grep -q "write tools are not validated yet" "$REPO_ROOT/README.md" &&
     grep -q "read file contents" "$REPO_ROOT/README.md" &&
+    grep -q "git diff -- <file>" "$REPO_ROOT/README.md" &&
     grep -q "Agent Says It Cannot Edit Files" "$REPO_ROOT/docs/troubleshooting.md" &&
     grep -q "WRITE_TOOLS_UNAVAILABLE" "$REPO_ROOT/docs/troubleshooting.md" &&
     grep -q "Agent Lists Files But Cannot Read Or Edit Them" "$REPO_ROOT/docs/troubleshooting.md" &&
-    grep -q "READ_TOOLS_UNAVAILABLE" "$REPO_ROOT/docs/troubleshooting.md"
+    grep -q "READ_TOOLS_UNAVAILABLE" "$REPO_ROOT/docs/troubleshooting.md" &&
+    grep -q "Agent Claims A Change But Git Diff Is Empty" "$REPO_ROOT/docs/troubleshooting.md" &&
+    grep -q "WRITE_NOT_APPLIED" "$REPO_ROOT/docs/troubleshooting.md"
 }
 
 run_test "validate-pack succeeds for repository" test_validate_succeeds
