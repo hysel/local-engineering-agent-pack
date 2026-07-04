@@ -259,6 +259,17 @@ Invoke-PackTest "Linux hardware profile reports ARM platform notes" {
     Assert-True -Condition ($content -match "GPU_DETECTION_TOOLS") -Message "Linux profile should track optional GPU detection tools."
     Assert-True -Condition ($content -match "Linux GPU detection is limited") -Message "Linux profile should warn when optional GPU detection tools are missing."
     Assert-True -Condition ($content -match "no GPU was detected") -Message "Linux profile should warn when tools are present but no GPU is detected."
+    Assert-True -Condition ($content -match "detect_container_context") -Message "Linux profile should detect common container contexts."
+    Assert-True -Condition ($content -match "Container or LXC-style environment detected") -Message "Linux profile should warn when container context is detected."
+}
+
+Invoke-PackTest "compatibility docs include cloud and container smoke tests" {
+    $docPath = Join-Path $repoRoot "docs/compatibility.md"
+    $content = Get-Content -LiteralPath $docPath -Raw
+
+    Assert-True -Condition ($content -match "Recommended enterprise/cloud smoke test") -Message "Compatibility docs should include enterprise/cloud smoke-test guidance."
+    Assert-True -Condition ($content -match "Recommended container smoke test") -Message "Compatibility docs should include container smoke-test guidance."
+    Assert-True -Condition ($content -match "get-local-model-profile\.linux\.sh") -Message "Compatibility smoke tests should reference the Linux hardware profile helper."
 }
 
 Invoke-PackTest "Continue file references are relative and resolvable" {
