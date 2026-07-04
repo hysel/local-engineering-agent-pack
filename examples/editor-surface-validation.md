@@ -37,7 +37,7 @@ Result:
 
 ### Decision
 
-- VS Code-compatible build: Read-only tool validated with `qwen3-coder:30b` in an application-style sample repository. Duplicate-rule status was not confirmed in this run.
+- VS Code-compatible build: Read-only tool validated with `qwen3-coder:30b` in an application-style sample repository. Duplicate-rule warnings were not observed in the current validation setup.
 - VSCodium: Initial Agent tool execution failed with `qwen3-coder:30b`, then a controlled Agent-mode retest with the `Ollama Qwen Coder` model label successfully executed the list-files tool. Treat VSCodium as read-only tool validated for the retested setup, with the earlier failure retained as a caution.
 - Continue CLI: Not validated for model-backed execution in this run because the provider connection failed.
 
@@ -55,7 +55,7 @@ Result:
 - Repository type tested: .NET Framework Excel-DNA add-in sample repository
 - Git status before test: clean
 - Git status after test: clean
-- Duplicate-rule warnings: Unknown
+- Duplicate-rule warnings: No duplicate-rule warnings observed
 - Raw JSON tool calls: No
 - Private details removed: Yes
 
@@ -67,13 +67,13 @@ Result:
 | Read-only Agent list-files test | Pass | The response summarized top-level files such as the solution, project file, Excel-DNA add-in file, source file, config files, package config, and documentation files. |
 | Unexpected file changes | Pass | `git status --short` was empty after the Agent test. |
 | Raw JSON tool-call behavior | Pass | The final response did not print raw JSON tool calls. |
-| Duplicate-rule warnings | Unknown | The test report did not confirm whether duplicate-rule warnings appeared. |
+| Duplicate-rule warnings | Pass | No duplicate-rule warnings were observed in the current editor validation setup. |
 
 ### Decision
 
 - Mark VS Code-compatible build plus `qwen3-coder:30b` as read-only tool validated for this sample repository.
 - Do not mark approved-write ready from this test; no write-mode smoke test was performed.
-- Validate duplicate-rule status in a future VS Code-compatible run.
+- Recheck duplicate-rule status after future Continue extension, model, or config changes.
 
 ## 2026-07-03 VSCodium Agent Tool Test: Initial Failed Run
 
@@ -88,7 +88,7 @@ Result:
 - Config source tested: project-local `.continue/config.yaml`
 - Repository type tested: .NET Framework Excel-DNA add-in sample repository
 - Git status after test: clean
-- Duplicate-rule warnings: Unknown
+- Duplicate-rule warnings: No duplicate-rule warnings observed in the current editor validation setup
 - Raw JSON or tool-call markup: Yes
 - Private details removed: Yes
 
@@ -99,7 +99,7 @@ Result:
 | Read-only Agent list-files test | Fail | The response printed tool-call markup instead of executing the list-files tool. |
 | Unexpected file changes | Pass | `git status --short` was empty after the failed Agent test. |
 | Raw JSON or tool-call markup behavior | Fail | The response included `<function=ls> <parameter=dirPath> . </tool_call>`. |
-| Duplicate-rule warnings | Unknown | The test report did not confirm whether duplicate-rule warnings appeared. |
+| Duplicate-rule warnings | Pass | No duplicate-rule warnings were observed in the current editor validation setup. |
 
 ### Decision
 
@@ -119,7 +119,7 @@ Result:
 - CPU architecture: x64
 - Config source tested: project-local `.continue/config.yaml`
 - Repository type tested: .NET Framework Excel-DNA add-in sample repository
-- Duplicate-rule warnings: Unknown
+- Duplicate-rule warnings: No duplicate-rule warnings observed
 - Raw JSON or tool-call markup: No
 - Private details removed: Yes
 
@@ -131,17 +131,39 @@ Result:
 | Tool execution | Pass | The response included `Continue listed files in .` before the summary. |
 | Raw JSON or tool-call markup behavior | Pass | The final response did not print raw JSON or `<function=...>` markup. |
 | Unexpected file changes | Not recorded in this run | The previous failed run left `git status --short` clean. The retest report did not include a new after-test status. |
-| Duplicate-rule warnings | Unknown | The test report did not confirm whether duplicate-rule warnings appeared. |
+| Duplicate-rule warnings | Pass | No duplicate-rule warnings were observed in the current VSCodium validation setup. |
 
 ### Decision
 
 - Mark VSCodium plus the `Ollama Qwen Coder` model label as read-only tool validated for this sample repository.
 - Do not mark approved-write ready from this test; no write-mode smoke test was performed.
-- Keep duplicate-rule status and post-retest `git status` confirmation as follow-up items.
+- Keep post-retest `git status` confirmation as a follow-up item for future VSCodium retests.
+
+## 2026-07-03 Duplicate-Rule Warning Check
+
+### Summary
+
+- Date: 2026-07-03
+- Editor surfaces checked: VS Code-compatible build and VSCodium
+- Config source tested: project-local `.continue/config.yaml`
+- Duplicate-rule warnings: No duplicate-rule warnings observed
+- Private details removed: Yes
+
+### Tests
+
+| Test | Result | Notes |
+| --- | --- | --- |
+| VS Code-compatible duplicate-rule check | Pass | No duplicate-rule warnings were observed in the current setup. |
+| VSCodium duplicate-rule check | Pass | No duplicate-rule warnings were observed in the current setup. |
+
+### Decision
+
+- Mark duplicate-rule status clean for the current editor validation setup.
+- Treat Milestone 11 editor-surface validation as complete for the current documented scope.
+- Recheck duplicate-rule status after future Continue extension, model, or config changes.
 
 ### Follow-Up
 
-- Validate duplicate-rule status in VS Code-compatible build and VSCodium.
 - Confirm `git status --short` after future VSCodium retests.
 
 ### Sanitization Checklist

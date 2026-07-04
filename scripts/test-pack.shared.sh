@@ -152,7 +152,9 @@ test_editor_compatibility_doc() {
     grep -q "Controlled Retest" "$REPO_ROOT/examples/editor-surface-validation.md" &&
     grep -q "Ollama Qwen Coder" "$REPO_ROOT/examples/editor-surface-validation.md" &&
     grep -q "Continue listed files in ." "$REPO_ROOT/examples/editor-surface-validation.md" &&
-    grep -q "model connection error" "$REPO_ROOT/examples/editor-surface-validation.md"
+    grep -q "model connection error" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "Duplicate-Rule Warning Check" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "No duplicate-rule warnings observed" "$REPO_ROOT/examples/editor-surface-validation.md"
 }
 
 test_model_tool_use_validation_doc() {
