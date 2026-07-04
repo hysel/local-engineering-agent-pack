@@ -138,7 +138,14 @@ test_editor_compatibility_doc() {
     grep -q "project-local" "$REPO_ROOT/docs/editor-compatibility.md" &&
     grep -q "Duplicate rule" "$REPO_ROOT/docs/editor-compatibility.md" &&
     grep -q "Agent mode" "$REPO_ROOT/docs/editor-compatibility.md" &&
-    grep -q "npx -y @continuedev/cli --config .continue/config.yaml" "$REPO_ROOT/docs/editor-compatibility.md"
+    grep -q "npx -y @continuedev/cli --config .continue/config.yaml" "$REPO_ROOT/docs/editor-compatibility.md" &&
+    grep -q "Terminal Preflight Checks" "$REPO_ROOT/docs/editor-compatibility.md" &&
+    grep -q "examples/editor-surface-validation.md" "$REPO_ROOT/docs/editor-compatibility.md" &&
+    grep -q "Editor Surface Validation Evidence" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "VS Code-compatible build" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "VSCodium" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "GUI config loading not proven" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "model connection error" "$REPO_ROOT/examples/editor-surface-validation.md"
 }
 
 test_model_tool_use_validation_doc() {

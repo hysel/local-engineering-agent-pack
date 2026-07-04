@@ -190,6 +190,7 @@
 ## Milestone 11: Editor Surface Compatibility
 
 - [x] Document VS Code and VSCodium Continue extension differences.
+- [x] Add sanitized terminal preflight evidence for locally installed VS Code-compatible and VSCodium Continue extensions.
 - [ ] Validate project-local `.continue/config.yaml` loading in VS Code when available.
 - [ ] Validate project-local `.continue/config.yaml` loading in VSCodium when available.
 - [ ] Validate Agent mode and tool execution behavior separately by editor.

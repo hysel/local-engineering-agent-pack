@@ -286,7 +286,9 @@ Invoke-PackTest "compatibility docs include cloud and container smoke tests" {
 
 Invoke-PackTest "editor compatibility docs cover config and tool validation" {
     $docPath = Join-Path $repoRoot "docs/editor-compatibility.md"
+    $evidencePath = Join-Path $repoRoot "examples/editor-surface-validation.md"
     $content = Get-Content -LiteralPath $docPath -Raw
+    $evidence = Get-Content -LiteralPath $evidencePath -Raw
 
     Assert-True -Condition ($content -match "VS Code") -Message "Editor compatibility docs should cover VS Code."
     Assert-True -Condition ($content -match "VSCodium") -Message "Editor compatibility docs should cover VSCodium."
@@ -294,6 +296,13 @@ Invoke-PackTest "editor compatibility docs cover config and tool validation" {
     Assert-True -Condition ($content -match "Duplicate rule") -Message "Editor compatibility docs should cover duplicate rules."
     Assert-True -Condition ($content -match "Agent mode") -Message "Editor compatibility docs should cover Agent mode."
     Assert-True -Condition ($content -like "*npx -y @continuedev/cli --config .continue/config.yaml*") -Message "Editor compatibility docs should include CLI fallback command."
+    Assert-True -Condition ($content -match "Terminal Preflight Checks") -Message "Editor compatibility docs should include terminal preflight checks."
+    Assert-True -Condition ($content -match "examples/editor-surface-validation.md") -Message "Editor compatibility docs should reference sanitized evidence."
+    Assert-True -Condition ($evidence -match "Editor Surface Validation Evidence") -Message "Editor evidence should have the expected title."
+    Assert-True -Condition ($evidence -match "VS Code-compatible build") -Message "Editor evidence should record VS Code-compatible detection."
+    Assert-True -Condition ($evidence -match "VSCodium") -Message "Editor evidence should record VSCodium detection."
+    Assert-True -Condition ($evidence -match "GUI config loading not proven") -Message "Editor evidence should avoid overstating GUI validation."
+    Assert-True -Condition ($evidence -match "model connection error") -Message "Editor evidence should record CLI connection failure safely."
 }
 
 Invoke-PackTest "model tool-use validation docs define evidence workflow" {

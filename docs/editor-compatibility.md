@@ -53,6 +53,37 @@ Run these checks before testing prompts:
 
 If the model or prompts are missing, Continue may be using a global/default config instead of the project-local config.
 
+## Terminal Preflight Checks
+
+These commands do not prove that the editor UI loaded the project-local config. They only confirm that the editor command and Continue extension are visible from the current shell.
+
+VS Code-compatible builds:
+
+```powershell
+code --version
+code --list-extensions --show-versions | Select-String -Pattern "continue" -CaseSensitive:$false
+```
+
+VSCodium:
+
+```powershell
+codium --version
+codium --list-extensions --show-versions | Select-String -Pattern "continue" -CaseSensitive:$false
+```
+
+Linux or macOS:
+
+```bash
+code --version
+code --list-extensions --show-versions | grep -i continue
+codium --version
+codium --list-extensions --show-versions | grep -i continue
+```
+
+If `code` or `codium` is not on `PATH`, use the editor UI to confirm the installed Continue extension version instead.
+
+Record sanitized terminal preflight results in `examples/editor-surface-validation.md` only when they change shared guidance.
+
 ## Duplicate Rule Warnings
 
 Duplicate rule warnings usually mean the same rule files are loaded from two places:
@@ -156,3 +187,5 @@ When testing an editor surface, record:
 - whether any fallback was needed
 
 Keep private endpoints, usernames, local paths, private repository names, and raw transcripts out of committed notes.
+
+See `examples/editor-surface-validation.md` for the current sanitized editor-surface evidence record.

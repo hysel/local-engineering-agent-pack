@@ -575,6 +575,8 @@ Runtime status:
 - `examples/performance-review.md`
 - `examples/release-readiness.md`
 - `examples/sonarqube-review.md`
+- `examples/editor-surface-validation.md`
+- `examples/model-tool-use-validation.md`
 - `examples/fixtures/repository-context.md`
 - `examples/fixtures/security-review-input.md`
 - `examples/fixtures/performance-review-input.md`
