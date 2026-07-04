@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, Milestone 9 distribution and install experience, and Milestone 10 ARM and Apple Silicon model support are complete. Broader multi-repository validation remains in the backlog.
+The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, Milestone 9 distribution and install experience, Milestone 10 ARM and Apple Silicon model support, and Milestone 11 editor surface compatibility are complete. Broader multi-repository validation remains in the backlog.
 
 ## Stage Status
 
@@ -19,7 +19,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 8: Real Repository Validation | Complete | The pack repository and one private application-style repository have been validated with the runtime runner; practical MCP workflow examples are documented. |
 | Milestone 9: Distribution And Install Experience | Complete | Install/update workflows are implemented with dry-run, backup, local-config exclusion, install validation, and Windows/Linux/macOS commands. |
 | Milestone 10: ARM And Apple Silicon Model Support | Complete | CPU architecture reporting, ARM model guidance, Linux compatibility assumptions, container caveats, cloud smoke-test guidance, and MLX guidance are documented. |
-| Milestone 11: Editor Surface Compatibility | In Progress | VS Code-compatible and VSCodium read-only Agent validation are recorded; duplicate-rule status still needs confirmation. |
+| Milestone 11: Editor Surface Compatibility | Complete | VS Code-compatible and VSCodium read-only Agent validation are recorded, duplicate-rule checks are clean, and CLI fallback guidance is documented. |
 | Milestone 12: Model Tool-Use Validation Evidence | In Progress | Starter model defaults, automatic local model config generation, read-only tool validation guidance, and sanitized evidence templates are in place; online discovery and broader evidence catalog decisions remain. |
 
 ## Milestone 1: Minimum Usable Pack
@@ -306,11 +306,12 @@ Scope:
 - Document known VS Code and VSCodium differences for Continue extension availability, versioning, and command behavior. Done.
 - Add sanitized terminal preflight evidence for locally installed VS Code-compatible and VSCodium Continue extensions. Done.
 - Validate project-local `.continue/config.yaml` loading in VS Code-compatible builds when available. Done.
-- Validate project-local `.continue/config.yaml` loading in VSCodium when available. Partial: Agent ran in VSCodium, but duplicate-rule status was not confirmed.
+- Validate project-local `.continue/config.yaml` loading in VSCodium when available. Done for current scope.
 - Validate Agent mode and tool execution in VS Code-compatible builds. Done for read-only tool use.
 - Validate Agent mode and tool execution in VSCodium. Done for read-only tool use after controlled retest.
 - Document how global Continue config can conflict with project-local rules. Done.
 - Keep `npx @continuedev/cli --config .continue/config.yaml` as a fallback validation path. Done.
+- Confirm duplicate-rule status in the current VS Code-compatible and VSCodium setup. Done.
 - Add troubleshooting notes for duplicate rules, missing models, missing prompts, and raw JSON tool-call output. Done.
 
 Exit criteria:

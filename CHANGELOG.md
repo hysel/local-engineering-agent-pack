@@ -26,6 +26,7 @@ This project follows a simple changelog format:
 - Added sanitized editor-surface preflight evidence for local VS Code-compatible and VSCodium Continue extension detection, plus terminal preflight guidance.
 - Recorded sanitized VS Code-compatible read-only Agent validation evidence with `qwen3-coder:30b` on an application-style sample repository.
 - Recorded sanitized VSCodium Agent tool validation results, including an initial tool-call markup failure and a controlled read-only Agent retest that successfully listed repository files.
+- Recorded clean duplicate-rule status for the current VS Code-compatible and VSCodium validation setup and closed Milestone 11 for the current scope.
 
 ## 0.1.12 - 2026-07-03
 
