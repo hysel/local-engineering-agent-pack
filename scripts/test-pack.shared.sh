@@ -149,6 +149,9 @@ test_editor_compatibility_doc() {
     grep -q "Do not mark approved-write ready" "$REPO_ROOT/examples/editor-surface-validation.md" &&
     grep -q "VSCodium Agent Tool Test" "$REPO_ROOT/examples/editor-surface-validation.md" &&
     grep -q "<function=ls>" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "Controlled Retest" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "Ollama Qwen Coder" "$REPO_ROOT/examples/editor-surface-validation.md" &&
+    grep -q "Continue listed files in ." "$REPO_ROOT/examples/editor-surface-validation.md" &&
     grep -q "model connection error" "$REPO_ROOT/examples/editor-surface-validation.md"
 }
 

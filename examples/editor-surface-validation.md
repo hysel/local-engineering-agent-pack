@@ -38,7 +38,7 @@ Result:
 ### Decision
 
 - VS Code-compatible build: Read-only tool validated with `qwen3-coder:30b` in an application-style sample repository. Duplicate-rule status was not confirmed in this run.
-- VSCodium: Agent tool execution failed with `qwen3-coder:30b` because the editor/model surface printed tool-call markup instead of executing the list-files tool.
+- VSCodium: Initial Agent tool execution failed with `qwen3-coder:30b`, then a controlled Agent-mode retest with the `Ollama Qwen Coder` model label successfully executed the list-files tool. Treat VSCodium as read-only tool validated for the retested setup, with the earlier failure retained as a caution.
 - Continue CLI: Not validated for model-backed execution in this run because the provider connection failed.
 
 ## 2026-07-03 VS Code-Compatible Read-Only Agent Test
@@ -75,7 +75,7 @@ Result:
 - Do not mark approved-write ready from this test; no write-mode smoke test was performed.
 - Validate duplicate-rule status in a future VS Code-compatible run.
 
-## 2026-07-03 VSCodium Agent Tool Test
+## 2026-07-03 VSCodium Agent Tool Test: Initial Failed Run
 
 ### Summary
 
@@ -103,15 +103,46 @@ Result:
 
 ### Decision
 
-- Do not mark VSCodium plus `qwen3-coder:30b` as read-only tool validated for this setup.
-- Do not use this VSCodium setup for approved write mode until Agent tool execution works.
-- Use selected files, `@Files`, or generated runtime context as a fallback for VSCodium on this setup.
-- Retest VSCodium after Continue extension, model, or configuration changes.
+- Do not mark this initial VSCodium run as read-only tool validated.
+- Keep the failure as evidence that VSCodium/tool behavior can vary by exact mode, selected model label, and session state.
+- Use a controlled Agent-mode retest before deciding whether the setup is tool validated.
+
+## 2026-07-03 VSCodium Agent Tool Test: Controlled Retest
+
+### Summary
+
+- Date: 2026-07-03
+- Editor surface: VSCodium
+- Model label shown in Continue: `Ollama Qwen Coder`
+- Provider: Ollama
+- Operating system: Windows
+- CPU architecture: x64
+- Config source tested: project-local `.continue/config.yaml`
+- Repository type tested: .NET Framework Excel-DNA add-in sample repository
+- Duplicate-rule warnings: Unknown
+- Raw JSON or tool-call markup: No
+- Private details removed: Yes
+
+### Tests
+
+| Test | Result | Notes |
+| --- | --- | --- |
+| Read-only Agent list-files test | Pass | Continue reported that it listed files in the repository root and returned a normal text summary. |
+| Tool execution | Pass | The response included `Continue listed files in .` before the summary. |
+| Raw JSON or tool-call markup behavior | Pass | The final response did not print raw JSON or `<function=...>` markup. |
+| Unexpected file changes | Not recorded in this run | The previous failed run left `git status --short` clean. The retest report did not include a new after-test status. |
+| Duplicate-rule warnings | Unknown | The test report did not confirm whether duplicate-rule warnings appeared. |
+
+### Decision
+
+- Mark VSCodium plus the `Ollama Qwen Coder` model label as read-only tool validated for this sample repository.
+- Do not mark approved-write ready from this test; no write-mode smoke test was performed.
+- Keep duplicate-rule status and post-retest `git status` confirmation as follow-up items.
 
 ### Follow-Up
 
 - Validate duplicate-rule status in VS Code-compatible build and VSCodium.
-- Retest VSCodium Agent mode after extension, model, or configuration changes.
+- Confirm `git status --short` after future VSCodium retests.
 
 ### Sanitization Checklist
 
