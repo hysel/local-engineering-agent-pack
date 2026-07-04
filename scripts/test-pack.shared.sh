@@ -111,7 +111,11 @@ test_runtime_validation_missing_target() {
 
 test_profile_script_markers() {
   grep -q "MlxRecommendation" "$REPO_ROOT/scripts/get-local-model-profile.macos.sh" &&
-    grep -q "PlatformNotes" "$REPO_ROOT/scripts/get-local-model-profile.linux.sh"
+    grep -q "PlatformNotes" "$REPO_ROOT/scripts/get-local-model-profile.linux.sh" &&
+    grep -q "detect_container_context" "$REPO_ROOT/scripts/get-local-model-profile.linux.sh" &&
+    grep -q "Container or LXC-style environment detected" "$REPO_ROOT/scripts/get-local-model-profile.linux.sh" &&
+    grep -q "Recommended enterprise/cloud smoke test" "$REPO_ROOT/docs/compatibility.md" &&
+    grep -q "Recommended container smoke test" "$REPO_ROOT/docs/compatibility.md"
 }
 
 run_test "validate-pack succeeds for repository" test_validate_succeeds

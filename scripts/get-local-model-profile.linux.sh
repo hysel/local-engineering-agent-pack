@@ -137,6 +137,22 @@ add_platform_note() {
   PLATFORM_NOTES+=("$1")
 }
 
+detect_container_context() {
+  if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
+    return 0
+  fi
+
+  if command_exists systemd-detect-virt && systemd-detect-virt --container >/dev/null 2>&1; then
+    return 0
+  fi
+
+  if [ -r /proc/1/cgroup ] && grep -Eiq 'docker|containerd|kubepods|libpod|lxc|lxd' /proc/1/cgroup; then
+    return 0
+  fi
+
+  return 1
+}
+
 OS_SUMMARY="Linux"
 if [ -r /etc/os-release ]; then
   OS_SUMMARY="$(grep '^PRETTY_NAME=' /etc/os-release | head -n 1 | cut -d= -f2- | tr -d '"')"
@@ -197,6 +213,10 @@ done
 
 if [ "$JETSON_DETECTED" = true ]; then
   add_platform_note "NVIDIA Jetson or Tegra indicators detected; verify JetPack, CUDA, container/device access, and Ollama acceleration before trusting model sizing."
+fi
+
+if detect_container_context; then
+  add_platform_note "Container or LXC-style environment detected; hardware, GPU, driver, and memory details may reflect container-visible limits rather than host capacity."
 fi
 
 GPU_DETECTION_TOOLS=()

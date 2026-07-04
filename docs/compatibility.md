@@ -160,6 +160,17 @@ Cloud and enterprise caveats:
 
 The support goal is portable setup, validation, and installation. Hardware profiling remains best effort because cloud images vary by provider, instance type, driver state, and hardening policy.
 
+Recommended enterprise/cloud smoke test:
+
+1. Run `./scripts/validate-pack.linux.sh`.
+2. Run `./scripts/test-pack.linux.sh`.
+3. Run `./scripts/get-local-model-profile.linux.sh`.
+4. Confirm the output reports the expected OS family, CPU architecture, RAM, Ollama status, and any GPU or platform notes.
+5. If using a GPU instance, confirm the vendor tooling works before trusting model sizing: `nvidia-smi` for NVIDIA or `rocm-smi` for AMD.
+6. Run a read-only Continue prompt before enabling approved write mode.
+
+Treat these checks as smoke tests, not certification. A cloud image can pass pack validation while still needing provider-specific driver setup, firewall rules, endpoint configuration, or model installation.
+
 ### Containers And LXC
 
 Containers, LXC, and LXD environments need extra care because the visible hardware may not match the host machine.
@@ -177,6 +188,16 @@ Considerations:
 - File paths can differ when Continue runs on the host but tools or scripts run inside a container.
 
 Treat hardware profile output from containers as container-visible capacity, not guaranteed host capacity. Use conservative model recommendations until GPU passthrough, memory limits, Ollama reachability, and tool execution are validated in the exact container setup.
+
+The Linux hardware profile script reports a platform note when it detects common container or LXC-style indicators. That note is a warning only. It does not prove whether GPU passthrough works, whether Ollama is running on the host or in the container, or whether the model can use acceleration.
+
+Recommended container smoke test:
+
+1. Run `./scripts/get-local-model-profile.linux.sh` inside the same container or LXC environment where Continue tools will run.
+2. Confirm `Platform notes` mentions the container context when expected.
+3. Confirm GPU devices are visible inside the container only if passthrough is intentionally configured.
+4. Confirm Ollama reachability from inside the container.
+5. Run read-only repository discovery before approved write mode.
 
 ## Line Endings
 

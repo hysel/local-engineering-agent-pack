@@ -151,6 +151,8 @@ GPU detection is best-effort:
 
 On Linux, `Platform notes` will warn when `nvidia-smi`, `rocm-smi`, and `lspci` are all missing, or when detection tools are present but no GPU is found. This is common on minimal distributions, containers, hardened servers, and cloud images before GPU drivers or device passthrough are configured.
 
+On Linux, `Platform notes` also warn when common container or LXC-style indicators are detected. In that case, treat RAM, GPU, and driver details as the capacity visible from inside that environment, not necessarily the physical host capacity.
+
 If GPU VRAM is unknown, use the profile as a starting point and avoid high-risk tool-backed workflows until the model is validated.
 
 ## Reading The Output
@@ -168,6 +170,7 @@ Important fields:
 - `Ollama`: Shows whether the helper can run `ollama list`.
 - `Installed Ollama models`: Shows local model names only.
 - `MLX tooling`: On macOS, shows whether common MLX commands or Python modules are visible to the current shell.
+- `Platform notes`: On Linux, highlights ARM, Jetson/Tegra, missing GPU detection tools, no detected GPU, and container-style environments.
 - `Recommendation tier`: A starting point for low, medium, or high resource guidance.
 - `Recommended model`: The first installed model that matches the machine tier and workflow guidance, or a model to pull and test.
 - `Recommended use`: How to use the recommended model safely.

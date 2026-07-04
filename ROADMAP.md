@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, and Milestone 9 distribution and install experience are complete. Milestone 10 ARM and Apple Silicon model support is in progress. Broader multi-repository validation remains in the backlog.
+The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, Milestone 9 distribution and install experience, and Milestone 10 ARM and Apple Silicon model support are complete. Broader multi-repository validation remains in the backlog.
 
 ## Stage Status
 
@@ -18,7 +18,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 7: Cross-Platform Contributor Experience | Complete | Linux and macOS validation/test wrappers are available, and Linux wrapper execution is covered in CI. |
 | Milestone 8: Real Repository Validation | Complete | The pack repository and one private application-style repository have been validated with the runtime runner; practical MCP workflow examples are documented. |
 | Milestone 9: Distribution And Install Experience | Complete | Install/update workflows are implemented with dry-run, backup, local-config exclusion, install validation, and Windows/Linux/macOS commands. |
-| Milestone 10: ARM And Apple Silicon Model Support | In Progress | CPU architecture reporting, ARM model guidance, Linux compatibility assumptions, container caveats, and MLX guidance are documented; deeper detection and evidence work remains. |
+| Milestone 10: ARM And Apple Silicon Model Support | Complete | CPU architecture reporting, ARM model guidance, Linux compatibility assumptions, container caveats, cloud smoke-test guidance, and MLX guidance are documented. |
 | Milestone 11: Editor Surface Compatibility | Planned | Validate and document VS Code and VSCodium differences for Continue config loading, Agent mode, tool execution, and duplicate-rule behavior. |
 | Milestone 12: Model Tool-Use Validation Evidence | Planned | Define repeatable evidence for marking models as tool-validated across providers, editors, and operating systems. |
 
@@ -279,14 +279,14 @@ Scope:
 - Evaluate whether the macOS hardware profile script should detect `mlx-lm` or other MLX tooling.
 - Evaluate whether Linux ARM profiles should identify NVIDIA Jetson or other ARM GPU acceleration paths.
 - Evaluate fallback behavior on minimal Linux distributions where `lspci`, `nvidia-smi`, or `rocm-smi` are unavailable.
-- Evaluate whether enterprise/cloud Linux images need additional validation fixtures or smoke-test guidance.
-- Evaluate whether containerized model servers need separate profile output warnings or detection.
+- Evaluate whether enterprise/cloud Linux images need additional validation fixtures or smoke-test guidance. Done.
+- Evaluate whether containerized model servers need separate profile output warnings or detection. Done.
 - Add conservative guidance for Windows ARM machines where local LLM acceleration may vary by hardware and tooling.
 - Review whether ARM architecture should affect recommendation tiering before changing `config/model-recommendations.tsv`.
 - Decide whether MLX recommendations belong in `config/model-recommendations.tsv` or a provider-specific catalog.
 - Decide whether ARM-specific recommendations belong in the shared TSV catalog or a provider-specific catalog.
 - Document how unified memory and shared memory change model-size recommendations compared with dedicated GPU VRAM.
-- Keep ARM/MLX local endpoints, model experiments, private model names, and machine-specific paths out of committed shared config.
+- Keep ARM/MLX local endpoints, model experiments, private model names, and machine-specific paths out of committed shared config. Done.
 
 Exit criteria:
 
