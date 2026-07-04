@@ -20,7 +20,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 9: Distribution And Install Experience | Complete | Install/update workflows are implemented with dry-run, backup, local-config exclusion, duplicate-rule-safe global config generation, install validation, and Windows/Linux/macOS commands. |
 | Milestone 10: ARM And Apple Silicon Model Support | Complete | CPU architecture reporting, ARM model guidance, Linux compatibility assumptions, container caveats, cloud smoke-test guidance, and MLX guidance are documented. |
 | Milestone 11: Editor Surface Compatibility | Complete | VS Code-compatible and VSCodium read-only Agent validation are recorded, duplicate-rule checks are clean, and CLI fallback guidance is documented. |
-| Milestone 12: Model Tool-Use Validation Evidence | In Progress | Starter model defaults, automatic local model config generation, read-only and read-content tool validation guidance, approved-write smoke-test guidance, platform-aware command rules, and sanitized evidence templates are in place; online discovery and broader evidence catalog decisions remain. |
+| Milestone 12: Model Tool-Use Validation Evidence | In Progress | Starter model defaults, automatic local model config generation, read-only and read-content tool validation guidance, approved-write smoke-test guidance, post-edit diff verification, platform-aware command rules, and sanitized evidence templates are in place; online discovery and broader evidence catalog decisions remain. |
 
 ## Milestone 1: Minimum Usable Pack
 
@@ -334,6 +334,7 @@ Scope:
 - Define a repeatable read-only tool-use validation checklist. Done.
 - Require read-content validation before using approved write mode for real code or configuration changes. Done.
 - Define a repeatable approved-write smoke test for edit/apply tool validation. Done.
+- Require post-edit content or diff verification before accepting claimed file changes. Done.
 - Add platform-aware command guidance so Windows uses PowerShell and Linux/macOS use shell commands. Done.
 - Record model, provider, editor surface, Continue version, operating system, and MCP state for validation runs. Done via sanitized evidence template.
 - Distinguish candidate model recommendations from tool-validated model status. Done.
@@ -347,5 +348,5 @@ Exit criteria:
 - Users know that hardware/profile scripts recommend candidates, not proven tool-safe models.
 - Online model discovery, if added, suggests candidates only and does not replace local validation or auto-install models.
 - A model is considered tool-validated only after a read-only tool test passes.
-- Approved write mode for real code changes remains blocked until file listing, file-content reading, and a scoped write smoke test pass in the intended editor/provider setup.
+- Approved write mode for real code changes remains blocked until file listing, file-content reading, a scoped write smoke test, and post-edit diff verification pass in the intended editor/provider setup.
 - Sanitized validation evidence can be recorded without exposing private machine or repository details.

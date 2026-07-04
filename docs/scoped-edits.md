@@ -141,6 +141,7 @@ git diff
 Look for:
 
 - Files changed outside the approved scope
+- Claimed changes that do not appear in `git diff`
 - Unrelated formatting churn
 - Private machine details
 - Missing validation
@@ -148,6 +149,9 @@ Look for:
 - Broad behavior changes hidden inside a small task
 
 If the diff is too large, stop and ask the assistant to explain why.
+
+If the diff is empty but the assistant claimed success, mark the attempt as
+`WRITE_NOT_APPLIED` and retest with a smaller edit.
 
 ## Step 6: Validate
 

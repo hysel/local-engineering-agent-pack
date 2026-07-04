@@ -33,7 +33,7 @@ Use this template to record sanitized model validation results. Keep private end
 | Read-content tool execution | Not run | Confirm the model can read a harmless file such as `README.md` before approving code changes. |
 | Plan-only behavior | Pass | Plan included affected files, risks, validation, rollback, and definition of done. |
 | Platform-aware command use | Not run | Confirm Windows uses PowerShell commands and Linux/macOS use shell commands. |
-| Approved-write smoke test | Not run | Leave as not run unless tested in a safe disposable branch or repository. |
+| Approved-write smoke test | Not run | Leave as not run unless tested in a safe disposable branch or repository. Require changed content or a non-empty diff before marking pass. |
 
 ## Failure Mode
 

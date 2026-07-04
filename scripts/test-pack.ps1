@@ -330,6 +330,8 @@ Invoke-PackTest "model tool-use validation docs define evidence workflow" {
     Assert-True -Condition ($doc -match "raw JSON") -Message "Validation doc should explain raw JSON tool-call failure."
     Assert-True -Condition ($doc -match "read file contents") -Message "Validation doc should require file-content reading for implementation workflows."
     Assert-True -Condition ($doc -match "READ_TOOLS_UNAVAILABLE") -Message "Validation doc should document the read-tools unavailable signal."
+    Assert-True -Condition ($doc -match "WRITE_NOT_APPLIED") -Message "Validation doc should document the write-not-applied signal."
+    Assert-True -Condition ($doc -match "non-empty diff") -Message "Validation doc should require changed-content or diff verification."
     Assert-True -Condition ($doc -match "active shell and operating system") -Message "Validation doc should require platform-aware command use."
     Assert-True -Condition ($doc -match "continue-agent-write-test\.md") -Message "Validation doc should include the approved-write smoke test file."
     Assert-True -Condition ($doc -match "I can't directly edit files") -Message "Validation doc should cover refusal-to-edit failure mode."
@@ -341,6 +343,7 @@ Invoke-PackTest "model tool-use validation docs define evidence workflow" {
     Assert-True -Condition ($template -match "Editor surface") -Message "Evidence template should record editor surface."
     Assert-True -Condition ($template -match "MCP state") -Message "Evidence template should record MCP state."
     Assert-True -Condition ($template -match "Read-content tool execution") -Message "Evidence template should record read-content validation."
+    Assert-True -Condition ($template -match "non-empty diff") -Message "Evidence template should require diff verification for write tests."
     Assert-True -Condition ($template -match "Platform-aware command use") -Message "Evidence template should record platform-aware command validation."
     Assert-True -Condition ($template -match "Sanitization Checklist") -Message "Evidence template should include sanitization checklist."
 }
@@ -358,6 +361,8 @@ Invoke-PackTest "tool-use docs define platform-aware approved write behavior" {
 
     Assert-True -Condition ($generalRule -match "Match commands to the user's active operating system and shell") -Message "General rules should require platform-aware command selection."
     Assert-True -Condition ($generalRule -match "READ_TOOLS_UNAVAILABLE") -Message "General rules should require a clear read-tool failure signal."
+    Assert-True -Condition ($generalRule -match "WRITE_NOT_APPLIED") -Message "General rules should require a clear write-not-applied signal."
+    Assert-True -Condition ($generalRule -match "git diff") -Message "General rules should require diff verification after edits."
     Assert-True -Condition ($generalRule -match "typical") -Message "General rules should forbid typical-pattern implementation guesses."
     Assert-True -Condition ($generalRule -match "Select-String") -Message "General rules should include PowerShell-native search guidance."
     Assert-True -Condition ($generalRule -match "write tools are unavailable") -Message "General rules should require clear write-tool failure reporting."
@@ -365,11 +370,14 @@ Invoke-PackTest "tool-use docs define platform-aware approved write behavior" {
     Assert-True -Condition ($toolModes -match "Platform-Aware Commands") -Message "Tool-use docs should include platform-aware command guidance."
     Assert-True -Condition ($toolModes -match "READ_TOOLS_UNAVAILABLE") -Message "Tool-use docs should define the read-tools unavailable signal."
     Assert-True -Condition ($toolModes -match "WRITE_TOOLS_UNAVAILABLE") -Message "Tool-use docs should define the write-tools unavailable signal."
+    Assert-True -Condition ($toolModes -match "WRITE_NOT_APPLIED") -Message "Tool-use docs should define the write-not-applied signal."
     Assert-True -Condition ($toolModes -match "continue-agent-write-test\.md") -Message "Tool-use docs should include approved-write smoke test."
     Assert-True -Condition ($approvedChanges -match "Safe write smoke-test prompt") -Message "Approved changes docs should include write smoke-test prompt."
+    Assert-True -Condition ($approvedChanges -match "git diff") -Message "Approved changes docs should require diff inspection."
     Assert-True -Condition ($approvedChanges -match "Remove-Item") -Message "Approved changes docs should include Windows cleanup."
     Assert-True -Condition ($readme -match "write tools are not validated yet") -Message "README should explain unvalidated write-tool behavior."
     Assert-True -Condition ($readme -match "read file contents") -Message "README should require content-read validation before real code changes."
+    Assert-True -Condition ($readme -match "git diff -- <file>") -Message "README should require user diff verification after approved writes."
 
     $troubleshootingPath = Join-Path $repoRoot "docs/troubleshooting.md"
     $troubleshooting = Get-Content -LiteralPath $troubleshootingPath -Raw
@@ -377,6 +385,8 @@ Invoke-PackTest "tool-use docs define platform-aware approved write behavior" {
     Assert-True -Condition ($troubleshooting -match "WRITE_TOOLS_UNAVAILABLE") -Message "Troubleshooting should document the write-tools unavailable signal."
     Assert-True -Condition ($troubleshooting -match "Agent Lists Files But Cannot Read Or Edit Them") -Message "Troubleshooting should cover partial tool-access failure."
     Assert-True -Condition ($troubleshooting -match "READ_TOOLS_UNAVAILABLE") -Message "Troubleshooting should document the read-tools unavailable signal."
+    Assert-True -Condition ($troubleshooting -match "Agent Claims A Change But Git Diff Is Empty") -Message "Troubleshooting should cover claimed-but-missing writes."
+    Assert-True -Condition ($troubleshooting -match "WRITE_NOT_APPLIED") -Message "Troubleshooting should document the write-not-applied signal."
 }
 
 Invoke-PackTest "Continue file references are relative and resolvable" {

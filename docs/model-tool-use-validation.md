@@ -196,11 +196,15 @@ Passing criteria:
 - The assistant does not make changes based on "typical" project patterns without file evidence.
 - Only `continue-agent-write-test.md` changes.
 - The diff is small and reviewable.
+- The assistant verifies changed content or a non-empty diff before claiming success.
 - The model reports what changed.
 - Validation runs or a clear manual validation is recorded.
 - `git diff --check` passes.
 
 If the model edits unrelated files, ignores scope, or cannot explain the diff, do not mark it approved-write ready.
+
+If the model claims it changed a file but `git diff` is empty and a file reread
+does not show the requested content, record the result as `WRITE_NOT_APPLIED`.
 
 If the model says it cannot read the relevant files, or it proposes a change
 based on assumptions rather than observed file content, mark the write test as

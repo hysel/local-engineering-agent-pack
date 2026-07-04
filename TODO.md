@@ -207,6 +207,7 @@
 - [x] Define repeatable read-only tool-use validation steps.
 - [x] Require file-content read validation before treating a setup as ready for real code changes.
 - [x] Define a repeatable approved-write smoke test for validating edit/apply tools.
+- [x] Require post-edit content or diff verification before accepting claimed file changes.
 - [x] Add platform-aware command guidance for Windows PowerShell, Linux, and macOS shells.
 - [x] Record model, provider, editor surface, Continue version, operating system, and MCP state for validation runs.
 - [x] Distinguish candidate model recommendations from tool-validated model status.

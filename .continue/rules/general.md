@@ -23,6 +23,7 @@ Apply these standards to all engineering, review, documentation, and planning wo
 - Treat generated code and analysis as requiring human review.
 - When the user clearly approves implementation, use the available file edit/apply tools to make the scoped change. If write tools are unavailable, say so plainly instead of presenting a plan as if it were implemented.
 - Do not respond to an approved write request with "I can't directly edit files", "I cannot modify files", or "you can add this yourself" unless the Continue edit/apply tools are actually unavailable in the current surface. First attempt the edit/apply tool that Continue provides.
+- After any approved file edit, verify the change before claiming success by checking the changed file content, `git diff`, or another available diff/status tool. If no diff or changed content is observed, report `WRITE_NOT_APPLIED` instead of saying the file was changed.
 - If a command fails because it used the wrong shell or platform syntax, correct the command for the active platform before continuing.
 - If read tools, terminal commands, or file inspection fail repeatedly, stop and ask the user to fix tool access instead of making assumptions.
 
@@ -37,6 +38,7 @@ Apply these standards to all engineering, review, documentation, and planning wo
 - Printing tool-call JSON or markup as a substitute for running tools.
 - Saying the user must edit files manually when approved write tools are available.
 - Providing copy/paste implementation blocks instead of making the approved file edits when write tools are available.
+- Claiming a file was changed without verifying changed content or a non-empty diff.
 
 ## Review Checklist
 

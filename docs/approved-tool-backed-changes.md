@@ -80,6 +80,7 @@ Expected behavior:
 - The assistant uses an edit/apply tool.
 - The assistant does not ask you to create the file manually.
 - `git status --short` shows only the smoke-test file.
+- The assistant verifies the file content or a non-empty diff before claiming the change succeeded.
 
 On Windows, clean up with:
 
@@ -161,6 +162,9 @@ The assistant should explain:
 - Why each change was needed
 - What validation was run
 - What still needs manual review
+
+If `git diff` is empty for the file the assistant claimed to change, treat the
+attempt as failed and do not continue with additional implementation steps.
 
 ## Step 5: Validate
 

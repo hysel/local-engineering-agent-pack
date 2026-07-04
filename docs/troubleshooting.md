@@ -286,6 +286,38 @@ If you cannot read the file, say READ_TOOLS_UNAVAILABLE.
 Do not accept implementation based on "typical .NET project" or similar
 language. The model must base code/config edits on file evidence.
 
+## Agent Claims A Change But Git Diff Is Empty
+
+Symptoms:
+
+- The assistant says it changed a file.
+- `git status --short` does not show that file as modified or untracked.
+- `git diff -- <file>` is empty.
+- Reading the file does not show the requested content.
+
+Expected behavior:
+
+- After approved write mode, the assistant should verify changed content or a
+  non-empty diff before claiming success.
+- If no changed content or diff exists, it should say `WRITE_NOT_APPLIED`.
+
+What to check:
+
+1. Confirm you accepted any Continue edit/apply prompt in the editor UI.
+2. Run:
+
+```powershell
+git status --short
+git diff --check
+git diff -- README.md
+```
+
+3. If the target file has no diff, treat the implementation attempt as failed.
+4. Rerun with a narrower prompt that explicitly requires diff verification.
+
+Do not commit or continue with follow-up code changes until the diff proves the
+requested change was actually applied.
+
 ## Ollama Is Not Reachable
 
 Symptoms:
