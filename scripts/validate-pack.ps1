@@ -182,6 +182,7 @@ $requiredFiles = @(
     "examples/fixtures/performance-review-input.md",
     "examples/fixtures/release-readiness-input.md",
     "examples/fixtures/release-readiness-quality-input.md",
+    "examples/editor-surface-validation.md",
     "examples/model-tool-use-validation.md",
     ".github/workflows/validate-pack.yml"
 )

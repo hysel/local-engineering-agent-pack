@@ -23,6 +23,7 @@ This project follows a simple changelog format:
 - Changed the committed Ollama model to a smaller starter sample and added install-script support for generating a local-only config from hardware profile recommendations.
 - Added roadmap tracking for optional online Ollama model discovery as candidate-only, local-validation-required future work.
 - Added model tool-use validation guidance and a sanitized evidence template for recording candidate, read-only validated, plan-validated, and approved-write-ready model status.
+- Added sanitized editor-surface preflight evidence for local VS Code-compatible and VSCodium Continue extension detection, plus terminal preflight guidance.
 
 ## 0.1.12 - 2026-07-03
 
