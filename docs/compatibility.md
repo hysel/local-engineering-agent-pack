@@ -61,8 +61,9 @@ ollama pull nomic-embed-text
 
 Tool-use guidance:
 
-- `qwen3-coder:30b` is a validated high-resource example for Agent mode tool execution in the tested VSCodium, Continue, and Ollama setup.
-- Smaller models may be useful for lightweight chat, planning, or documentation, but must be validated before relying on Agent tool execution.
+- `qwen3.5:9b` is the simple-hardware default for the generated Agent profiles.
+- `qwen3-coder:30b` is a high-resource read/review example from the tested VSCodium, Continue, and Ollama setup, not a beginner requirement.
+- Heavier models may be useful for planning or review, but must be validated before relying on Agent tool execution.
 - When a model prints tool-call JSON instead of executing tools, use the runtime-context fallback workflow in `docs/troubleshooting.md`.
 - Use `docs/local-model-selection.md` and the hardware profile helpers before recommending a different local model tier.
 

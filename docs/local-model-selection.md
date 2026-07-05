@@ -39,7 +39,9 @@ Before choosing a model, check:
 
 Larger models usually need more memory and respond more slowly, but they may follow tool and planning instructions better.
 
-Use a larger coding model, such as `qwen3-coder:30b`, only when your hardware profile and read-only tool validation show that your setup can handle it.
+Use a larger coding model, such as `devstral-small-2:24b` or
+`qwen3-coder:30b`, only when your hardware profile and read-only tool
+validation show that your setup can handle it.
 
 For the validation checklist, use `docs/model-tool-use-validation.md`.
 
@@ -155,6 +157,9 @@ Use model lanes when you want a local-only config with clear model routing:
 | `2 - PLAN ONLY` | Implementation plans and scoped change proposals | `chat` |
 | `3 - DEEP REVIEW` | Architecture, security, and maintainability reviews | `chat` |
 
+The simple-hardware default points all three Agent profiles at `qwen3.5:9b`.
+This keeps setup realistic for home PCs and avoids requiring 24B or 30B models.
+
 The generated config also keeps `nomic-embed-text` as the embedding model. It
 is not an Agent profile and does not receive `chat`, `edit`, or `apply` roles.
 
@@ -166,12 +171,19 @@ size or benchmark reputation.
 | Profile | Model | Why it is used |
 | --- | --- | --- |
 | `1 - WRITE SAFE` | `qwen3.5:9b` | It produced the most reliable approved-write behavior in local testing. Use it for small, scoped edits after the editor Apply smoke test passes. |
-| `2 - PLAN ONLY` | `devstral-small-2:24b` | It is useful for planning and reasoning, but it should stay chat-only until approved-write behavior is validated in the target editor. |
-| `3 - DEEP REVIEW` | `qwen3-coder:30b` | It is useful for larger code review and architecture analysis, but write access is intentionally withheld because stronger analysis does not automatically mean safer patch application. |
+| `2 - PLAN ONLY` | `qwen3.5:9b` | It keeps planning usable on simple hardware. Upgrade this profile to a larger planning model only after local latency and tool behavior are validated. |
+| `3 - DEEP REVIEW` | `qwen3.5:9b` | It keeps review workflows available on simple hardware. Upgrade this profile to a larger review model only after local hardware and read-only tool behavior are validated. |
 
 Other tested models were removed from the generated profiles when they failed
 tool support, produced raw tool-call text, leaked reasoning tags, behaved too
 slowly for the workflow, or required unreliable multi-approval Apply behavior.
+
+Suggested high-resource upgrades after validation:
+
+| Profile | Optional upgrade | Use only when |
+| --- | --- | --- |
+| `2 - PLAN ONLY` | `devstral-small-2:24b` | The machine can run it with acceptable latency and the model stays chat-only. |
+| `3 - DEEP REVIEW` | `qwen3-coder:30b` | The machine can run it with acceptable latency and read-only tool validation passes. |
 
 Treat these models as validated defaults for this pack, not permanent
 requirements. If a newer local model performs better, add it only after
@@ -608,8 +620,8 @@ The helper scripts use `config/model-recommendations.tsv` when selecting an inst
 
 | Resource tier | Preferred installed models | Best use |
 | --- | --- | --- |
-| High | `qwen3.5:9b`, `devstral-small-2:24b`, `qwen3-coder:30b` | WRITE SAFE edits after validation, PLAN ONLY workflows, and DEEP REVIEW workflows |
-| Medium | `qwen3.5:9b`, `devstral-small-2:24b`, `qwen3-coder:30b` only when local hardware can run it acceptably | Keep write access limited to the validated WRITE SAFE profile |
+| High | `qwen3.5:9b` by default; optionally upgrade PLAN ONLY to `devstral-small-2:24b` and DEEP REVIEW to `qwen3-coder:30b` after validation | WRITE SAFE edits after validation, PLAN ONLY workflows, and DEEP REVIEW workflows |
+| Medium | `qwen3.5:9b` by default; heavier profile upgrades only when local hardware can run them acceptably | Keep write access limited to the validated WRITE SAFE profile |
 | Low | `qwen3.5:9b` after latency and write validation are acceptable; otherwise use read-only or plan-only workflows | Focused context, one scoped edit at a time, and no approved writes until validation passes |
 
 These recommendations are intentionally conservative. A model is not approved for tool-backed edits until it successfully runs a read-only tool test in Continue and the result is recorded using the validation evidence template.

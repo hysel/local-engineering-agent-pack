@@ -2,14 +2,9 @@
 # Ordered top to bottom within each tier. MatchPattern is checked against installed Ollama model names.
 # The first matching installed model wins; this file is a curated priority list, not a live benchmark.
 # Leave MatchPattern empty for the tier fallback.
-High|^qwen3\.5:9b$||Use as the WRITE SAFE lane only after approved-write validation in the target editor.|Keep `create_new_file` excluded for existing-file edits.
-High|^devstral-small-2:24b$||Use as the PLAN ONLY lane for implementation plans and scoped proposals.|Keep chat-only until approved-write validation passes.
-High|^qwen3-coder:30b$||Use as the DEEP REVIEW lane for architecture, security, maintainability, and larger reviews.|Keep chat-only unless approved-write validation passes.
-High||qwen3.5:9b|Pull and validate the WRITE SAFE lane model before approved edits.|Do not grant edit/apply roles until the editor Apply smoke test passes.
-Medium|^qwen3\.5:9b$||Use as the WRITE SAFE lane only after approved-write validation in the target editor.|Keep `create_new_file` excluded for existing-file edits.
-Medium|^devstral-small-2:24b$||Use as the PLAN ONLY lane for implementation plans and scoped proposals.|Keep chat-only until approved-write validation passes.
-Medium|^qwen3-coder:30b$||Use as the DEEP REVIEW lane only when local hardware can run it acceptably.|Keep chat-only unless approved-write validation passes.
-Medium||qwen3.5:9b|Pull and validate the WRITE SAFE lane model before approved edits.|Prefer review and plan-only workflows until tool calls are proven.
-Low|^qwen3\.5:9b$||Use for the WRITE SAFE lane on constrained systems only after latency and write validation are acceptable.|Use focused context and one scoped edit at a time.
-Low|^devstral-small-2:24b$||Use for PLAN ONLY workflows if hardware can run it acceptably.|Use focused context and avoid approved writes.
-Low||qwen3.5:9b|Pull and validate the smallest current WRITE SAFE candidate.|Use focused context and avoid approved writes until validation passes.
+High|^qwen3\.5:9b$||Use as the simple-hardware default for WRITE SAFE, PLAN ONLY, and DEEP REVIEW profiles until heavier profile models are validated locally.|Keep `create_new_file` excluded for existing-file edits.
+High||qwen3.5:9b|Pull and validate the simple-hardware profile model before approved edits.|Do not grant edit/apply roles until the editor Apply smoke test passes.
+Medium|^qwen3\.5:9b$||Use as the simple-hardware default for WRITE SAFE, PLAN ONLY, and DEEP REVIEW profiles.|Prefer focused context and one scoped edit at a time.
+Medium||qwen3.5:9b|Pull and validate the simple-hardware profile model before approved edits.|Prefer review and plan-only workflows until tool calls are proven.
+Low|^qwen3\.5:9b$||Use as the smallest current supported profile candidate after latency and write validation are acceptable.|Use focused context and one scoped edit at a time.
+Low||qwen3.5:9b|Pull and validate the simple-hardware profile model.|Avoid approved writes until validation passes.

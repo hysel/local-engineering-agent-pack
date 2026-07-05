@@ -197,7 +197,7 @@ Invoke-PackTest "model recommendation catalog has valid schema" {
     }
 
     $catalogText = Get-Content -LiteralPath $catalogPath -Raw
-    Assert-True -Condition ($catalogText -match "WRITE SAFE lane") -Message "Catalog should include the validated WRITE SAFE profile model."
+    Assert-True -Condition ($catalogText -match "simple-hardware default") -Message "Catalog should include the simple-hardware profile model."
     Assert-True -Condition ($catalogText -notmatch "rejected starter model") -Message "Catalog should avoid rejected starter-model guidance."
 }
 
@@ -620,15 +620,15 @@ Invoke-PackTest "install script model lanes generate scoped roles" {
         $globalConfig = Get-Content -LiteralPath $globalConfigPath -Raw
 
         Assert-True -Condition ($localConfig -match "1 - WRITE SAFE - qwen3\.5:9b") -Message "Model lanes should include WRITE SAFE lane."
-        Assert-True -Condition ($localConfig -match "2 - PLAN ONLY - devstral-small-2:24b") -Message "Model lanes should include PLAN ONLY lane."
-        Assert-True -Condition ($localConfig -match "3 - DEEP REVIEW - qwen3-coder:30b") -Message "Model lanes should include DEEP REVIEW lane."
+        Assert-True -Condition ($localConfig -match "2 - PLAN ONLY - qwen3\.5:9b") -Message "Model lanes should include simple-hardware PLAN ONLY lane."
+        Assert-True -Condition ($localConfig -match "3 - DEEP REVIEW - qwen3\.5:9b") -Message "Model lanes should include simple-hardware DEEP REVIEW lane."
         Assert-True -Condition ($localConfig -match "Ollama Nomic Embed") -Message "Model lanes should keep a separate embedding model."
         Assert-True -Condition ($localConfig -notmatch "4 - ") -Message "Model lanes should include only three Agent lanes."
         Assert-True -Condition ($localConfig -notmatch "5 - ") -Message "Embedding should not be labeled as an Agent lane."
         Assert-True -Condition ($localConfig -match '(?s)1 - WRITE SAFE - qwen3\.5:9b.*roles:\s*\r?\n\s*- chat\s*\r?\n\s*- edit\s*\r?\n\s*- apply') -Message "WRITE SAFE lane should include chat/edit/apply roles."
-        Assert-True -Condition ($localConfig -match '(?s)2 - PLAN ONLY - devstral-small-2:24b.*roles:\s*\r?\n\s*- chat') -Message "PLAN ONLY lane should include chat role."
-        Assert-True -Condition ($localConfig -notmatch '(?s)2 - PLAN ONLY - devstral-small-2:24b.*roles:.*- edit') -Message "PLAN ONLY lane should not include edit role."
-        Assert-True -Condition ($localConfig -notmatch '(?s)3 - DEEP REVIEW - qwen3-coder:30b.*roles:.*- apply') -Message "DEEP REVIEW lane should not include apply role."
+        Assert-True -Condition ($localConfig -match '(?s)2 - PLAN ONLY - qwen3\.5:9b.*roles:\s*\r?\n\s*- chat') -Message "PLAN ONLY lane should include chat role."
+        Assert-True -Condition ($localConfig -notmatch '(?s)2 - PLAN ONLY - qwen3\.5:9b.*roles:.*- edit') -Message "PLAN ONLY lane should not include edit role."
+        Assert-True -Condition ($localConfig -notmatch '(?s)3 - DEEP REVIEW - qwen3\.5:9b.*roles:.*- apply') -Message "DEEP REVIEW lane should not include apply role."
         Assert-True -Condition ($globalConfig -match "apiBase: http://127\.0\.0\.1:11434") -Message "Global model lanes config should include requested apiBase."
     } finally {
         Remove-Item -LiteralPath $tempRepo -Recurse -Force -ErrorAction SilentlyContinue

@@ -45,6 +45,7 @@ This project follows a simple changelog format:
 
 ### Changed
 
+- Changed generated model profiles to use `qwen3.5:9b` for WRITE SAFE, PLAN ONLY, and DEEP REVIEW by default so simple-hardware setups do not require 24B or 30B models.
 - Tuned the committed local model defaults to `contextLength: 16384` and `maxTokens: 2048` after VS Code and VSCodium Agent testing showed better responsiveness with smaller local output budgets.
 - Clarified approved write mode so models must use edit/apply tools after explicit approval or report that write tools are unavailable.
 - Added `-GlobalConfigIncludeRules` and `--global-config-include-rules` for explicit global-only rule loading when needed.

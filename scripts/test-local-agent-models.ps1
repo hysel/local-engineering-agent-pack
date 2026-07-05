@@ -75,9 +75,7 @@ function Get-CandidateModels {
 
     if ($candidates.Count -eq 0) {
         @(
-            "qwen3.5:9b",
-            "devstral-small-2:24b",
-            "qwen3-coder:30b"
+            "qwen3.5:9b"
         ) | ForEach-Object { $candidates.Add($_) }
     }
 
