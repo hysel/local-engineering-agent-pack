@@ -17,6 +17,12 @@ if (-not $OutputPath) {
 
 $target = Resolve-Path -LiteralPath $TargetRepo
 
+function Get-NormalizedPath {
+    param([string]$Path)
+
+    return [System.IO.Path]::GetFullPath($Path).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+}
+
 function Invoke-InTarget {
     param([scriptblock]$Script)
 
@@ -108,17 +114,25 @@ $lines.Add("Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm')")
 $lines.Add("")
 $lines.Add("This file is generated for AI runtime validation. Review it before sharing or committing.")
 
-$gitStatus = Invoke-InTarget {
-    if (Get-Command git -ErrorAction SilentlyContinue) {
-        git status --short --branch 2>$null
+$targetIsGitRoot = $false
+if (Get-Command git -ErrorAction SilentlyContinue) {
+    $gitRoot = Invoke-InTarget { git rev-parse --show-toplevel 2>$null }
+    if ($gitRoot) {
+        $targetIsGitRoot = (Get-NormalizedPath -Path ([string]$gitRoot)) -ieq (Get-NormalizedPath -Path $target.Path)
     }
+}
+
+$gitStatus = if ($targetIsGitRoot) {
+    Invoke-InTarget { git status --short --branch 2>$null }
+} else {
+    @("Not a git repository at the target root, or target is inside a parent repository.")
 }
 Add-Section -Lines $lines -Title "Git Status" -Content $gitStatus
 
-$trackedFiles = Invoke-InTarget {
-    if (Get-Command git -ErrorAction SilentlyContinue) {
-        git ls-files 2>$null
-    }
+$trackedFiles = if ($targetIsGitRoot) {
+    Invoke-InTarget { git ls-files 2>$null }
+} else {
+    @()
 }
 
 if (-not $trackedFiles) {
@@ -132,7 +146,7 @@ Add-Section -Lines $lines -Title "Tracked File Inventory" -Content ($trackedFile
 $solutionFiles = Get-FilesByPattern -Patterns @("*.sln", "*.slnx")
 Add-Section -Lines $lines -Title "Solution Files" -Content $solutionFiles
 
-$projectFiles = Get-FilesByPattern -Patterns @("*.csproj", "*.vbproj", "*.fsproj", "*.props", "*.targets", "packages.config")
+$projectFiles = Get-FilesByPattern -Patterns @("*.csproj", "*.vbproj", "*.fsproj", "*.props", "*.targets", "packages.config", "package.json", "pyproject.toml", "requirements*.txt", "pom.xml", "go.mod", "Cargo.toml")
 Add-Section -Lines $lines -Title "Project And Dependency Files" -Content $projectFiles
 
 $configFiles = Get-FilesByPattern -Patterns @("appsettings*.json", "Dockerfile", "docker-compose*.yml", "*.config", "*.runsettings", "Directory.Build.*", "global.json")
@@ -156,7 +170,7 @@ foreach ($doc in $topLevelDocs) {
 }
 
 foreach ($projectFile in $projectFiles) {
-    if ($projectFile -match "\.(csproj|vbproj|fsproj|props|targets|config)$") {
+    if ($projectFile -match "\.(csproj|vbproj|fsproj|props|targets|config|json|toml|txt|xml)$" -or [System.IO.Path]::GetFileName($projectFile) -in @("go.mod", "packages.config")) {
         $projectContent = Read-SmallFile -RelativePath $projectFile -MaxLines 160
         if ($projectContent.Count -gt 0) {
             Add-Section -Lines $lines -Title "Project File: $projectFile" -Content $projectContent

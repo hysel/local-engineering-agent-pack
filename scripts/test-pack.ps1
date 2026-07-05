@@ -559,6 +559,14 @@ Invoke-PackTest "sample repository factory creates expected fixtures" {
             Assert-True -Condition (Test-Path -LiteralPath (Join-Path $tempRoot $relativePath)) -Message "Expected generated file is missing: $relativePath"
         }
 
+
+        $pythonReadme = Get-Content -LiteralPath (Join-Path $tempRoot "python-api/README.md") -Raw
+        $pythonMain = Get-Content -LiteralPath (Join-Path $tempRoot "python-api/app/main.py") -Raw
+        Assert-True -Condition ($pythonReadme -match "# Python API Sample") -Message "Python sample README should have the expected heading."
+        Assert-True -Condition ($pythonReadme -match "python -m pytest") -Message "Python sample README should include pytest command guidance."
+        Assert-True -Condition ($pythonReadme -notmatch "Write-SampleFile") -Message "Python sample README should not leak factory script text."
+        Assert-True -Condition ($pythonReadme -notmatch "@['`"]|['`"]@") -Message "Python sample README should not leak here-string markers."
+        Assert-True -Condition ($pythonMain -notmatch "Write-SampleFile") -Message "Python sample source should not leak factory script text."
         $listResult = Invoke-CommandCapture -FilePath $scriptPath -Arguments @("-List")
         Assert-Equal -Actual $listResult.ExitCode -Expected 0 -Message "Sample repository factory list mode should succeed."
         Assert-True -Condition ($listResult.Output -match "python-api") -Message "List output should include python-api."
@@ -723,7 +731,7 @@ Invoke-PackTest "Continue file references are relative and resolvable" {
 }
 
 Invoke-PackTest "runtime context generation captures useful files and excludes build output" {
-    $tempRepo = Join-Path ([System.IO.Path]::GetTempPath()) "continue-runtime-context-test-$([guid]::NewGuid())"
+    $tempRepo = Join-Path $repoRoot "runtime-validation-output/context-parent-git-test-$([guid]::NewGuid())"
 
     try {
         New-Item -ItemType Directory -Force -Path (Join-Path $tempRepo "src") | Out-Null
@@ -733,6 +741,7 @@ Invoke-PackTest "runtime context generation captures useful files and excludes b
         "public class App { }" | Set-Content -LiteralPath (Join-Path $tempRepo "src/App.cs")
         "public class BuildOutput { }" | Set-Content -LiteralPath (Join-Path $tempRepo "bin/Ignored.cs")
         "<Project Sdk=`"Microsoft.NET.Sdk`" />" | Set-Content -LiteralPath (Join-Path $tempRepo "Sample.csproj")
+        "{`"scripts`":{`"test`":`"vitest run`"}}" | Set-Content -LiteralPath (Join-Path $tempRepo "package.json")
 
         $outputPath = Join-Path $tempRepo "runtime-context.md"
         $result = Invoke-CommandCapture `
@@ -747,6 +756,10 @@ Invoke-PackTest "runtime context generation captures useful files and excludes b
         Assert-True -Condition ($context -match "README.md") -Message "Runtime context should include top-level docs."
         Assert-True -Condition ($context -match "src/App.cs") -Message "Runtime context should include source files."
         Assert-True -Condition ($context -notmatch "bin/Ignored.cs") -Message "Runtime context should exclude build output."
+        Assert-True -Condition ($context -match "package.json") -Message "Runtime context should include package metadata files."
+        Assert-True -Condition ($context -match "vitest run") -Message "Runtime context should include package metadata excerpts."
+        Assert-True -Condition ($context -match "Not a git repository at the target root") -Message "Runtime context should not inherit parent repository git status."
+        Assert-True -Condition ($context -notmatch "scripts/test-pack.ps1") -Message "Runtime context should not include parent repository tracked files."
     }
     finally {
         Remove-Item -LiteralPath $tempRepo -Recurse -Force -ErrorAction SilentlyContinue

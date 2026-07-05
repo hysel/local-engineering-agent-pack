@@ -251,12 +251,13 @@
 
 ## Milestone 15: Multi-Language Engineering Support
 
-- [ ] Document current language-support maturity and staged expansion in `docs/language-support.md`.
+- [x] Document current language-support maturity and staged expansion in `docs/language-support.md`.
 - [ ] Add project-detection guidance for Python, JavaScript/TypeScript, Java/Spring, Go, Rust, SQL, and Infrastructure as Code repositories.
-- [ ] Add generated local sample repositories for at least Python and JavaScript/TypeScript validation.
+- [x] Add generated local sample repositories for at least Python and JavaScript/TypeScript validation.
 - [ ] Add language-specific rules or guidance without applying them globally by default.
 - [ ] Validate repository discovery, implementation planning, and code review against Python and JavaScript/TypeScript samples.
-- [ ] Record sanitized multi-language validation evidence.
+- [x] Record focused Continue CLI repository-discovery validation for generated Python and TypeScript samples.
+- [ ] Record sanitized multi-language validation evidence for implementation planning and code review.
 - [ ] Prevent .NET-specific recommendations from being applied to non-.NET repositories.
 ## Milestone 16: Sample Repository Factory
 
@@ -265,8 +266,11 @@
 - [x] Add Linux and macOS sample repository factory wrappers.
 - [x] Generate deterministic samples for Python, TypeScript, Node, Java, Go, Rust, Infrastructure as Code, and SQL.
 - [x] Add validation and test coverage for sample factory scripts.
+- [x] Add regression coverage that generated sample files do not leak factory script text or here-string markers.
 - [x] Record initial script-level validation evidence for generated Python and TypeScript samples.
+- [x] Use generated samples for focused read-only Continue CLI repository-discovery validation evidence.
 - [ ] Use generated samples for editor/model-based multi-language validation evidence.
+- [ ] Improve runtime context generation for non-.NET project metadata as new ecosystems are added.
 
 ## Milestone 17: Agent Surface Compatibility Validation
 

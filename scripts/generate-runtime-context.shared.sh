@@ -61,9 +61,24 @@ fi
     -path "$TARGET_REPO/.git" -prune -o \
     -path "$TARGET_REPO/bin" -prune -o \
     -path "$TARGET_REPO/obj" -prune -o \
-    -type f \( -name '*.csproj' -o -name '*.sln' -o -name 'package.json' -o -name '*.fsproj' -o -name '*.vbproj' \) -print |
+    -type f \( -name '*.csproj' -o -name '*.sln' -o -name '*.slnx' -o -name '*.fsproj' -o -name '*.vbproj' -o -name 'package.json' -o -name 'pyproject.toml' -o -name 'requirements*.txt' -o -name 'pom.xml' -o -name 'go.mod' -o -name 'Cargo.toml' \) -print |
     sed "s#^$TARGET_REPO/##" |
     sort
+
+  printf '\n## Project File Excerpts\n\n'
+  find "$TARGET_REPO" \
+    -path "$TARGET_REPO/.git" -prune -o \
+    -path "$TARGET_REPO/bin" -prune -o \
+    -path "$TARGET_REPO/obj" -prune -o \
+    -type f \( -name '*.csproj' -o -name '*.fsproj' -o -name '*.vbproj' -o -name 'package.json' -o -name 'pyproject.toml' -o -name 'requirements*.txt' -o -name 'pom.xml' -o -name 'go.mod' -o -name 'Cargo.toml' \) -print |
+    sort |
+    while IFS= read -r project_file; do
+      relative_project_file="${project_file#"$TARGET_REPO/"}"
+      printf '### %s\n\n' "$relative_project_file"
+      printf '```text\n'
+      sed -n '1,120p' "$project_file"
+      printf '\n```\n\n'
+    done
 
   printf '\n## Selected Source And Test Files\n\n'
   find "$TARGET_REPO" \

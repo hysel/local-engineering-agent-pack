@@ -99,16 +99,21 @@ test_linux_macos_scripts_do_not_require_pwsh() {
 }
 
 test_runtime_context_generation() {
-  temp_repo="$(mktemp -d)"
+  temp_repo="$REPO_ROOT/runtime-validation-output/context-parent-git-test-$$"
+  rm -rf "$temp_repo"
   mkdir -p "$temp_repo/src" "$temp_repo/bin"
   printf '# Sample\n' > "$temp_repo/README.md"
   printf 'public class App { }\n' > "$temp_repo/src/App.cs"
   printf 'public class BuildOutput { }\n' > "$temp_repo/bin/Ignored.cs"
   printf '<Project Sdk="Microsoft.NET.Sdk" />\n' > "$temp_repo/Sample.csproj"
+  printf '{"scripts":{"test":"vitest run"}}\n' > "$temp_repo/package.json"
 
   "$REPO_ROOT/scripts/generate-runtime-context.shared.sh" --target-repo "$temp_repo" --output-path "$temp_repo/runtime-context.md" >/tmp/continue-context.out 2>&1 || return 1
   grep -q '# Runtime Repository Context' "$temp_repo/runtime-context.md" || return 1
   grep -q 'src/App.cs' "$temp_repo/runtime-context.md" || return 1
+  grep -q 'package.json' "$temp_repo/runtime-context.md" || return 1
+  grep -q 'vitest run' "$temp_repo/runtime-context.md" || return 1
+  ! grep -q 'scripts/test-pack.shared.sh' "$temp_repo/runtime-context.md" || return 1
   ! grep -q 'bin/Ignored.cs' "$temp_repo/runtime-context.md"
 }
 
@@ -452,6 +457,12 @@ test_sample_repository_factory() {
   [ -f "$temp_root/rust-cli/Cargo.toml" ] || return 1
   [ -f "$temp_root/iac-terraform-kubernetes/terraform/main.tf" ] || return 1
   [ -f "$temp_root/sql-migrations/schema/001_create_items.sql" ] || return 1
+
+  grep -q "# Python API Sample" "$temp_root/python-api/README.md" || return 1
+  grep -q "python -m pytest" "$temp_root/python-api/README.md" || return 1
+  ! grep -q "Write-SampleFile" "$temp_root/python-api/README.md" || return 1
+  ! grep -Eq "@['\"]|['\"]@" "$temp_root/python-api/README.md" || return 1
+  ! grep -q "Write-SampleFile" "$temp_root/python-api/app/main.py" || return 1
 
   ! "$REPO_ROOT/scripts/generate-sample-repositories.shared.sh" --output-root "$temp_root" >/tmp/sample-factory-rerun.out 2>&1 || return 1
   grep -q "Use --force" /tmp/sample-factory-rerun.out || return 1
