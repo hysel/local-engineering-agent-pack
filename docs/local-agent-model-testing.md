@@ -24,7 +24,7 @@ Windows:
 ```powershell
 .\scripts\pull-local-agent-models.ps1 `
   -OllamaBaseUrl "http://127.0.0.1:11434" `
-  -Models "qwen3.5:9b","devstral-small-2:24b","qwen3-coder:30b"
+  -Models "qwen3.5:9b"
 ```
 
 Linux:
@@ -32,7 +32,7 @@ Linux:
 ```bash
 ./scripts/pull-local-agent-models.linux.sh \
   --ollama-base-url "http://127.0.0.1:11434" \
-  --models "qwen3.5:9b,devstral-small-2:24b,qwen3-coder:30b"
+  --models "qwen3.5:9b"
 ```
 
 macOS:
@@ -40,7 +40,7 @@ macOS:
 ```bash
 ./scripts/pull-local-agent-models.macos.sh \
   --ollama-base-url "http://127.0.0.1:11434" \
-  --models "qwen3.5:9b,devstral-small-2:24b,qwen3-coder:30b"
+  --models "qwen3.5:9b"
 ```
 
 Use your own Ollama base URL when the server runs on another machine. Do not
@@ -54,7 +54,7 @@ Windows:
 .\scripts\test-local-agent-models.ps1 `
   -OllamaBaseUrl "http://127.0.0.1:11434" `
   -TargetRepo "C:\path\to\sample-repo" `
-  -Models "qwen3.5:9b","devstral-small-2:24b","qwen3-coder:30b" `
+  -Models "qwen3.5:9b" `
   -UnloadAfterEach
 ```
 
@@ -64,7 +64,7 @@ Linux:
 ./scripts/test-local-agent-models.linux.sh \
   --ollama-base-url "http://127.0.0.1:11434" \
   --target-repo "/path/to/sample-repo" \
-  --models "qwen3.5:9b,devstral-small-2:24b,qwen3-coder:30b" \
+  --models "qwen3.5:9b" \
   --unload-after-each
 ```
 
@@ -74,12 +74,17 @@ macOS:
 ./scripts/test-local-agent-models.macos.sh \
   --ollama-base-url "http://127.0.0.1:11434" \
   --target-repo "/path/to/sample-repo" \
-  --models "qwen3.5:9b,devstral-small-2:24b,qwen3-coder:30b" \
+  --models "qwen3.5:9b" \
   --unload-after-each
 ```
 
 Add `-PullMissing` on Windows, or `--pull-missing` on Linux/macOS, when you want
 the test runner to pull missing models before testing.
+
+After the simple-hardware model passes, high-resource machines may explicitly
+test optional profile upgrades such as `devstral-small-2:24b` for PLAN ONLY or
+`qwen3-coder:30b` for DEEP REVIEW. Do not add those upgrades to shared config
+until they pass local validation.
 
 ## What The Test Means
 

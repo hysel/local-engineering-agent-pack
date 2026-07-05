@@ -1,9 +1,7 @@
 param(
     [string]$OllamaBaseUrl = "http://127.0.0.1:11434",
     [string[]]$Models = @(
-        "qwen3.5:9b",
-        "devstral-small-2:24b",
-        "qwen3-coder:30b"
+        "qwen3.5:9b"
     ),
     [int]$TimeoutSeconds = 600
 )

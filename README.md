@@ -76,9 +76,10 @@ ollama pull qwen3.5:9b
 ollama pull nomic-embed-text
 ```
 
-Optional stronger model for high-resource machines after validation:
+Optional stronger models for high-resource machines after validation:
 
 ```bash
+ollama pull devstral-small-2:24b
 ollama pull qwen3-coder:30b
 ```
 
@@ -415,7 +416,7 @@ The installer:
 - Backs up an existing target `.continue` folder before replacing it.
 - Validates that copied config file references resolve.
 - Can create `.continue/config.local.yaml` with the model recommended by the hardware profile helper.
-- Can create `.continue/config.local.yaml` with three Agent model profiles: WRITE SAFE, PLAN ONLY, and DEEP REVIEW, plus the embedding model.
+- Can create `.continue/config.local.yaml` with three Agent model profiles: WRITE SAFE, PLAN ONLY, and DEEP REVIEW. By default, all three use the simple-hardware starter model, plus the separate embedding model.
 - Can update the global Continue config, with a backup, when an editor does not load project-local config files.
 - Omits rules from generated global config by default to avoid duplicate rule warnings.
 - Writes Windows global config file references as `file://C:/path/...` for VSCodium compatibility.
@@ -584,9 +585,10 @@ candidate until tool execution is validated in the editor or CLI surface you
 plan to use.
 
 For mixed-model workflows, use model profiles instead of giving every model
-`edit` and `apply` roles. Only the `1 - WRITE SAFE` lane should have
-`chat`, `edit`, and `apply`; planning and review lanes should stay
-`chat` only until they pass approved-write validation.
+`edit` and `apply` roles. The simple-hardware default points all three Agent
+profiles at `qwen3.5:9b`; only the `1 - WRITE SAFE` lane should have `chat`,
+`edit`, and `apply`. Planning and review lanes should stay `chat` only, even if
+you later upgrade them to heavier models.
 
 For private endpoints, local model experiments, or machine-specific settings, use `docs/local-config-safety.md` before editing committed config files.
 

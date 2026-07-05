@@ -4,8 +4,6 @@ set -euo pipefail
 OLLAMA_BASE_URL="http://127.0.0.1:11434"
 MODELS=(
   "qwen3.5:9b"
-  "devstral-small-2:24b"
-  "qwen3-coder:30b"
 )
 CUSTOM_MODELS=false
 

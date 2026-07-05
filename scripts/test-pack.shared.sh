@@ -49,7 +49,7 @@ test_catalog_schema() {
     $2 == "" && $3 ~ / or / { exit 1 }
     END { exit 0 }
   ' "$REPO_ROOT/config/model-recommendations.tsv" &&
-    grep -q "WRITE SAFE lane" "$REPO_ROOT/config/model-recommendations.tsv"
+    grep -q "simple-hardware default" "$REPO_ROOT/config/model-recommendations.tsv"
 }
 
 test_committed_config_uses_starter_model() {
@@ -124,8 +124,8 @@ test_install_model_lanes() {
   [ -f "$local_config" ] || return 1
   [ -f "$global_config" ] || return 1
     grep -q "1 - WRITE SAFE - qwen3.5:9b" "$local_config" &&
-    grep -q "2 - PLAN ONLY - devstral-small-2:24b" "$local_config" &&
-    grep -q "3 - DEEP REVIEW - qwen3-coder:30b" "$local_config" &&
+    grep -q "2 - PLAN ONLY - qwen3.5:9b" "$local_config" &&
+    grep -q "3 - DEEP REVIEW - qwen3.5:9b" "$local_config" &&
     grep -q "Ollama Nomic Embed" "$local_config" &&
     ! grep -q "4 - " "$local_config" &&
     ! grep -q "5 - " "$local_config" &&
@@ -136,8 +136,8 @@ test_install_model_lanes() {
       }
       current == "1 - WRITE SAFE - qwen3.5:9b" && /- edit/ { write_edit = 1 }
       current == "1 - WRITE SAFE - qwen3.5:9b" && /- apply/ { write_apply = 1 }
-      current == "2 - PLAN ONLY - devstral-small-2:24b" && /- edit|- apply/ { plan_bad = 1 }
-      current == "3 - DEEP REVIEW - qwen3-coder:30b" && /- edit|- apply/ { deep_bad = 1 }
+      current == "2 - PLAN ONLY - qwen3.5:9b" && /- edit|- apply/ { plan_bad = 1 }
+      current == "3 - DEEP REVIEW - qwen3.5:9b" && /- edit|- apply/ { deep_bad = 1 }
       END {
         if (!write_edit || !write_apply || plan_bad || deep_bad) {
           exit 1

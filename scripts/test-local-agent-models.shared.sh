@@ -114,8 +114,6 @@ def catalog_candidates():
     if not candidates:
         candidates = [
             "qwen3.5:9b",
-            "devstral-small-2:24b",
-            "qwen3-coder:30b",
         ]
     return list(dict.fromkeys(candidates))
 
