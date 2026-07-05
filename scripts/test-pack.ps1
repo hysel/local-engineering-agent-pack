@@ -441,6 +441,29 @@ Invoke-PackTest "multi-repository validation docs define sanitized evidence work
     Assert-True -Condition ($readme -match "examples/multi-repository-validation.md") -Message "README should link multi-repository validation template."
 }
 
+Invoke-PackTest "prompt quality guardrails require filename fidelity and sourced lifecycle claims" {
+    $legacyPromptPath = Join-Path $repoRoot ".continue/prompts/legacy-dotnet-dependency-migration.md"
+    $repositoryPromptPath = Join-Path $repoRoot ".continue/prompts/repository-discovery.md"
+    $promptQualityPath = Join-Path $repoRoot "docs/prompt-quality.md"
+    $bannedPatternsPath = Join-Path $repoRoot "docs/banned-output-patterns.md"
+
+    $legacyPrompt = Get-Content -LiteralPath $legacyPromptPath -Raw
+    $repositoryPrompt = Get-Content -LiteralPath $repositoryPromptPath -Raw
+    $promptQuality = Get-Content -LiteralPath $promptQualityPath -Raw
+    $bannedPatterns = Get-Content -LiteralPath $bannedPatternsPath -Raw
+
+    Assert-True -Condition ($legacyPrompt -match "exact filenames") -Message "Legacy migration prompt should require exact inspected filenames."
+    Assert-True -Condition ($legacyPrompt -match "Do not invent or normalize filenames") -Message "Legacy migration prompt should ban filename invention."
+    Assert-True -Condition ($legacyPrompt -match "lifecycle/support claims") -Message "Legacy migration prompt should constrain lifecycle/support claims."
+    Assert-True -Condition ($legacyPrompt -match "verify with current vendor documentation") -Message "Legacy migration prompt should require current vendor verification when evidence is missing."
+    Assert-True -Condition ($repositoryPrompt -match "Use exact filenames") -Message "Repository discovery prompt should require exact filenames."
+    Assert-True -Condition ($repositoryPrompt -match "label it as unconfirmed") -Message "Repository discovery prompt should label unconfirmed filenames."
+    Assert-True -Condition ($promptQuality -match "Use exact filenames") -Message "Prompt quality doc should include filename fidelity."
+    Assert-True -Condition ($promptQuality -match "lifecycle/support claims") -Message "Prompt quality doc should cover sourced lifecycle/support claims."
+    Assert-True -Condition ($bannedPatterns -match "Invents, normalizes, or alters") -Message "Banned output patterns should reject altered filenames."
+    Assert-True -Condition ($bannedPatterns -match "support-lifecycle claims") -Message "Banned output patterns should reject unsupported lifecycle claims."
+}
+
 Invoke-PackTest "tool-use docs define platform-aware approved write behavior" {
     $generalRulePath = Join-Path $repoRoot ".continue/rules/general.md"
     $toolModesPath = Join-Path $repoRoot "docs/tool-use-modes.md"

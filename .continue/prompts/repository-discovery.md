@@ -40,3 +40,5 @@ Discover the repository structure, architecture, technology choices, and current
 - Do not claim implementation exists when files are placeholders.
 - Separate evidence from inference.
 - Keep recommendations tied to repository facts.
+- Use exact filenames from inspected file lists or file reads. Do not invent, rename, pluralize, or normalize filenames.
+- If an expected file is not confirmed by tools or supplied context, label it as unconfirmed instead of naming it as fact.

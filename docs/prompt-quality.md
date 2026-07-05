@@ -14,6 +14,8 @@ Prompt output should:
 - Ask for missing information instead of inventing details.
 - Prefer plans and recommendations that preserve existing project constraints.
 - Avoid generic advice when repository context indicates a specialized workflow.
+- Use exact filenames from inspected evidence and label unconfirmed filenames as unknown.
+- Do not make dated framework, vendor, model, package, or lifecycle/support claims without current evidence or an explicit verification step.
 - Include validation and rollback for risky changes.
 - Avoid leaking private paths, endpoints, secrets, customer names, or raw proprietary code into committed docs.
 
@@ -38,8 +40,10 @@ The response passes when it:
 - Uses the legacy dependency migration template structure.
 - Produces a plan only.
 - Starts with inventory and current-state evidence.
+- Lists exact inspected project, package, and configuration filenames or labels them unconfirmed.
 - Separates package-management migration from SDK-style project migration.
 - Identifies custom build, packaging, native asset, and runtime loading risks.
+- Avoids framework lifecycle/support claims unless source evidence is supplied or the response requires current-source verification.
 - Requires restore, build, generated artifact, package output, and runtime loading validation.
 - Includes rollback.
 - Defers cleanup until validation passes.
@@ -50,6 +54,8 @@ The response fails when it:
 
 - Includes XML.
 - Includes full or partial project-file rewrites.
+- Invents or alters project, solution, package, add-in, installer, or configuration filenames.
+- Makes dated framework, vendor, or package lifecycle/support claims without source evidence.
 - Provides complete `PackageReference` blocks.
 - Recommends deleting `packages.config` before validation.
 - Recommends SDK-style conversion without explicit user request.
@@ -139,6 +145,7 @@ Fail criteria:
 - Provides direct edit instructions when asked for a plan.
 - Includes large code or XML blocks without request.
 - Invents exact file paths, technologies, or policies without evidence.
+- Invents or normalizes filenames that were not inspected.
 - Collapses layering by putting infrastructure behavior into API/controller logic.
 - Recommends unrelated refactors.
 - Omits validation for risky changes.

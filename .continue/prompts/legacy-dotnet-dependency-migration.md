@@ -14,6 +14,7 @@ Use this workflow for .NET Framework, desktop, Excel-DNA, Office add-in, install
 
 - User request
 - Current project file style
+- Exact inspected project, package, and configuration filenames
 - `packages.config`
 - Existing package references, `HintPath` entries, and package versions
 - Custom `Import`, `.props`, `.targets`, `.dna`, installer, bootstrapper, packaging, or generated artifact configuration
@@ -26,10 +27,12 @@ Use this workflow for .NET Framework, desktop, Excel-DNA, Office add-in, install
 - Do not provide a full rewritten project file unless the user explicitly asks for one.
 - Do not provide a full `<PackageReference>` replacement block unless the user explicitly asks for generated XML.
 - Do not recommend SDK-style conversion unless the user explicitly asks for SDK-style migration.
+- Do not invent or normalize filenames. Use only exact filenames seen in the provided context or tool output. If the project file name is not confirmed, say it is unconfirmed.
 - Do not treat `packages.config` to `PackageReference` migration as a simple text replacement.
 - Do not recommend deleting `packages.config` until restore, build, package output, runtime loading, and rollback have been validated.
 - Do not assume `dotnet restore` or `dotnet build` is correct for non-SDK-style .NET Framework projects.
 - Do not remove or rewrite custom package `Import`, `.props`, `.targets`, `HintPath`, native asset, analyzer, `.dna`, bootstrapper, installer, or packaging behavior without identifying the replacement behavior.
+- Do not make runtime, framework, or vendor lifecycle/support claims unless the evidence is present in the supplied context or explicitly marked as unverified and requiring current-source confirmation.
 - If evidence is missing, call it out and make the first step an inventory or spike.
 - If asked for a plan, produce a plan only. Do not provide edit-ready XML, project-file patches, or mechanical replacement instructions.
 
@@ -41,7 +44,9 @@ For this workflow, avoid these patterns unless the user explicitly requests impl
 - "Remove packages.config, then add these PackageReference nodes..."
 - A complete list of package references as XML.
 - A full or partial rewritten `.csproj`.
+- A guessed `.csproj`, `.sln`, `.config`, package, add-in, or installer filename.
 - A statement that PackageReference is recommended for all modern .NET projects without qualifying legacy .NET Framework/custom MSBuild risk.
+- A dated framework, vendor, or package lifecycle/support claim without source evidence or an explicit "verify with current vendor documentation" qualifier.
 - A migration plan that starts with editing before inventorying package build assets and custom targets.
 
 If the requested migration is risky, the correct response is a phased validation plan, not a direct edit recipe.
@@ -54,7 +59,8 @@ If the requested migration is risky, the correct response is a phased validation
    - .NET Framework or modern .NET
    - desktop/add-in/service/library
    - custom MSBuild or packaging targets
-3. Inventory migration-sensitive assets:
+3. List the exact inspected filenames used as evidence. If any expected filename is inferred rather than inspected, label it as unconfirmed.
+4. Inventory migration-sensitive assets:
    - package build assets
    - native assets
    - analyzers
@@ -62,11 +68,11 @@ If the requested migration is risky, the correct response is a phased validation
    - `.props` and `.targets`
    - generated artifacts
    - installer, bootstrapper, `.dna`, `.xll`, or packaging output
-4. Separate packages into:
+5. Separate packages into:
    - likely safe to migrate
    - requires package-specific validation
    - should remain unchanged until tool support is confirmed
-5. Propose a phased migration:
+6. Propose a phased migration:
    - branch and baseline
    - inventory
    - tool-supported migration or one-package spike
@@ -75,12 +81,12 @@ If the requested migration is risky, the correct response is a phased validation
    - package/artifact validation
    - runtime loading validation
    - cleanup only after validation
-6. Define rollback:
+7. Define rollback:
    - revert commit
    - restore original project/package files
    - restore package folder behavior if needed
    - revalidate build and runtime loading
-7. State what not to change.
+8. State what not to change.
 
 ## Output Format
 
@@ -106,6 +112,8 @@ The plan must include these phases:
 ## Quality Checks
 
 - Preserve project style unless a project-system migration is explicitly requested.
+- Use exact inspected filenames only.
+- Mark missing or unverified filenames, commands, versions, and lifecycle/support status as unknown.
 - Keep `PackageReference` migration separate from SDK-style conversion.
 - Require validation before cleanup.
 - Identify custom build and packaging risks before editing package references.

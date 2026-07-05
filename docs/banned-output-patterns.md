@@ -11,7 +11,9 @@ Use it with `docs/prompt-quality.md`, prompt fixtures, and local-model reliabili
 Reject output that:
 
 - Invents repository facts, file paths, test results, package versions, endpoints, or deployment status.
+- Invents, normalizes, or alters project, solution, package, add-in, installer, or configuration filenames instead of using inspected filenames exactly.
 - Presents assumptions as confirmed evidence.
+- Makes dated framework, vendor, package, or support-lifecycle claims without source evidence or a current verification step.
 - Ignores explicit "do not modify files", "plan only", or "wait for approval" instructions.
 - Recommends broad rewrites when the request is scoped.
 - Omits validation for risky changes.
@@ -50,10 +52,14 @@ Reject output that:
 - Recommends SDK-style project conversion without explicit request.
 - Assumes `dotnet restore` or `dotnet build` is valid for a legacy project without checking project-system support.
 - Ignores custom MSBuild imports, add-in packaging, native assets, generated files, or runtime loading.
+- Invents exact project, package, add-in, installer, or configuration filenames.
+- Makes unsupported framework lifecycle or vendor support claims.
 
 Required safe behavior:
 
 - Produce a plan only unless the user explicitly asks for implementation.
+- Use exact inspected filenames only and mark missing filenames as unconfirmed.
+- Require current-source verification for lifecycle/support statements.
 - Separate package-management migration from SDK-style conversion.
 - Require inventory, validation, rollback, and staged cleanup.
 - Prefer the fixed template when local-model output repeatedly fails.

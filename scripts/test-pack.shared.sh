@@ -341,6 +341,19 @@ test_multi_repository_validation_doc() {
     grep -q "examples/multi-repository-validation.md" "$REPO_ROOT/README.md"
 }
 
+test_prompt_quality_guardrails_require_filename_fidelity() {
+  grep -q "exact filenames" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
+    grep -q "Do not invent or normalize filenames" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
+    grep -q "lifecycle/support claims" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
+    grep -q "verify with current vendor documentation" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
+    grep -q "Use exact filenames" "$REPO_ROOT/.continue/prompts/repository-discovery.md" &&
+    grep -q "label it as unconfirmed" "$REPO_ROOT/.continue/prompts/repository-discovery.md" &&
+    grep -q "Use exact filenames" "$REPO_ROOT/docs/prompt-quality.md" &&
+    grep -q "lifecycle/support claims" "$REPO_ROOT/docs/prompt-quality.md" &&
+    grep -q "Invents, normalizes, or alters" "$REPO_ROOT/docs/banned-output-patterns.md" &&
+    grep -q "support-lifecycle claims" "$REPO_ROOT/docs/banned-output-patterns.md"
+}
+
 test_tool_use_docs_define_platform_aware_write_behavior() {
   grep -q "Match commands to the user's active operating system and shell" "$REPO_ROOT/.continue/rules/general.md" &&
     grep -q "READ_TOOLS_UNAVAILABLE" "$REPO_ROOT/.continue/rules/general.md" &&
@@ -443,6 +456,7 @@ run_test "editor compatibility docs cover config and tool validation" test_edito
 run_test "model tool-use validation docs define evidence workflow" test_model_tool_use_validation_doc
 run_test "online model discovery docs preserve offline local-first defaults" test_online_model_discovery_doc
 run_test "multi-repository validation docs define sanitized evidence workflow" test_multi_repository_validation_doc
+run_test "prompt quality guardrails require filename fidelity and sourced lifecycle claims" test_prompt_quality_guardrails_require_filename_fidelity
 run_test "tool-use docs define platform-aware approved write behavior" test_tool_use_docs_define_platform_aware_write_behavior
 
 if [ "$FAILED" -eq 1 ]; then

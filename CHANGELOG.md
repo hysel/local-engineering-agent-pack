@@ -13,6 +13,7 @@ This project follows a simple changelog format:
 
 ### Added
 
+- Added prompt-quality guardrails and tests for exact filename fidelity and source-grounded lifecycle/support claims after the first legacy repository validation run.
 - Added Linux hardware profile platform notes for missing optional GPU detection tools and no-GPU detection fallbacks.
 - Documented that CPU architecture is currently context for model selection, not a direct recommendation-tier input.
 - Added a separate MLX model recommendation catalog and macOS MLX recommendation output for advanced Apple Silicon setups.

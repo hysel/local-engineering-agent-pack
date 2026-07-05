@@ -371,7 +371,7 @@ Scope:
 - Add validation and test coverage so the guide and template stay linked. Done.
 - Record first sanitized Milestone 13 validation evidence for a legacy .NET repository category. Done.
 - Validate the pack against additional real repositories when suitable targets are available.
-- Convert repeated validation failures into prompt, rule, documentation, or script updates.
+- Convert repeated validation failures into prompt, rule, documentation, or script updates. First legacy validation findings for filename fidelity and lifecycle/support claims have been converted into prompt and test guardrails.
 - Keep private repository names, local paths, endpoints, raw transcripts, customer names, and source code out of committed evidence.
 
 Exit criteria:
