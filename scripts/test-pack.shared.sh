@@ -344,13 +344,20 @@ test_multi_repository_validation_doc() {
 test_prompt_quality_guardrails_require_filename_fidelity() {
   grep -q "exact filenames" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
     grep -q "Do not invent or normalize filenames" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
+    grep -q "Do not combine a basename" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
+    grep -q "Evidence Files" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
+    grep -q "requires current-source verification" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
     grep -q "lifecycle/support claims" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
     grep -q "verify with current vendor documentation" "$REPO_ROOT/.continue/prompts/legacy-dotnet-dependency-migration.md" &&
     grep -q "Use exact filenames" "$REPO_ROOT/.continue/prompts/repository-discovery.md" &&
+    grep -q "filename-fidelity gate" "$REPO_ROOT/.continue/prompts/repository-discovery.md" &&
+    grep -q "Do not combine a basename" "$REPO_ROOT/.continue/prompts/repository-discovery.md" &&
     grep -q "label it as unconfirmed" "$REPO_ROOT/.continue/prompts/repository-discovery.md" &&
     grep -q "Use exact filenames" "$REPO_ROOT/docs/prompt-quality.md" &&
     grep -q "lifecycle/support claims" "$REPO_ROOT/docs/prompt-quality.md" &&
+    grep -q "Do not combine a basename" "$REPO_ROOT/docs/prompt-quality.md" &&
     grep -q "Invents, normalizes, or alters" "$REPO_ROOT/docs/banned-output-patterns.md" &&
+    grep -q "Combines a basename" "$REPO_ROOT/docs/banned-output-patterns.md" &&
     grep -q "support-lifecycle claims" "$REPO_ROOT/docs/banned-output-patterns.md"
 }
 

@@ -454,13 +454,20 @@ Invoke-PackTest "prompt quality guardrails require filename fidelity and sourced
 
     Assert-True -Condition ($legacyPrompt -match "exact filenames") -Message "Legacy migration prompt should require exact inspected filenames."
     Assert-True -Condition ($legacyPrompt -match "Do not invent or normalize filenames") -Message "Legacy migration prompt should ban filename invention."
+    Assert-True -Condition ($legacyPrompt -match "Do not combine a basename") -Message "Legacy migration prompt should ban mixed filename synthesis."
+    Assert-True -Condition ($legacyPrompt -match "Evidence Files") -Message "Legacy migration prompt should require evidence file output."
+    Assert-True -Condition ($legacyPrompt -match "requires current-source verification") -Message "Legacy migration prompt should require verification for unsupported compatibility claims."
     Assert-True -Condition ($legacyPrompt -match "lifecycle/support claims") -Message "Legacy migration prompt should constrain lifecycle/support claims."
     Assert-True -Condition ($legacyPrompt -match "verify with current vendor documentation") -Message "Legacy migration prompt should require current vendor verification when evidence is missing."
     Assert-True -Condition ($repositoryPrompt -match "Use exact filenames") -Message "Repository discovery prompt should require exact filenames."
+    Assert-True -Condition ($repositoryPrompt -match "filename-fidelity gate") -Message "Repository discovery prompt should require a filename-fidelity gate."
+    Assert-True -Condition ($repositoryPrompt -match "Do not combine a basename") -Message "Repository discovery prompt should ban mixed filename synthesis."
     Assert-True -Condition ($repositoryPrompt -match "label it as unconfirmed") -Message "Repository discovery prompt should label unconfirmed filenames."
     Assert-True -Condition ($promptQuality -match "Use exact filenames") -Message "Prompt quality doc should include filename fidelity."
     Assert-True -Condition ($promptQuality -match "lifecycle/support claims") -Message "Prompt quality doc should cover sourced lifecycle/support claims."
+    Assert-True -Condition ($promptQuality -match "Do not combine a basename") -Message "Prompt quality doc should ban mixed filename synthesis."
     Assert-True -Condition ($bannedPatterns -match "Invents, normalizes, or alters") -Message "Banned output patterns should reject altered filenames."
+    Assert-True -Condition ($bannedPatterns -match "Combines a basename") -Message "Banned output patterns should reject mixed filename synthesis."
     Assert-True -Condition ($bannedPatterns -match "support-lifecycle claims") -Message "Banned output patterns should reject unsupported lifecycle claims."
 }
 
