@@ -252,13 +252,15 @@
 ## Milestone 15: Multi-Language Engineering Support
 
 - [x] Document current language-support maturity and staged expansion in `docs/language-support.md`.
-- [ ] Add project-detection guidance for Python, JavaScript/TypeScript, Java/Spring, Go, Rust, SQL, and Infrastructure as Code repositories.
+- [x] Add project-detection guidance for Python, JavaScript/TypeScript, Java/Spring, Go, Rust, SQL, and Infrastructure as Code repositories.
 - [x] Add generated local sample repositories for at least Python and JavaScript/TypeScript validation.
+- [x] Update rules, prompts, and agents to evidence-gate language-specific advice.
 - [ ] Add language-specific rules or guidance without applying them globally by default.
 - [ ] Validate repository discovery, implementation planning, and code review against Python and JavaScript/TypeScript samples.
 - [x] Record focused Continue CLI repository-discovery validation for generated Python and TypeScript samples.
 - [ ] Record sanitized multi-language validation evidence for implementation planning and code review.
 - [ ] Prevent .NET-specific recommendations from being applied to non-.NET repositories.
+
 ## Milestone 16: Sample Repository Factory
 
 - [x] Add `docs/sample-repository-factory.md`.

@@ -42,3 +42,8 @@ Apply these standards to .NET application, library, and service code.
 - Do package or project-system changes preserve restore, build, packaging, and runtime loading behavior?
 - Are project-system migration assumptions proven by tool support or marked as assumptions?
 - Have package build assets, native assets, analyzers, custom targets, and hint paths been inventoried before migration?
+## Evidence Gate
+
+Apply this rule only when inspected files or supplied context provide matching .NET evidence, such as `.sln`, `.slnx`, `.csproj`, `.fsproj`, `.vbproj`, `Directory.Build.*`, `packages.config`, `global.json`, `Program.cs`, `Startup.cs`, `appsettings*.json`, or related .NET source files.
+
+If .NET evidence is absent or unreadable, keep recommendations language-neutral and label .NET-specific assumptions as `unconfirmed`.

@@ -13,6 +13,7 @@ This project follows a simple changelog format:
 
 ### Added
 
+- Added `docs/project-detection.md` for evidence-based ecosystem, framework, build, package, and test-system classification before language-specific advice.
 - Added focused Continue CLI repository-discovery validation evidence for generated Python and TypeScript samples after improving runtime context fidelity.
 - Added sample repository factory documentation and scripts for disposable local validation repositories.
 - Added sanitized sample repository factory validation evidence for generated Python and TypeScript samples.
@@ -20,6 +21,7 @@ This project follows a simple changelog format:
 
 ### Changed
 
+- Updated core prompts, shared rules, and agents to evidence-gate language-specific recommendations and use `unconfirmed` when project metadata is missing.
 - Improved runtime context generation so nested target folders do not inherit parent repository git status and common multi-language project metadata is included in context excerpts.
 
 ### Fixed

@@ -8,6 +8,10 @@ Apply these standards to all engineering, review, documentation, and planning wo
 
 ## Required Practices
 
+- Run project classification before language-specific recommendations: identify primary ecosystem, framework/runtime, build/dependency system, test system, confidence level, and evidence files.
+- Use `docs/project-detection.md` for evidence strength, ecosystem signals, and confidence labels.
+- Do not apply .NET, ASP.NET Core, frontend, Python, Java, Go, Rust, SQL, or Infrastructure as Code-specific advice unless inspected files or supplied context provide matching evidence.
+- Prefer `unconfirmed` over framework, runtime, package-manager, or test-runner guesses when project metadata is missing or unreadable.
 - Understand the existing repository before proposing or making changes.
 - Preserve existing style, naming, organization, and framework choices unless there is a clear reason to change them.
 - Keep changes small, cohesive, and tied to the stated objective.

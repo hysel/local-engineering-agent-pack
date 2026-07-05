@@ -18,11 +18,15 @@ Create, review, or improve engineering documentation while keeping recommendatio
 
 ## Process
 
-1. Identify the audience and document purpose.
-2. Compare claims against actual repository state.
-3. Organize content for scanning and maintenance.
-4. Use terminology from `STYLEGUIDE.md`.
-5. Call out missing implementation or unknowns honestly.
+1. Run project classification before stack-specific advice:
+   - identify primary ecosystem, framework/runtime, build/dependency system, and test system
+   - cite evidence files used
+   - mark missing or uncertain signals as `unconfirmed`
+   - do not apply .NET, frontend, Python, Java, Go, Rust, SQL, or IaC-specific guidance without matching evidence
+2. Inspect existing docs and repository structure.
+3. Identify missing setup, usage, validation, architecture, contribution, and troubleshooting documentation.
+4. Match documentation recommendations to the detected project type and audience.
+5. Separate required documentation from optional polish.
 
 ## Output Format
 
@@ -32,7 +36,14 @@ Create, review, or improve engineering documentation while keeping recommendatio
 - Gaps
 - Follow-up Tasks
 
+## Project Detection Reference
+
+Use `docs/project-detection.md` for evidence strength, ecosystem signals, confidence labels, and language-specific guardrails.
+
 ## Quality Checks
+
+- Do not apply language-specific recommendations unless inspected files or supplied context provide matching evidence.
+- Prefer `unconfirmed` over framework or toolchain guesses when project metadata is missing.
 
 - Do not invent functionality.
 - Keep scaffold-stage language explicit when appropriate.

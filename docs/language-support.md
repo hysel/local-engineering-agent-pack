@@ -19,6 +19,10 @@ This document tracks how the Local Engineering Agent Pack should grow beyond its
 | SQL / database projects | Planned | Needs schema, migration, query, and data-safety guidance. |
 | Infrastructure as Code | Planned | Terraform, Docker, Kubernetes, and GitHub Actions need separate safety rules. |
 
+## Project Detection
+
+Use `docs/project-detection.md` as the source of truth for ecosystem signals, evidence strength, confidence labels, and unconfirmed assumptions. Language-specific guidance should not be applied until project detection has enough repository evidence.
+
 ## Shared Guidance
 
 These standards should remain cross-language:

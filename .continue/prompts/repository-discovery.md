@@ -20,18 +20,27 @@ Discover the repository structure, architecture, technology choices, and current
 ## Process
 
 1. Identify the repository purpose and current stage.
-2. Run the filename-fidelity gate:
+2. Run project classification before recommendations:
+   - primary ecosystem or language
+   - framework or runtime
+   - package, dependency, or build system
+   - test framework or test runner
+   - confidence level: high, medium, low, or unconfirmed
+   - evidence files used
+   - unconfirmed assumptions
+3. Run the filename-fidelity gate:
    - list exact inspected filenames for project, package, configuration, source, and documentation files
    - do not combine a basename from one file with an extension from another file
    - label expected but unconfirmed filenames as unconfirmed
-3. Map the major directories and responsibilities.
-4. Identify runtime architecture, dependencies, and integration points.
-5. Identify missing or placeholder components.
-6. Note risks, assumptions, and open questions.
+4. Map the major directories and responsibilities.
+5. Identify runtime architecture, dependencies, and integration points.
+6. Identify missing or placeholder components.
+7. Note risks, assumptions, and open questions.
 
 ## Output Format
 
 - Executive Summary
+- Project Classification
 - Repository Structure
 - Current Architecture
 - Key Workflows
@@ -39,7 +48,14 @@ Discover the repository structure, architecture, technology choices, and current
 - Risks
 - Recommended Next Steps
 
+## Project Detection Reference
+
+Use `docs/project-detection.md` for evidence strength, ecosystem signals, confidence labels, and language-specific guardrails.
+
 ## Quality Checks
+
+- Do not apply language-specific recommendations unless inspected files or supplied context provide matching evidence.
+- Prefer `unconfirmed` over framework or toolchain guesses when project metadata is missing.
 
 - Do not claim implementation exists when files are placeholders.
 - Separate evidence from inference.

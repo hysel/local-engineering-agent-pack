@@ -145,6 +145,7 @@ $requiredFiles = @(
     "docs/runtime-output-verification.md",
     "docs/agent-surface-options.md",
     "docs/language-support.md",
+    "docs/project-detection.md",
     "docs/sample-repository-factory.md",
     "docs/local-agent-model-testing.md",
     "docs/model-tool-use-validation.md",

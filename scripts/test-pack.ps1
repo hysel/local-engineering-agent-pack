@@ -532,6 +532,65 @@ Invoke-PackTest "language support docs define staged multi-language boundary" {
     Assert-True -Condition ($roadmap -match "Milestone 15: Multi-Language Engineering Support") -Message "Roadmap should include Milestone 15."
 }
 
+
+Invoke-PackTest "project detection docs and guidance are evidence-gated" {
+    $docPath = Join-Path $repoRoot "docs/project-detection.md"
+    $languagePath = Join-Path $repoRoot "docs/language-support.md"
+    $readmePath = Join-Path $repoRoot "README.md"
+    $generalRulePath = Join-Path $repoRoot ".continue/rules/general.md"
+    $dotnetRulePath = Join-Path $repoRoot ".continue/rules/dotnet.md"
+    $aspnetRulePath = Join-Path $repoRoot ".continue/rules/aspnetcore.md"
+    $repositoryPromptPath = Join-Path $repoRoot ".continue/prompts/repository-discovery.md"
+
+    Assert-True -Condition (Test-Path -LiteralPath $docPath) -Message "Project detection doc should exist."
+
+    $doc = Get-Content -LiteralPath $docPath -Raw
+    $language = Get-Content -LiteralPath $languagePath -Raw
+    $readme = Get-Content -LiteralPath $readmePath -Raw
+    $generalRule = Get-Content -LiteralPath $generalRulePath -Raw
+    $dotnetRule = Get-Content -LiteralPath $dotnetRulePath -Raw
+    $aspnetRule = Get-Content -LiteralPath $aspnetRulePath -Raw
+    $repositoryPrompt = Get-Content -LiteralPath $repositoryPromptPath -Raw
+    $agents = Get-ChildItem -LiteralPath (Join-Path $repoRoot ".continue/agents") -Filter "*.md" | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }
+    $corePrompts = @(
+        "repository-discovery.md",
+        "implementation-plan.md",
+        "code-review.md",
+        "architecture-review.md",
+        "security-review.md",
+        "performance-review.md",
+        "documentation.md"
+    )
+
+    Assert-True -Condition ($doc -match "Evidence Strength") -Message "Project detection doc should define evidence strength."
+    Assert-True -Condition ($doc -match "Ecosystem Signals") -Message "Project detection doc should define ecosystem signals."
+    Assert-True -Condition ($doc -match "Strong") -Message "Project detection doc should define strong evidence."
+    Assert-True -Condition ($doc -match "Unconfirmed") -Message "Project detection doc should define unconfirmed evidence."
+    Assert-True -Condition ($doc -match "Python") -Message "Project detection doc should include Python signals."
+    Assert-True -Condition ($doc -match "JavaScript / TypeScript") -Message "Project detection doc should include TypeScript signals."
+    Assert-True -Condition ($doc -match "Do not apply \.NET-specific guidance") -Message "Project detection doc should block unsupported .NET advice."
+    Assert-True -Condition ($doc -match "package metadata is present") -Message "Project detection doc should prefer package metadata over source guesses."
+    Assert-True -Condition ($language -match "docs/project-detection.md") -Message "Language support doc should link project detection."
+    Assert-True -Condition ($readme -match "docs/project-detection.md") -Message "README should link project detection."
+    Assert-True -Condition ($generalRule -match "Run project classification") -Message "General rule should require project classification."
+    Assert-True -Condition ($generalRule -match "Do not apply \.NET") -Message "General rule should gate language-specific advice."
+    Assert-True -Condition ($dotnetRule -match "Evidence Gate") -Message ".NET rule should include evidence gate."
+    Assert-True -Condition ($aspnetRule -match "Evidence Gate") -Message "ASP.NET Core rule should include evidence gate."
+    Assert-True -Condition ($repositoryPrompt -match "Project Classification") -Message "Repository discovery output should include project classification."
+
+    foreach ($promptName in $corePrompts) {
+        $prompt = Get-Content -LiteralPath (Join-Path $repoRoot ".continue/prompts/$promptName") -Raw
+        Assert-True -Condition ($prompt -match "docs/project-detection.md") -Message "$promptName should reference project detection doc."
+        Assert-True -Condition ($prompt -match "Do not apply language-specific recommendations") -Message "$promptName should gate language-specific recommendations."
+        Assert-True -Condition ($prompt -match "unconfirmed") -Message "$promptName should prefer unconfirmed over guesses."
+    }
+
+    foreach ($agentText in $agents) {
+        Assert-True -Condition ($agentText -match "Project Detection") -Message "Each agent should include project detection guidance."
+        Assert-True -Condition ($agentText -match "Do not apply language-specific recommendations") -Message "Each agent should gate language-specific recommendations."
+    }
+}
+
 Invoke-PackTest "sample repository factory creates expected fixtures" {
     $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "sample-factory-test-$([guid]::NewGuid())"
 

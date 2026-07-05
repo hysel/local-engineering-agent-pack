@@ -30,3 +30,8 @@ Apply these standards to ASP.NET Core APIs and services.
 - Is the API boundary thin and explicit?
 - Are validation, authorization, and errors handled consistently?
 - Are service lifetimes and middleware order safe?
+## Evidence Gate
+
+Apply this rule only when inspected files or supplied context provide matching .NET evidence, such as `.sln`, `.slnx`, `.csproj`, `.fsproj`, `.vbproj`, `Directory.Build.*`, `packages.config`, `global.json`, `Program.cs`, `Startup.cs`, `appsettings*.json`, or related .NET source files.
+
+If .NET evidence is absent or unreadable, keep recommendations language-neutral and label .NET-specific assumptions as `unconfirmed`.

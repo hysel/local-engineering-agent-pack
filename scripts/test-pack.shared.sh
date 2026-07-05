@@ -443,6 +443,25 @@ test_language_support_doc() {
     grep -q "Milestone 15: Multi-Language Engineering Support" "$REPO_ROOT/ROADMAP.md"
 }
 
+
+test_project_detection_doc() {
+  [ -f "$REPO_ROOT/docs/project-detection.md" ] &&
+    grep -q "Evidence Strength" "$REPO_ROOT/docs/project-detection.md" &&
+    grep -q "Ecosystem Signals" "$REPO_ROOT/docs/project-detection.md" &&
+    grep -q "Python" "$REPO_ROOT/docs/project-detection.md" &&
+    grep -q "JavaScript / TypeScript" "$REPO_ROOT/docs/project-detection.md" &&
+    grep -q "Do not apply .NET-specific guidance" "$REPO_ROOT/docs/project-detection.md" &&
+    grep -q "package metadata is present" "$REPO_ROOT/docs/project-detection.md" &&
+    grep -q "docs/project-detection.md" "$REPO_ROOT/docs/language-support.md" &&
+    grep -q "docs/project-detection.md" "$REPO_ROOT/README.md" &&
+    grep -q "Run project classification" "$REPO_ROOT/.continue/rules/general.md" &&
+    grep -q "Evidence Gate" "$REPO_ROOT/.continue/rules/dotnet.md" &&
+    grep -q "Evidence Gate" "$REPO_ROOT/.continue/rules/aspnetcore.md" &&
+    grep -q "Project Classification" "$REPO_ROOT/.continue/prompts/repository-discovery.md" &&
+    grep -q "docs/project-detection.md" "$REPO_ROOT/.continue/prompts/implementation-plan.md" &&
+    grep -q "Do not apply language-specific recommendations" "$REPO_ROOT/.continue/prompts/code-review.md" &&
+    grep -q "Project Detection" "$REPO_ROOT/.continue/agents/senior-engineer.md"
+}
 test_sample_repository_factory() {
   temp_root="$(mktemp -d)"
   "$REPO_ROOT/scripts/generate-sample-repositories.shared.sh" --output-root "$temp_root" >/tmp/sample-factory.out 2>&1 || return 1
@@ -599,6 +618,7 @@ run_test "sample repository factory validation evidence is sanitized" test_sampl
 run_test "sample repository factory docs define generated fixtures" test_sample_repository_factory_doc
 run_test "agent surface docs define portability boundary" test_agent_surface_options_doc
 run_test "language support docs define staged multi-language boundary" test_language_support_doc
+run_test "project detection docs and guidance are evidence-gated" test_project_detection_doc
 run_test "sample repository factory creates expected fixtures" test_sample_repository_factory
 run_test "prompt quality guardrails require filename fidelity and sourced lifecycle claims" test_prompt_quality_guardrails_require_filename_fidelity
 run_test "tool-use docs define platform-aware approved write behavior" test_tool_use_docs_define_platform_aware_write_behavior

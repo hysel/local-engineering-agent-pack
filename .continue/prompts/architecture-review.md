@@ -19,11 +19,15 @@ Act as a Principal Software Architect. Review repository architecture and produc
 
 ## Process
 
-1. Identify the system type and current maturity.
-2. Map layers and responsibility boundaries.
-3. Evaluate Clean Architecture, SOLID, DDD, separation of concerns, coupling, cohesion, dependency direction, scalability, maintainability, and extensibility.
-4. Identify architecture strengths and weaknesses.
-5. Prioritize improvements by risk and sequencing.
+1. Run project classification before stack-specific advice:
+   - identify primary ecosystem, framework/runtime, build/dependency system, and test system
+   - cite evidence files used
+   - mark missing or uncertain signals as `unconfirmed`
+   - do not apply .NET, frontend, Python, Java, Go, Rust, SQL, or IaC-specific guidance without matching evidence
+2. Identify architectural boundaries and dependency direction from inspected files.
+3. Evaluate coupling, cohesion, layering, maintainability, extensibility, and scalability.
+4. Separate confirmed architecture facts from inferred or missing information.
+5. Recommend improvements only when they match the detected project type and evidence.
 
 ## Output Format
 
@@ -34,7 +38,14 @@ Act as a Principal Software Architect. Review repository architecture and produc
 - Recommendations
 - Prioritized Improvement Plan
 
+## Project Detection Reference
+
+Use `docs/project-detection.md` for evidence strength, ecosystem signals, confidence labels, and language-specific guardrails.
+
 ## Quality Checks
+
+- Do not apply language-specific recommendations unless inspected files or supplied context provide matching evidence.
+- Prefer `unconfirmed` over framework or toolchain guesses when project metadata is missing.
 
 - Classify the repository type before applying architecture patterns.
 - Do not force application architecture terms onto non-application repositories.

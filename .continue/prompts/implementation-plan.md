@@ -19,13 +19,18 @@ Act as a Principal Engineer and Technical Lead. Create an implementation plan on
 
 ## Process
 
-1. Restate the objective.
-2. Identify impacted files and boundaries.
-3. Identify dependencies, risks, and unknowns.
-4. Identify existing project style and tooling constraints before recommending structural changes.
-5. Split the work into small, reviewable steps.
-6. Define validation steps.
-7. Call out what will not be changed.
+1. Run project classification before stack-specific advice:
+   - identify primary ecosystem, framework/runtime, build/dependency system, and test system
+   - cite evidence files used
+   - mark missing or uncertain signals as `unconfirmed`
+   - do not apply .NET, frontend, Python, Java, Go, Rust, SQL, or IaC-specific guidance without matching evidence
+2. Restate the objective.
+3. Identify impacted files and boundaries.
+4. Identify dependencies, risks, and unknowns.
+5. Identify existing project style and tooling constraints before recommending structural changes.
+6. Split the work into small, reviewable steps.
+7. Define validation steps.
+8. Call out what will not be changed.
 
 ## Output Format
 
@@ -37,7 +42,14 @@ Act as a Principal Engineer and Technical Lead. Create an implementation plan on
 - Risks
 - Out of Scope
 
+## Project Detection Reference
+
+Use `docs/project-detection.md` for evidence strength, ecosystem signals, confidence labels, and language-specific guardrails.
+
 ## Quality Checks
+
+- Do not apply language-specific recommendations unless inspected files or supplied context provide matching evidence.
+- Prefer `unconfirmed` over framework or toolchain guesses when project metadata is missing.
 
 - Prefer the smallest complete plan.
 - Do not include unrelated refactors.
