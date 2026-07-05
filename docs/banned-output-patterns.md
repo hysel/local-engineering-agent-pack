@@ -12,6 +12,7 @@ Reject output that:
 
 - Invents repository facts, file paths, test results, package versions, endpoints, or deployment status.
 - Invents, normalizes, or alters project, solution, package, add-in, installer, or configuration filenames instead of using inspected filenames exactly.
+- Combines a basename from one inspected file with an extension from another inspected file.
 - Presents assumptions as confirmed evidence.
 - Makes dated framework, vendor, package, or support-lifecycle claims without source evidence or a current verification step.
 - Ignores explicit "do not modify files", "plan only", or "wait for approval" instructions.
@@ -53,6 +54,7 @@ Reject output that:
 - Assumes `dotnet restore` or `dotnet build` is valid for a legacy project without checking project-system support.
 - Ignores custom MSBuild imports, add-in packaging, native assets, generated files, or runtime loading.
 - Invents exact project, package, add-in, installer, or configuration filenames.
+- Combines an add-in, package, installer, or config filename with a project-file extension.
 - Makes unsupported framework lifecycle or vendor support claims.
 
 Required safe behavior:

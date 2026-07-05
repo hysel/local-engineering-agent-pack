@@ -15,6 +15,7 @@ Prompt output should:
 - Prefer plans and recommendations that preserve existing project constraints.
 - Avoid generic advice when repository context indicates a specialized workflow.
 - Use exact filenames from inspected evidence and label unconfirmed filenames as unknown.
+- Do not combine a basename from one inspected file with an extension from another inspected file.
 - Do not make dated framework, vendor, model, package, or lifecycle/support claims without current evidence or an explicit verification step.
 - Include validation and rollback for risky changes.
 - Avoid leaking private paths, endpoints, secrets, customer names, or raw proprietary code into committed docs.
@@ -41,6 +42,7 @@ The response passes when it:
 - Produces a plan only.
 - Starts with inventory and current-state evidence.
 - Lists exact inspected project, package, and configuration filenames or labels them unconfirmed.
+- Avoids combining add-in, project, package, installer, or configuration filenames into filenames that do not exist in the inspected context.
 - Separates package-management migration from SDK-style project migration.
 - Identifies custom build, packaging, native asset, and runtime loading risks.
 - Avoids framework lifecycle/support claims unless source evidence is supplied or the response requires current-source verification.
@@ -55,6 +57,7 @@ The response fails when it:
 - Includes XML.
 - Includes full or partial project-file rewrites.
 - Invents or alters project, solution, package, add-in, installer, or configuration filenames.
+- Combines a basename from one inspected file with an extension from another file.
 - Makes dated framework, vendor, or package lifecycle/support claims without source evidence.
 - Provides complete `PackageReference` blocks.
 - Recommends deleting `packages.config` before validation.

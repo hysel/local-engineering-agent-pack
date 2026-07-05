@@ -28,6 +28,8 @@ Use this workflow for .NET Framework, desktop, Excel-DNA, Office add-in, install
 - Do not provide a full `<PackageReference>` replacement block unless the user explicitly asks for generated XML.
 - Do not recommend SDK-style conversion unless the user explicitly asks for SDK-style migration.
 - Do not invent or normalize filenames. Use only exact filenames seen in the provided context or tool output. If the project file name is not confirmed, say it is unconfirmed.
+- Do not combine a basename from one inspected file with an extension from another inspected file. For example, never turn an add-in `.dna` filename into a `.csproj` filename.
+- Do not state package, framework, runtime, or vendor compatibility/support status as fact unless the supplied context includes that evidence. Otherwise write "requires current-source verification."
 - Do not treat `packages.config` to `PackageReference` migration as a simple text replacement.
 - Do not recommend deleting `packages.config` until restore, build, package output, runtime loading, and rollback have been validated.
 - Do not assume `dotnet restore` or `dotnet build` is correct for non-SDK-style .NET Framework projects.
@@ -54,12 +56,15 @@ If the requested migration is risky, the correct response is a phased validation
 ## Process
 
 1. Restate the migration goal and confirm whether this is package-management migration only or project-system migration too.
-2. Classify the project style:
+2. Run the filename-fidelity gate:
+   - list exact inspected project, package, and configuration filenames
+   - mark missing expected filenames as unconfirmed
+   - stop and report unconfirmed filenames if the evidence is not sufficient to name a file exactly
+3. Classify the project style:
    - SDK-style or non-SDK-style
    - .NET Framework or modern .NET
    - desktop/add-in/service/library
    - custom MSBuild or packaging targets
-3. List the exact inspected filenames used as evidence. If any expected filename is inferred rather than inspected, label it as unconfirmed.
 4. Inventory migration-sensitive assets:
    - package build assets
    - native assets
@@ -92,6 +97,8 @@ If the requested migration is risky, the correct response is a phased validation
 
 Use the `LegacyDotNetDependencyMigration` template structure.
 
+Start with an `Evidence Files` subsection that lists only exact inspected filenames. Do not continue with migration recommendations if required filenames are unconfirmed.
+
 Do not add sections outside that template unless the user explicitly asks.
 Do not include XML.
 Do not include replacement snippets.
@@ -114,6 +121,7 @@ The plan must include these phases:
 - Preserve project style unless a project-system migration is explicitly requested.
 - Use exact inspected filenames only.
 - Mark missing or unverified filenames, commands, versions, and lifecycle/support status as unknown.
+- Mark compatibility, maintenance, support, lifecycle, and upgrade status as requiring current-source verification when not proven by supplied context.
 - Keep `PackageReference` migration separate from SDK-style conversion.
 - Require validation before cleanup.
 - Identify custom build and packaging risks before editing package references.
