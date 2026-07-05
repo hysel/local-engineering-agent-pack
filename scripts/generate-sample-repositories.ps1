@@ -86,7 +86,7 @@ New-Item -ItemType Directory -Force -Path $outputRootPath | Out-Null
 
 $root = New-SampleRoot "python-api"
 Add-Metadata $root "python-api" "Python" "API-style repository discovery and review validation."
-Write-SampleFile $root "README.md" @"
+Write-SampleFile $root "README.md" @'
 # Python API Sample
 
 Small Python API-style sample used for local agent validation.
@@ -95,7 +95,7 @@ Small Python API-style sample used for local agent validation.
 
 - `python -m pytest`
 - `python -m app.main`
-"@
+'@
 
 Write-SampleFile $root "app/main.py" @'
 from app.settings import Settings

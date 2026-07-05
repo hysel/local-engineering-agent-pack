@@ -76,4 +76,8 @@ Recommended validation flow:
 - Do not mark a language or agent surface validated until model output is reviewed and recorded.
 ## Evidence
 
-Initial script-level validation evidence is recorded in `examples/sample-repository-factory-validation.md`. This evidence covers generation, installation, and runtime context creation for generated samples. It does not replace editor/model Agent validation.
+Initial script-level validation evidence is recorded in `examples/sample-repository-factory-validation.md`. This evidence covers generation, installation, and runtime context creation for generated samples. Focused CLI evidence also records read-only repository-discovery validation against generated Python and TypeScript samples.
+
+The first focused validation found and fixed two fixture-quality issues: generated PowerShell sample README content could leak factory script text when Markdown backticks were used in a double-quoted here-string, and runtime context generation could inherit parent repository git status when samples lived under ignored runtime output. Tests now cover both classes of regression.
+
+This does not replace editor/model Agent validation or approved-write validation.

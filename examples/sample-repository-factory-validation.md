@@ -67,3 +67,69 @@ Do not include private repository names, private paths, private endpoints, usern
 - [x] No raw private source code.
 - [x] No raw transcripts.
 - [x] No customer, employer, or internal project identifiers.
+
+## 2026-07-05 Focused CLI Repository Discovery Validation
+
+### Summary
+
+- Validation type: Focused Continue CLI repository-discovery validation with supplied runtime context
+- Repository categories: Python API sample, TypeScript frontend sample
+- Operating system: Windows
+- Editor surface: Not used for this evidence entry
+- Continue version: CLI path through `npx @continuedev/cli`
+- Model: Local Ollama coding model through ignored local-only config
+- Provider: Ollama-compatible local endpoint, endpoint omitted
+- MCP state: Not used
+- Pack version or commit: `0.2.0` development branch after sample factory and runtime context fixes
+
+### Setup
+
+- Regenerated disposable samples under ignored runtime output.
+- Installed the pack into the generated Python API and TypeScript frontend samples.
+- Regenerated runtime context files for both samples.
+- Ran repository discovery through Continue CLI in read-only mode using supplied context only.
+- Saved raw CLI outputs only under ignored runtime output.
+
+### Results
+
+| Sample | CLI exit | Final text produced | Exact file signals | Notes |
+| --- | --- | --- | --- | --- |
+| `python-api` | Passed | Passed | `README.md`, `app/main.py`, `app/settings.py`, `tests/test_main.py` | Output identified the sample and key files. It still lightly inferred standard Python dependency context, so this is read-only discovery evidence, not dependency-analysis proof. |
+| `typescript-frontend` | Passed | Passed | `package.json`, `README.md`, `tsconfig.json`, `src/App.tsx`, `src/app.test.ts` | After adding project metadata excerpts to runtime context, output correctly identified Vite, Vitest, scripts, and dependencies. It still used placeholder-style language for the source file, so deeper workflow validation remains pending. |
+
+### Findings
+
+1. The PowerShell sample factory had a README generation bug: Markdown command backticks inside a double-quoted here-string caused factory script text to leak into the generated Python sample README.
+2. The factory was fixed by using a single-quoted here-string for the Python README.
+3. Regression checks now assert generated sample README and source files do not contain factory script text or here-string markers.
+4. Runtime context generation previously inherited parent repository git status when a target sample lived under this repository's ignored runtime folder.
+5. Runtime context generation now records parent-repository containment explicitly and falls back to target-local file enumeration instead of parent git metadata.
+6. Runtime context generation now includes common multi-language project metadata excerpts such as `package.json`, improving TypeScript grounding.
+
+### Tool Validation
+
+- File listing worked: Not applicable; CLI was instructed to use supplied context only.
+- File content reading worked: Runtime context generation included README and project metadata excerpts.
+- Current-folder path resolution worked: Not applicable; no editor Agent write was performed.
+- Apply target matched intended file: Not applicable; no approved write was performed.
+- External shell or git verification passed: Yes, script exit codes and regenerated fixture checks passed before evidence was recorded.
+- Failure signals: No raw tool-call-only output observed in the focused CLI path. Minor output-quality caveats remain as noted above.
+
+### Pack Follow-Up
+
+- Prompt updates needed: Keep evidence-fidelity guardrails for language/framework claims.
+- Rule updates needed: None from this validation pass.
+- Documentation updates needed: Record that generated samples are suitable for focused read-only CLI validation but do not replace editor approved-write validation.
+- Script or test updates needed: Completed for the factory escaping bug, generated fixture leakage checks, parent git-status isolation, and multi-language metadata excerpts.
+- Remaining validation: Run implementation-planning and code-review workflows against generated Python and TypeScript samples before marking multi-language workflow validation complete.
+
+### Sanitization Checklist
+
+- [x] No private repository names.
+- [x] No private local paths.
+- [x] No private endpoints, IP addresses, or hostnames.
+- [x] No usernames.
+- [x] No tokens or secrets.
+- [x] No raw private source code.
+- [x] No raw transcripts.
+- [x] No customer, employer, or internal project identifiers.

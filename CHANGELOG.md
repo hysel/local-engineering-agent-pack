@@ -13,9 +13,19 @@ This project follows a simple changelog format:
 
 ### Added
 
+- Added focused Continue CLI repository-discovery validation evidence for generated Python and TypeScript samples after improving runtime context fidelity.
 - Added sample repository factory documentation and scripts for disposable local validation repositories.
 - Added sanitized sample repository factory validation evidence for generated Python and TypeScript samples.
 - Added roadmap and TODO tracking for sample repository factory, agent-surface compatibility validation, language rule packs, installer profiles, evidence catalogs, and release packaging.
+
+### Changed
+
+- Improved runtime context generation so nested target folders do not inherit parent repository git status and common multi-language project metadata is included in context excerpts.
+
+### Fixed
+
+- Fixed PowerShell sample repository factory README generation so Markdown command examples do not leak factory script text into generated samples.
+- Added regression checks that generated sample README and source files do not contain factory script or here-string markers.
 
 ## 0.2.0 - 2026-07-05
 
