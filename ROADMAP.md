@@ -425,7 +425,7 @@ Scope:
 - Keep shared engineering standards reusable across languages: Git, testing, security, logging, performance, architecture, documentation, and rollback planning.
 - Prevent .NET-specific recommendations from being applied to non-.NET repositories.
 - Add generated local sample repositories for planned language ecosystems when real repositories are not available.
-- Validate repository discovery, implementation planning, code review, and runtime output verification against at least Python and TypeScript samples before promoting language support. A generated-sample workflow validation attempt is recorded as blocked until the local Ollama API responds.
+- Validate repository discovery, implementation planning, code review, and runtime output verification against at least Python and TypeScript samples before promoting language support. Generated-sample workflow validation now runs against Python and TypeScript, with filename-drift guardrail failures recorded for documentation and release-style workflows.
 - Keep README, docs, roadmap, TODO, changelog, and wiki clear that language support is staged and evidence-based.
 
 Exit criteria:
@@ -479,7 +479,7 @@ Scope:
 - Add optional rule files for Python and TypeScript first, then Java, Go, Rust, SQL, and Infrastructure as Code. Python and TypeScript rule packs are added for current scope.
 - Define when each rule pack should apply based on repository evidence. Done for Python and TypeScript current scope.
 - Add prompt guidance that keeps recommendations language-neutral when evidence is incomplete.
-- Validate each rule pack against generated samples before promoting it. Static generated-sample validation is recorded for Python and TypeScript in `examples/language-rule-pack-validation.md`; editor/model workflow validation remains pending.
+- Validate each rule pack against generated samples before promoting it. Static generated-sample validation is recorded for Python and TypeScript in `examples/language-rule-pack-validation.md`; model-backed workflow validation is recorded in `examples/multi-language-workflow-validation.md` with follow-up guardrail work pending.
 
 Exit criteria:
 

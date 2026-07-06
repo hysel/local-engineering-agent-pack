@@ -476,9 +476,9 @@ test_optional_language_rule_packs() {
     grep -q "package.json" "$REPO_ROOT/examples/language-rule-pack-validation.md" &&
     grep -q "does not prove editor/model behavior" "$REPO_ROOT/examples/language-rule-pack-validation.md" &&
     grep -q "Multi-Language Workflow Validation Evidence" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
-    grep -q "LOCAL_OLLAMA_UNREACHABLE" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
-    grep -q "CONTINUE_CLI_REQUEST_TIMEOUT" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
-    grep -q "Blocked until local model server responds" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
+    grep -q "Local Ollama API preflight | Passed" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
+    grep -q "Repository discovery | Passed verification" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
+    grep -q "FILENAME_NOT_IN_CONTEXT" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
     ! grep -q "rule-packs" "$REPO_ROOT/.continue/config.yaml"
 }
 test_project_detection_doc() {
