@@ -588,9 +588,9 @@ Invoke-PackTest "optional language rule packs are evidence-gated and not globall
     Assert-True -Condition ($languageEvidence -match "package\.json") -Message "Evidence should include TypeScript project metadata signal."
     Assert-True -Condition ($languageEvidence -match "does not prove editor/model behavior") -Message "Evidence should avoid overstating editor/model validation."
     Assert-True -Condition ($workflowEvidence -match "Multi-Language Workflow Validation Evidence") -Message "Workflow evidence should have expected title."
-    Assert-True -Condition ($workflowEvidence -match "LOCAL_OLLAMA_UNREACHABLE") -Message "Workflow evidence should record local Ollama reachability failure."
-    Assert-True -Condition ($workflowEvidence -match "CONTINUE_CLI_REQUEST_TIMEOUT") -Message "Workflow evidence should record Continue CLI timeout failure."
-    Assert-True -Condition ($workflowEvidence -match "Blocked until local model server responds") -Message "Workflow evidence should avoid claiming workflow validation passed."
+    Assert-True -Condition ($workflowEvidence -match "Local Ollama API preflight \| Passed") -Message "Workflow evidence should record successful local Ollama preflight after rerun."
+    Assert-True -Condition ($workflowEvidence -match "Repository discovery \| Passed verification") -Message "Workflow evidence should record verified repository discovery."
+    Assert-True -Condition ($workflowEvidence -match "FILENAME_NOT_IN_CONTEXT") -Message "Workflow evidence should record filename-drift guardrail failures."
     Assert-True -Condition ($config -notmatch "rule-packs") -Message "Default Continue config should not load optional language rule packs."
 }
 Invoke-PackTest "project detection docs and guidance are evidence-gated" {

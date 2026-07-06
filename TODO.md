@@ -258,9 +258,9 @@
 - [x] Add language-specific rules or guidance without applying them globally by default for Python and TypeScript.
 - [ ] Validate repository discovery, implementation planning, and code review against Python and JavaScript/TypeScript samples.
 - [x] Record focused Continue CLI repository-discovery validation for generated Python and TypeScript samples.
-- [x] Record blocked generated multi-language workflow validation attempt when local Ollama API was unreachable.
-- [ ] Record sanitized multi-language validation evidence for implementation planning and code review.
-- [ ] Prevent .NET-specific recommendations from being applied to non-.NET repositories.
+- [x] Record generated multi-language workflow validation once local Ollama API is reachable.
+- [x] Record sanitized multi-language validation evidence for implementation planning and code review.
+- [ ] Strengthen filename-drift guardrails for documentation, AI framework self-review, and release-readiness workflows.
 
 ## Milestone 16: Sample Repository Factory
 
@@ -272,7 +272,7 @@
 - [x] Add regression coverage that generated sample files do not leak factory script text or here-string markers.
 - [x] Record initial script-level validation evidence for generated Python and TypeScript samples.
 - [x] Use generated samples for focused read-only Continue CLI repository-discovery validation evidence.
-- [ ] Use generated samples for editor/model-based multi-language validation evidence.
+- [x] Use generated samples for model-backed multi-language validation evidence.
 - [ ] Improve runtime context generation for non-.NET project metadata as new ecosystems are added.
 
 ## Milestone 17: Agent Surface Compatibility Validation
