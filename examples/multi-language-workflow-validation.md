@@ -103,6 +103,40 @@ Do not include private repository names, private paths, private endpoints, usern
 - Keep `qwen3.5:9b` as the write-safe starter default until a candidate passes manual editor Apply validation.
 - Consider `Qwen3-Coder-Next:latest` and `devstral-small-2:latest` for plan/review candidate testing.
 - Strengthen `ai-framework-self-review` and `release-readiness` prompts against filename drift.
+
+## 2026-07-06 Missing Model Existence And API Screening
+
+### Summary
+
+- Validation type: Missing model existence and API-level screening
+- Provider: Ollama-compatible local endpoint, endpoint omitted
+- Pull behavior: Missing names were pulled when available; non-existent or copied names were filtered out
+- Raw output location: ignored runtime output only
+
+### Existence Results
+
+| Model Name | Result | Action |
+| --- | --- | --- |
+| `qwen3-coder-localpilot:latest` | Not installed and not pullable by that name | Removed from active test list. |
+| `architect:latest` | Not installed and not pullable by that name | Removed from active test list. |
+| `coder:latest` | Not installed and not pullable by that name | Removed from active test list. |
+| `llama3.1:8b-instruct-q5_K_M` | Installed | Tested. |
+| `sammcj/glm-4-32b-0414:q6_k` | Installed | Tested. |
+| `deepseek-r1:14b` | Installed | Tested. |
+
+### API-Level Screening Results
+
+| Model | Result | Failure Signal | Notes |
+| --- | --- | --- | --- |
+| `llama3.1:8b-instruct-q5_K_M` | Candidate | `none` | Passed structured tool-call and exact-content checks. Requires manual Continue editor Apply validation before write-safe use. |
+| `sammcj/glm-4-32b-0414:q6_k` | Failed | `TOOL_CALL_FAILED` | Did not produce a valid structured tool call and returned unusable exact-content output. |
+| `deepseek-r1:14b` | Failed | `TOOL_CALL_FAILED` | Did not produce a valid structured tool call or exact-content output. |
+
+### Interpretation
+
+- `llama3.1:8b-instruct-q5_K_M` is now an API-level candidate, but it still needs manual Continue editor validation.
+- GLM and DeepSeek remain poor fits for this pack's tool-backed Agent workflow in the current local setup.
+- Copied/custom local names should not remain in candidate lists unless they are installed locally or can be pulled by that exact name.
 ### Sanitization Checklist
 
 - [x] No private repository names.

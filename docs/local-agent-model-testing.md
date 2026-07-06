@@ -104,6 +104,17 @@ Recent automated API-level screening and Continue CLI prompt validation found tw
 | `devstral-small-2:latest` | Passed API-level tool/exact-content screening and completed all generated Python sample CLI workflows; 10 of 12 workflow outputs passed verification. | Try manual Continue editor Apply validation before granting write-safe status. |
 
 Both candidates failed verification only on filename-drift guardrails in non-code workflows. That is a prompt-quality follow-up, not proof that either model is write-safe.
+
+Additional missing-model screening found:
+
+| Model | Automated Result | Next Step |
+| --- | --- | --- |
+| `llama3.1:8b-instruct-q5_K_M` | Passed API-level structured tool-call and exact-content screening. | Treat as an API-level candidate only; run manual Continue editor Apply validation before write-safe use. |
+| `sammcj/glm-4-32b-0414:q6_k` | Failed structured tool-call validation. | Do not use for tool-backed Agent workflows unless settings or model variant changes. |
+| `deepseek-r1:14b` | Failed structured tool-call validation. | Do not use for tool-backed Agent workflows unless settings or model variant changes. |
+| `qwen3-coder-localpilot:latest` | Not installed and not pullable by that exact name. | Remove from active candidate lists unless a valid local tag is created. |
+| `architect:latest` | Not installed and not pullable by that exact name. | Remove from active candidate lists unless a valid local tag is created. |
+| `coder:latest` | Not installed and not pullable by that exact name. | Remove from active candidate lists unless a valid local tag is created. |
 ## Install A Validated Model Into Local Config
 
 After a model passes validation, install it into one local-only profile. This
