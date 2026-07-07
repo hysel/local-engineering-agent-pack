@@ -165,6 +165,60 @@ Invoke-PackTest "validate-pack fails when required safety doc is missing" {
     }
 }
 
+Invoke-PackTest "evidence catalog has valid schema and sanitized links" {
+    $catalogPath = Join-Path $repoRoot "config/evidence-catalog.tsv"
+    $docPath = Join-Path $repoRoot "docs/evidence-catalog.md"
+    $allowedStatuses = @(
+        "candidate-only",
+        "plan-review-candidate",
+        "read-only-tool-validated",
+        "read-only-cli-validated",
+        "approved-write-ready",
+        "static-validated",
+        "validated-by-tests",
+        "partial-pass"
+    )
+
+    Assert-True -Condition (Test-Path -LiteralPath $catalogPath) -Message "Evidence catalog should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $docPath) -Message "Evidence catalog docs should exist."
+
+    $lines = Get-Content -LiteralPath $catalogPath | Where-Object { $_.Trim().Length -gt 0 }
+    Assert-True -Condition ($lines.Count -gt 1) -Message "Evidence catalog should include rows."
+    Assert-Equal -Actual $lines[0] -Expected "area`tsubject`tsurface`tos`tmodel`tstatus`tevidence`tnotes" -Message "Evidence catalog header changed."
+
+    $seenApprovedWrite = $false
+    $seenCandidateOnly = $false
+    $seenReadOnly = $false
+
+    foreach ($line in $lines[1..($lines.Count - 1)]) {
+        $parts = $line -split "`t", 8
+        Assert-Equal -Actual $parts.Count -Expected 8 -Message "Evidence catalog row should have eight tab-delimited columns: $line"
+
+        foreach ($part in $parts) {
+            Assert-True -Condition ($part.Trim().Length -gt 0) -Message "Evidence catalog row contains an empty field: $line"
+        }
+
+        $status = $parts[5]
+        $evidence = $parts[6]
+        Assert-True -Condition ($status -in $allowedStatuses) -Message "Evidence catalog row has unsupported status: $line"
+        Assert-True -Condition ($evidence -notmatch "^[A-Za-z]:|^/|\\") -Message "Evidence path should be repository-relative: $line"
+        Assert-True -Condition ($evidence -notmatch "\.\.") -Message "Evidence path should not traverse directories: $line"
+        Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot $evidence)) -Message "Evidence path should exist: $evidence"
+        Assert-True -Condition ($line -notmatch "192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|localhost|itama|Users\\|OneDrive|customer|token|secret") -Message "Evidence catalog row should stay sanitized: $line"
+
+        if ($status -eq "approved-write-ready") { $seenApprovedWrite = $true }
+        if ($status -eq "candidate-only") { $seenCandidateOnly = $true }
+        if ($status -eq "read-only-tool-validated") { $seenReadOnly = $true }
+    }
+
+    Assert-True -Condition $seenApprovedWrite -Message "Evidence catalog should include approved-write-ready evidence."
+    Assert-True -Condition $seenCandidateOnly -Message "Evidence catalog should include candidate-only evidence."
+    Assert-True -Condition $seenReadOnly -Message "Evidence catalog should include read-only tool evidence."
+
+    $doc = Get-Content -LiteralPath $docPath -Raw
+    Assert-True -Condition ($doc -match "config/evidence-catalog\.tsv") -Message "Evidence catalog docs should reference the TSV file."
+    Assert-True -Condition ($doc -match "approved-write-ready") -Message "Evidence catalog docs should define approved-write-ready."
+}
 Invoke-PackTest "model recommendation catalog has valid schema" {
     $catalogPath = Join-Path $repoRoot "config/model-recommendations.tsv"
     $rows = Get-Content -LiteralPath $catalogPath | Where-Object { $_ -and -not $_.StartsWith("#") }

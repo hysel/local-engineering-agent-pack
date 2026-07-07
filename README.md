@@ -35,6 +35,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Detect project type before giving advice | `docs/project-detection.md` |
 | Generate local sample repositories | `docs/sample-repository-factory.md` |
 | Validate this pack | `Quick Validation` |
+| Review validation evidence | `docs/evidence-catalog.md` and `config/evidence-catalog.tsv` |
 | Fix setup problems | `Common Problems` and `docs/troubleshooting.md` |
 
 ## Quick Start
@@ -702,7 +703,7 @@ macOS:
 ./scripts/get-local-model-profile.macos.sh
 ```
 
-For detailed setup, script usage, model selection, troubleshooting, validation, and tool-use safety instructions, start in the `docs/` folder.
+For detailed setup, script usage, model selection, troubleshooting, validation, evidence catalog, and tool-use safety instructions, start in the `docs/` folder.
 
 Example Ollama setup:
 
