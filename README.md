@@ -335,13 +335,23 @@ Windows PowerShell:
 .\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project"
 ```
 
+Choose an install profile when you know how the pack will be used:
+
+```powershell
+# Review and planning only; no edit/apply roles.
+.\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project" -InstallProfile read-only
+
+# Approved-write workflow; creates scoped WRITE SAFE, PLAN ONLY, and DEEP REVIEW lanes.
+.\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project" -InstallProfile approved-write
+```
+
 Create a local-only config with automatic model selection:
 
 ```powershell
 .\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project" -AutoModelConfig
 ```
 
-Create a local-only config with safer model lanes:
+Create a local-only config with safer model lanes directly when you prefer the older explicit flag:
 
 ```powershell
 .\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project" -ModelLanes
@@ -402,6 +412,16 @@ Linux:
 ./scripts/install-continue-pack.linux.sh --target-repo /path/to/your-project
 ```
 
+Choose an install profile when you know how the pack will be used:
+
+```bash
+# Review and planning only; no edit/apply roles.
+./scripts/install-continue-pack.linux.sh --target-repo /path/to/your-project --install-profile read-only
+
+# Approved-write workflow; creates scoped WRITE SAFE, PLAN ONLY, and DEEP REVIEW lanes.
+./scripts/install-continue-pack.linux.sh --target-repo /path/to/your-project --install-profile approved-write
+```
+
 Create a local-only config with automatic model selection:
 
 ```bash
@@ -435,6 +455,16 @@ macOS:
 
 ```bash
 ./scripts/install-continue-pack.macos.sh --target-repo /path/to/your-project
+```
+
+Choose an install profile when you know how the pack will be used:
+
+```bash
+# Review and planning only; no edit/apply roles.
+./scripts/install-continue-pack.macos.sh --target-repo /path/to/your-project --install-profile read-only
+
+# Approved-write workflow; creates scoped WRITE SAFE, PLAN ONLY, and DEEP REVIEW lanes.
+./scripts/install-continue-pack.macos.sh --target-repo /path/to/your-project --install-profile approved-write
 ```
 
 Create a local-only config with automatic model selection:
@@ -473,6 +503,8 @@ The installer:
 - Backs up an existing target `.continue` folder before replacing it.
 - Validates that copied config file references resolve.
 - Can create `.continue/config.local.yaml` with the model recommended by the hardware profile helper.
+- Supports install profiles: `default`, `read-only`, and `approved-write`.
+- Can create `.continue/config.local.yaml` with a read-only review profile that omits edit/apply roles.
 - Can create `.continue/config.local.yaml` with three Agent model profiles: WRITE SAFE, PLAN ONLY, and DEEP REVIEW. By default, all three use the simple-hardware starter model, plus the separate embedding model.
 - Can install a selected validated model into one local-only profile without changing committed shared config.
 - Can update the global Continue config, with a backup, when an editor does not load project-local config files.

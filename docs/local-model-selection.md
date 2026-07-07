@@ -213,6 +213,17 @@ macOS:
 ./scripts/install-continue-pack.macos.sh --target-repo /path/to/your-project --model-lanes
 ```
 
+## Install Profiles
+
+Use installer profiles when you know the intended workflow and do not want to hand-edit model roles:
+
+```powershell
+.\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project" -InstallProfile read-only
+.\scripts\install-continue-pack.ps1 -TargetRepo "C:\path\to\your-project" -InstallProfile approved-write
+```
+
+`read-only` creates a local config without edit/apply roles. `approved-write` creates the scoped WRITE SAFE, PLAN ONLY, and DEEP REVIEW model lanes. The older `-ModelLanes` flag remains available for direct use.
+
 If your editor uses the global Continue config, combine model lanes with global
 config generation and pass the endpoint only at install time:
 

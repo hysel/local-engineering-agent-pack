@@ -958,6 +958,60 @@ Invoke-PackTest "install script auto model config dry run is explicit" {
     }
 }
 
+Invoke-PackTest "install script read-only profile omits edit roles" {
+    $tempRepo = Join-Path ([System.IO.Path]::GetTempPath()) "continue-install-read-only-profile-test-$([guid]::NewGuid())"
+    $globalConfigPath = Join-Path $tempRepo "global-config.yaml"
+
+    try {
+        New-Item -ItemType Directory -Force -Path $tempRepo | Out-Null
+
+        $result = Invoke-CommandCapture `
+            -FilePath (Join-Path $repoRoot "scripts/install-continue-pack.ps1") `
+            -Arguments @("-TargetRepo", $tempRepo, "-InstallProfile", "read-only", "-GlobalConfig", "-GlobalConfigPath", $globalConfigPath)
+
+        Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "Install with read-only profile should succeed."
+
+        $localConfigPath = Join-Path $tempRepo ".continue/config.local.yaml"
+        Assert-True -Condition (Test-Path -LiteralPath $localConfigPath) -Message "Read-only profile should generate local config."
+        Assert-True -Condition (Test-Path -LiteralPath $globalConfigPath) -Message "Read-only profile global config should be written."
+
+        $localConfig = Get-Content -LiteralPath $localConfigPath -Raw
+        $globalConfig = Get-Content -LiteralPath $globalConfigPath -Raw
+
+        Assert-True -Condition ($localConfig -match "READ ONLY - qwen3\.5:9b") -Message "Read-only profile should include a read-only model lane."
+        Assert-True -Condition ($localConfig -match "Ollama Nomic Embed") -Message "Read-only profile should keep embedding model."
+        Assert-True -Condition ($localConfig -notmatch "- edit") -Message "Read-only profile should not include edit role."
+        Assert-True -Condition ($localConfig -notmatch "- apply") -Message "Read-only profile should not include apply role."
+        Assert-True -Condition ($globalConfig -match "READ ONLY - qwen3\.5:9b") -Message "Global config should use read-only profile when present."
+        Assert-True -Condition ($globalConfig -notmatch "- edit") -Message "Global read-only config should not include edit role."
+    } finally {
+        Remove-Item -LiteralPath $tempRepo -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+Invoke-PackTest "install script approved-write profile maps to model lanes" {
+    $tempRepo = Join-Path ([System.IO.Path]::GetTempPath()) "continue-install-approved-write-profile-test-$([guid]::NewGuid())"
+
+    try {
+        New-Item -ItemType Directory -Force -Path $tempRepo | Out-Null
+
+        $result = Invoke-CommandCapture `
+            -FilePath (Join-Path $repoRoot "scripts/install-continue-pack.ps1") `
+            -Arguments @("-TargetRepo", $tempRepo, "-InstallProfile", "approved-write")
+
+        Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "Install with approved-write profile should succeed."
+
+        $localConfigPath = Join-Path $tempRepo ".continue/config.local.yaml"
+        Assert-True -Condition (Test-Path -LiteralPath $localConfigPath) -Message "Approved-write profile should generate model lane config."
+
+        $localConfig = Get-Content -LiteralPath $localConfigPath -Raw
+        Assert-True -Condition ($localConfig -match "1 - WRITE SAFE - qwen3\.5:9b") -Message "Approved-write profile should include WRITE SAFE lane."
+        Assert-True -Condition ($localConfig -match '(?s)1 - WRITE SAFE - qwen3\.5:9b.*roles:\s*\r?\n\s*- chat\s*\r?\n\s*- edit\s*\r?\n\s*- apply') -Message "Approved-write WRITE SAFE lane should include chat/edit/apply."
+        Assert-True -Condition ($localConfig -notmatch '(?s)2 - PLAN ONLY - qwen3\.5:9b.*roles:.*- edit') -Message "Approved-write PLAN ONLY lane should stay read-only."
+    } finally {
+        Remove-Item -LiteralPath $tempRepo -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
 Invoke-PackTest "install script model lanes generate scoped roles" {
     $tempRepo = Join-Path ([System.IO.Path]::GetTempPath()) "continue-install-model-lanes-test-$([guid]::NewGuid())"
     $globalConfigPath = Join-Path $tempRepo "global-config.yaml"

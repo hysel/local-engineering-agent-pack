@@ -131,6 +131,42 @@ test_install_auto_model_dry_run() {
   [ ! -e "$temp_repo/.continue" ]
 }
 
+test_install_read_only_profile() {
+  temp_repo="$(mktemp -d)"
+  global_config="$temp_repo/global-config.yaml"
+  "$REPO_ROOT/scripts/install-continue-pack.shared.sh" --target-repo "$temp_repo" --install-profile read-only --global-config --global-config-path "$global_config" >/tmp/continue-install-read-only-profile.out 2>&1 || return 1
+  local_config="$temp_repo/.continue/config.local.yaml"
+  [ -f "$local_config" ] || return 1
+  [ -f "$global_config" ] || return 1
+  grep -q "READ ONLY - qwen3.5:9b" "$local_config" &&
+    grep -q "Ollama Nomic Embed" "$local_config" &&
+    ! grep -q -- "- edit" "$local_config" &&
+    ! grep -q -- "- apply" "$local_config" &&
+    grep -q "READ ONLY - qwen3.5:9b" "$global_config" &&
+    ! grep -q -- "- edit" "$global_config"
+}
+
+test_install_approved_write_profile() {
+  temp_repo="$(mktemp -d)"
+  "$REPO_ROOT/scripts/install-continue-pack.shared.sh" --target-repo "$temp_repo" --install-profile approved-write >/tmp/continue-install-approved-write-profile.out 2>&1 || return 1
+  local_config="$temp_repo/.continue/config.local.yaml"
+  [ -f "$local_config" ] || return 1
+  grep -q "1 - WRITE SAFE - qwen3.5:9b" "$local_config" &&
+    grep -q "2 - PLAN ONLY - qwen3.5:9b" "$local_config" &&
+    awk '
+      /^  - name: / {
+        current = substr($0, 11)
+      }
+      current == "1 - WRITE SAFE - qwen3.5:9b" && /- edit/ { write_edit = 1 }
+      current == "1 - WRITE SAFE - qwen3.5:9b" && /- apply/ { write_apply = 1 }
+      current == "2 - PLAN ONLY - qwen3.5:9b" && /- edit|- apply/ { plan_bad = 1 }
+      END {
+        if (!write_edit || !write_apply || plan_bad) {
+          exit 1
+        }
+      }
+    ' "$local_config"
+}
 test_install_model_lanes() {
   temp_repo="$(mktemp -d)"
   global_config="$temp_repo/global-config.yaml"
@@ -640,6 +676,8 @@ run_test "Linux/macOS user-facing scripts do not require PowerShell" test_linux_
 run_test "runtime context generation captures useful files and excludes build output" test_runtime_context_generation
 run_test "install script dry run does not modify target repository" test_install_dry_run
 run_test "install script auto model config dry run is explicit" test_install_auto_model_dry_run
+run_test "install script read-only profile omits edit roles" test_install_read_only_profile
+run_test "install script approved-write profile maps to model lanes" test_install_approved_write_profile
 run_test "install script model lanes generate scoped roles" test_install_model_lanes
 run_test "validated model installer updates local-only config" test_install_validated_model
 run_test "validated model installer dry run is local only" test_install_validated_model_dry_run

@@ -27,7 +27,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 16: Sample Repository Factory | In Progress | Generate disposable local sample repositories for language, agent-surface, and runtime validation without needing private repositories. |
 | Milestone 17: Agent Surface Compatibility Validation | Planned | Convert candidate agent surfaces into evidence-backed compatibility results. |
 | Milestone 18: Language Rule Packs | In Progress | Optional Python and TypeScript rule packs are added as evidence-gated supplemental guidance with static generated-sample validation recorded; editor/model workflow validation and additional ecosystems remain pending. |
-| Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging | Planned | Generate surface/profile-specific installs, collect sanitized compatibility evidence, and package releases for easier adoption. |
+| Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging | In Progress | Installer profiles now cover default, read-only, and approved-write Continue workflows; evidence catalog and release packaging remain planned. |
 | Milestone 20: Hardware-Aware Model And Config Automation | Planned | Convert hardware profile data into model recommendations, generated local agent configs, and a future easy UI for running setup and validation workflows. |
 
 ## Milestone 1: Minimum Usable Pack
@@ -493,7 +493,7 @@ Goal: Make adoption easier as the pack grows across surfaces, languages, and val
 
 Scope:
 
-- Add installer profiles for Continue, read-only review, approved-write workflows, and future validated agent surfaces.
+- Add installer profiles for Continue, read-only review, approved-write workflows, and future validated agent surfaces. Default, read-only, and approved-write Continue profiles are implemented for current scope.
 - Add language-focused install/profile options after language packs are validated.
 - Create a sanitized evidence catalog for model, OS, editor, agent surface, language, and write-readiness results.
 - Improve release packaging with GitHub release notes, downloadable archives, checksums, and install command examples.
