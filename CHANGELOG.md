@@ -13,6 +13,7 @@ This project follows a simple changelog format:
 
 ### Added
 
+- Added a sanitized evidence catalog for model, editor surface, language, sample repository, installer profile, and workflow validation status.
 - Added installer profiles for default, read-only, and approved-write Continue workflows.
 - Added an opt-in Git pre-push hook installer so pack validation catches shell executable-bit regressions before GitHub Actions.
 - Added sanitized missing-model existence and API-level screening evidence, including `llama3.1:8b-instruct-q5_K_M` as an API-level candidate.
