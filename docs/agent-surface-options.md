@@ -23,7 +23,7 @@ This matrix is a support boundary, not a popularity ranking. A surface can be a 
 | Surface | Surface type | Current validation level | Current pack support | Approved-write position | Notes |
 | --- | --- | --- | --- | --- | --- |
 | Continue | VS Code-compatible extension, VSCodium extension, and CLI fallback | Approved-write ready for the validated local setup | Supported first path | Allowed only after the read-only, read-content, current-folder, and scoped write smoke tests pass in the user's actual setup | Existing config, install scripts, shared asset mode, validation docs, model testing, and approved-write guidance target Continue today. |
-| Cline | VS Code-compatible editor agent | Candidate | Not packaged yet | Blocked | Needs read-only repository discovery, prompt/rule packaging review, model/tool validation, and external changed-file verification. |
+| Cline | VS Code-compatible editor agent | Candidate | Read-only validation guide and evidence template available | Blocked | Use `docs/cline-readonly-validation.md` and `examples/cline-readonly-validation.md`; initial generated-sample run failed tool execution, so promotion remains blocked. |
 | Aider | Git-aware CLI coding assistant | Candidate | Not packaged yet | Blocked | Likely needs CLI-specific prompt bundles and a patch/diff workflow rather than Continue-style config. |
 | Kilo Code | VS Code-compatible editor agent | Candidate | Not packaged yet | Blocked | Needs config loading, tool behavior, approval flow, and write-safety validation before recommendation. |
 | OpenCode | Terminal or IDE-oriented coding agent | Candidate | Not packaged yet | Blocked | Needs repository discovery, local model/tool behavior, and deterministic output verification against generated samples. |
@@ -72,7 +72,7 @@ Every surface validation record should capture:
 
 ## Recommended Next Evaluation
 
-Start with one non-Continue surface in read-only mode.
+Start with one non-Continue surface in read-only mode. The first documented path is Cline read-only validation in `docs/cline-readonly-validation.md`.
 
 Suggested order:
 

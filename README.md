@@ -30,6 +30,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Validate this pack across repository types | `docs/multi-repository-validation.md` |
 | Verify runtime model output | `docs/runtime-output-verification.md` |
 | Compare other open-source agent surfaces | `docs/agent-surface-options.md` |
+| Validate Cline read-only behavior | `docs/cline-readonly-validation.md` |
 | Track multi-language support | `docs/language-support.md` |
 | Use optional language rule packs | `docs/language-rule-packs.md` |
 | Review language rule-pack evidence | `examples/language-rule-pack-validation.md` |
@@ -801,6 +802,7 @@ Runtime status:
 - `examples/sonarqube-review.md`
 - `examples/editor-surface-validation.md`
 - `examples/model-tool-use-validation.md`
+- `examples/cline-readonly-validation.md`
 - `examples/multi-repository-validation.md`
 - `examples/sample-repository-factory-validation.md`
 - `examples/fixtures/repository-context.md`
@@ -829,6 +831,8 @@ Runtime status:
 - `docs/online-model-discovery.md`
 - `docs/multi-repository-validation.md`
 - `docs/runtime-output-verification.md`
+- `docs/agent-surface-options.md`
+- `docs/cline-readonly-validation.md`
 - `docs/model-tool-use-validation.md`
 - `docs/local-model-reliability.md`
 - `docs/banned-output-patterns.md`

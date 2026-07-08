@@ -13,6 +13,8 @@ This project follows a simple changelog format:
 
 ### Added
 
+- Added sanitized Cline generated-sample failure evidence showing candidate-only status after tool execution did not complete.
+- Added a Cline read-only validation guide and sanitized evidence template for the first non-Continue surface validation track.
 - Added an evidence-gated agent-surface compatibility matrix for Continue, Cline, Aider, Kilo Code, OpenCode, OpenHands, and Roo Code.
 - Added centralized shared-assets installer mode so global Continue configs can point at one managed local prompts/rules/docs/templates folder across multiple target repositories.
 - Added deterministic filename-fidelity fallback artifacts for runtime validation workflows that fail with `FILENAME_NOT_IN_CONTEXT`.

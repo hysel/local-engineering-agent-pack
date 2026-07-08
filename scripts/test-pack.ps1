@@ -616,6 +616,38 @@ Invoke-PackTest "agent surface docs define portability boundary" {
 }
 
 
+Invoke-PackTest "Cline read-only validation docs define candidate workflow" {
+    $docPath = Join-Path $repoRoot "docs/cline-readonly-validation.md"
+    $evidencePath = Join-Path $repoRoot "examples/cline-readonly-validation.md"
+    $readmePath = Join-Path $repoRoot "README.md"
+    $catalogPath = Join-Path $repoRoot "config/evidence-catalog.tsv"
+    $todoPath = Join-Path $repoRoot "TODO.md"
+    $roadmapPath = Join-Path $repoRoot "ROADMAP.md"
+
+    Assert-True -Condition (Test-Path -LiteralPath $docPath) -Message "Cline read-only validation doc should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $evidencePath) -Message "Cline read-only evidence template should exist."
+
+    $doc = Get-Content -LiteralPath $docPath -Raw
+    $evidence = Get-Content -LiteralPath $evidencePath -Raw
+    $readme = Get-Content -LiteralPath $readmePath -Raw
+    $catalog = Get-Content -LiteralPath $catalogPath -Raw
+    $todo = Get-Content -LiteralPath $todoPath -Raw
+    $roadmap = Get-Content -LiteralPath $roadmapPath -Raw
+
+    Assert-True -Condition ($doc -match "read-only validation path only") -Message "Cline doc should keep validation read-only."
+    Assert-True -Condition ($doc -match "Write mode") -Message "Cline doc should mention write mode status."
+    Assert-True -Condition ($doc -match "Blocked") -Message "Cline doc should block write mode."
+    Assert-True -Condition ($doc -match "TOOLS_UNAVAILABLE") -Message "Cline doc should define tool-unavailable failure signals."
+    Assert-True -Condition ($doc -match "HALLUCINATED_STRUCTURE") -Message "Cline doc should define hallucinated-structure failure signal."
+    Assert-True -Condition ($doc -match "git status --short") -Message "Cline doc should require external git verification."
+    Assert-True -Condition ($doc -match "examples/cline-readonly-validation.md") -Message "Cline doc should point at evidence template."
+    Assert-True -Condition ($evidence -match "Candidate only") -Message "Cline evidence template should start candidate-only."
+    Assert-True -Condition ($evidence -match "Validation Record Template") -Message "Cline evidence should include a reusable template."
+    Assert-True -Condition ($readme -match "docs/cline-readonly-validation.md") -Message "README should link the Cline validation doc."
+    Assert-True -Condition ($catalog -match "Cline read-only validation workflow") -Message "Evidence catalog should include Cline candidate workflow."
+    Assert-True -Condition ($todo -match "Cline read-only validation guide") -Message "TODO should track Cline validation guide completion."
+    Assert-True -Condition ($roadmap -match "Cline read-only validation guide") -Message "Roadmap should track Cline validation guide completion."
+}
 Invoke-PackTest "language support docs define staged multi-language boundary" {
     $docPath = Join-Path $repoRoot "docs/language-support.md"
     $readmePath = Join-Path $repoRoot "README.md"
