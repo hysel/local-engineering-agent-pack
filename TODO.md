@@ -296,4 +296,4 @@
 - [x] Add installer profile options for read-only review and approved-write workflows.
 - [ ] Add future surface-specific profile generation after non-Continue validation.
 - [x] Add a sanitized evidence catalog for model, surface, OS, language, and write-readiness results.
-- [ ] Add release archive, checksum, and install-command guidance.
+- [x] Add release archive, checksum, and install-command guidance.

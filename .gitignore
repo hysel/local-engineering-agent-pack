@@ -1,3 +1,4 @@
 .vscode/
 .continue/config.local*.yaml
 runtime-validation-output/
+dist/

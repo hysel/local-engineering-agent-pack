@@ -165,6 +165,50 @@ Invoke-PackTest "validate-pack fails when required safety doc is missing" {
     }
 }
 
+
+Invoke-PackTest "release packaging scripts define archives, checksums, and sanitized dry runs" {
+    $psScriptPath = Join-Path $repoRoot "scripts/build-release-package.ps1"
+    $linuxScriptPath = Join-Path $repoRoot "scripts/build-release-package.linux.sh"
+    $macScriptPath = Join-Path $repoRoot "scripts/build-release-package.macos.sh"
+    $sharedScriptPath = Join-Path $repoRoot "scripts/build-release-package.shared.sh"
+    $releaseDocPath = Join-Path $repoRoot "docs/release.md"
+    $gitignorePath = Join-Path $repoRoot ".gitignore"
+
+    Assert-True -Condition (Test-Path -LiteralPath $psScriptPath) -Message "PowerShell release packager should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $linuxScriptPath) -Message "Linux release packager wrapper should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $macScriptPath) -Message "macOS release packager wrapper should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $sharedScriptPath) -Message "Shared release packager should exist."
+
+    $result = Invoke-CommandCapture -FilePath $psScriptPath -Arguments @("-Version", "0.2.0", "-DryRun", "-AllowDirty")
+    Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "PowerShell release packager dry run should succeed."
+    Assert-True -Condition ($result.Output -match "Release package plan") -Message "Dry run should print a release package plan."
+    Assert-True -Condition ($result.Output -match "local-engineering-agent-pack-0\.2\.0\.zip") -Message "Dry run should name the Windows archive."
+    Assert-True -Condition ($result.Output -match "\.sha256") -Message "Dry run should name a checksum file."
+    Assert-True -Condition ($result.Output -match "Excluded: \.git, \.vscode, runtime-validation-output, dist, local configs") -Message "Dry run should explain excluded local files."
+
+    $psScript = Get-Content -LiteralPath $psScriptPath -Raw
+    $sharedScript = Get-Content -LiteralPath $sharedScriptPath -Raw
+    $releaseDoc = Get-Content -LiteralPath $releaseDocPath -Raw
+    $gitignore = Get-Content -LiteralPath $gitignorePath -Raw
+
+    Assert-True -Condition ($psScript.Contains('git -C $repoRoot ls-files')) -Message "PowerShell packager should package tracked files."
+    Assert-True -Condition ($psScript -match "Compress-Archive") -Message "PowerShell packager should create a zip archive."
+    Assert-True -Condition ($psScript -match "Get-FileHash") -Message "PowerShell packager should create a SHA-256 checksum."
+    Assert-True -Condition ($psScript -match "config\\.local") -Message "PowerShell packager should exclude local config files."
+    Assert-True -Condition ($psScript -match "runtime-validation-output") -Message "PowerShell packager should exclude runtime validation output."
+    Assert-True -Condition ($psScript -match "AllowDirty") -Message "PowerShell packager should require an explicit dirty-tree override."
+    Assert-True -Condition ($sharedScript -match "tar -C") -Message "Shared packager should create a tar.gz archive."
+    Assert-True -Condition ($sharedScript -match "sha256sum") -Message "Shared packager should support sha256sum."
+    Assert-True -Condition ($sharedScript -match "shasum -a 256") -Message "Shared packager should support macOS shasum."
+    Assert-True -Condition ($sharedScript -notmatch "mapfile") -Message "Shared packager should avoid Bash 4-only mapfile for macOS compatibility."
+    Assert-True -Condition ($sharedScript -match "config\\.local") -Message "Shared packager should exclude local config files."
+    Assert-True -Condition ($sharedScript -match "runtime-validation-output") -Message "Shared packager should exclude runtime validation output."
+    Assert-True -Condition ($releaseDoc -match "Build Release Artifacts") -Message "Release docs should explain artifact creation."
+    Assert-True -Condition ($releaseDoc -match "Verify Checksums") -Message "Release docs should explain checksum verification."
+    Assert-True -Condition ($releaseDoc -match "build-release-package") -Message "Release docs should mention packaging scripts."
+    Assert-True -Condition ($releaseDoc -match "GitHub Release") -Message "Release docs should explain GitHub release uploads."
+    Assert-True -Condition ((Get-Content -LiteralPath $gitignorePath) -contains "dist/") -Message "dist output should be ignored."
+}
 Invoke-PackTest "evidence catalog has valid schema and sanitized links" {
     $catalogPath = Join-Path $repoRoot "config/evidence-catalog.tsv"
     $docPath = Join-Path $repoRoot "docs/evidence-catalog.md"

@@ -13,6 +13,7 @@ This project follows a simple changelog format:
 
 ### Added
 
+- Added cross-platform release packaging scripts with archive, manifest, checksum, and install verification guidance.
 - Added a sanitized evidence catalog for model, editor surface, language, sample repository, installer profile, and workflow validation status.
 - Added installer profiles for default, read-only, and approved-write Continue workflows.
 - Added an opt-in Git pre-push hook installer so pack validation catches shell executable-bit regressions before GitHub Actions.

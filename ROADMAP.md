@@ -27,7 +27,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 16: Sample Repository Factory | In Progress | Generate disposable local sample repositories for language, agent-surface, and runtime validation without needing private repositories. |
 | Milestone 17: Agent Surface Compatibility Validation | Planned | Convert candidate agent surfaces into evidence-backed compatibility results. |
 | Milestone 18: Language Rule Packs | In Progress | Optional Python and TypeScript rule packs are added as evidence-gated supplemental guidance with static generated-sample validation recorded; editor/model workflow validation and additional ecosystems remain pending. |
-| Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging | In Progress | Installer profiles and the sanitized evidence catalog are implemented for current scope; release packaging remains planned. |
+| Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging | In Progress | Installer profiles, the sanitized evidence catalog, and release packaging guidance are implemented for current scope; future surface-specific profiles remain after non-Continue validation. |
 | Milestone 20: Hardware-Aware Model And Config Automation | Planned | Convert hardware profile data into model recommendations, generated local agent configs, and a future easy UI for running setup and validation workflows. |
 
 ## Milestone 1: Minimum Usable Pack
@@ -496,7 +496,7 @@ Scope:
 - Add installer profiles for Continue, read-only review, approved-write workflows, and future validated agent surfaces. Default, read-only, and approved-write Continue profiles are implemented for current scope.
 - Add language-focused install/profile options after language packs are validated.
 - Create a sanitized evidence catalog for model, OS, editor, agent surface, language, and write-readiness results. Done for current scope in `config/evidence-catalog.tsv`.
-- Improve release packaging with GitHub release notes, downloadable archives, checksums, and install command examples.
+- Improve release packaging with GitHub release notes, downloadable archives, checksums, and install command examples. Done for current scope with cross-platform packaging scripts and checksum guidance.
 
 Exit criteria:
 

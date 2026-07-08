@@ -40,6 +40,25 @@ test_validate_fails_for_wrong_version() {
     grep -q "FAIL config version is 0.0.0" /tmp/continue-pack-validate-wrong.out
 }
 
+
+test_release_packaging_scripts() {
+  output="$($REPO_ROOT/scripts/build-release-package.shared.sh --version 0.2.0 --dry-run --allow-dirty 2>&1)" || return 1
+  printf '%s\n' "$output" | grep -q "Release package plan" || return 1
+  printf '%s\n' "$output" | grep -q "local-engineering-agent-pack-0.2.0.tar.gz" || return 1
+  printf '%s\n' "$output" | grep -q "\.sha256" || return 1
+  printf '%s\n' "$output" | grep -q "Excluded: .git, .vscode, runtime-validation-output, dist, local configs" || return 1
+  grep -q "tar -C" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
+    grep -q "sha256sum" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
+    grep -q "shasum -a 256" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
+    ! grep -q "mapfile" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
+    grep -q "config" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
+    grep -q "local" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
+    grep -q "runtime-validation-output" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
+    grep -q "Build Release Artifacts" "$REPO_ROOT/docs/release.md" &&
+    grep -q "Verify Checksums" "$REPO_ROOT/docs/release.md" &&
+    grep -q "GitHub Release" "$REPO_ROOT/docs/release.md" &&
+    grep -Fxq "dist/" "$REPO_ROOT/.gitignore"
+}
 test_evidence_catalog_schema() {
   catalog="$REPO_ROOT/config/evidence-catalog.tsv"
   doc="$REPO_ROOT/docs/evidence-catalog.md"
@@ -692,6 +711,7 @@ test_tool_use_docs_define_platform_aware_write_behavior() {
 
 run_test "validate-pack succeeds for repository" test_validate_succeeds
 run_test "validate-pack fails for wrong expected version" test_validate_fails_for_wrong_version
+run_test "release packaging scripts define archives, checksums, and sanitized dry runs" test_release_packaging_scripts
 run_test "evidence catalog has valid schema and sanitized links" test_evidence_catalog_schema
 run_test "model recommendation catalog has valid schema" test_catalog_schema
 run_test "committed config uses starter sample model" test_committed_config_uses_starter_model

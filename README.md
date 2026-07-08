@@ -35,6 +35,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Detect project type before giving advice | `docs/project-detection.md` |
 | Generate local sample repositories | `docs/sample-repository-factory.md` |
 | Validate this pack | `Quick Validation` |
+| Build release artifacts | `docs/release.md` |
 | Review validation evidence | `docs/evidence-catalog.md` and `config/evidence-catalog.tsv` |
 | Fix setup problems | `Common Problems` and `docs/troubleshooting.md` |
 

@@ -45,6 +45,93 @@ Before tagging a release:
 - [ ] Confirm shell scripts and hooks are executable in Git before pushing.
 - [ ] Confirm `CHANGELOG.md` has a release entry.
 
+
+## Build Release Artifacts
+
+Use the packaging scripts after validation passes and the working tree is clean.
+The scripts package tracked repository files, write a manifest, and create a
+SHA-256 checksum next to the archive.
+
+Windows PowerShell creates a `.zip` archive:
+
+```powershell
+.\scripts\build-release-package.ps1 -Version 0.2.0
+```
+
+Linux creates a `.tar.gz` archive:
+
+```bash
+./scripts/build-release-package.linux.sh --version 0.2.0
+```
+
+macOS creates a `.tar.gz` archive and uses `shasum -a 256` when `sha256sum` is
+not installed:
+
+```bash
+./scripts/build-release-package.macos.sh --version 0.2.0
+```
+
+Preview the package plan without writing files:
+
+```powershell
+.\scripts\build-release-package.ps1 -Version 0.2.0 -DryRun
+```
+
+```bash
+./scripts/build-release-package.linux.sh --version 0.2.0 --dry-run
+```
+
+The default output folder is `dist/`, which is ignored by Git.
+
+## Package Contents And Exclusions
+
+Release packages are built from Git-tracked files and exclude local or generated
+state:
+
+- `.git/`
+- `.vscode/`
+- `runtime-validation-output/`
+- `dist/`
+- `.continue/config.local*`
+- `.continue.backup-*`
+- `.env*`, secret, and token-style files
+
+Do not use `-AllowDirty` or `--allow-dirty` for an actual release. Those flags
+exist only for local packaging smoke tests.
+
+## Verify Checksums
+
+Windows PowerShell:
+
+```powershell
+Get-FileHash .\dist\local-engineering-agent-pack-0.2.0.zip -Algorithm SHA256
+Get-Content .\dist\local-engineering-agent-pack-0.2.0.sha256
+```
+
+Linux:
+
+```bash
+sha256sum -c dist/local-engineering-agent-pack-0.2.0.sha256
+```
+
+macOS:
+
+```bash
+shasum -a 256 -c dist/local-engineering-agent-pack-0.2.0.sha256
+```
+
+The checksum file uses the standard format:
+
+```text
+<sha256>  <archive-file-name>
+```
+
+## GitHub Release Upload
+
+Attach the generated archive, `.sha256` file, and `.manifest.txt` file to the
+GitHub Release for the matching tag. The release notes should include the
+validation summary and the checksum verification command.
+
 ## Commit And Tag
 
 Use a release commit message:
