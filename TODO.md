@@ -166,6 +166,7 @@
 - [x] Document Windows, Linux, and macOS install/update commands.
 - [x] Add explicit global Continue config generation for editor setups that ignore project-local config files.
 - [x] Ensure install outputs exclude local overrides, private endpoints, tokens, and machine-specific config.
+- [ ] Evaluate centralized shared asset installation for teams or users with multiple target projects, so global configs can point to one managed rules/prompts/docs folder instead of one project copy.
 
 ## Milestone 10: ARM And Apple Silicon Model Support
 
@@ -290,6 +291,7 @@
 - [x] Add validation coverage for recommendation scripts, docs, and sanitized output behavior.
 - [x] Generate local-only Continue config directly from the recommendation output.
 - [ ] Reuse the recommendation data model for future non-Continue agent surfaces.
+- [ ] Add config-generation strategy that can choose between project-local assets and centralized shared assets for Continue and future agent plugins.
 - [ ] Add a guided UI wrapper after script-level workflows are stable.
 
 ## Milestone 18: Language Rule Packs
