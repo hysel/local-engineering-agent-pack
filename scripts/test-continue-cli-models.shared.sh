@@ -6,6 +6,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TARGET_REPO="$REPO_ROOT/runtime-validation-output/sample-repositories/python-api"
 CONFIG_PATH=""
 OUTPUT_PATH=""
+OLLAMA_BASE_URL="http://127.0.0.1:11434"
 CONTINUE_COMMAND="npx"
 CONTINUE_ARGS_TEMPLATE='-y @continuedev/cli --config "{ConfigPath}" --readonly -p "{Prompt}"'
 MODEL_ARGS_TEMPLATE=""
@@ -13,6 +14,7 @@ TIMEOUT_SECONDS=600
 INCLUDE_WRITE_SMOKE=false
 ALLOW_NON_GENERATED_TARGET=false
 DRY_RUN=false
+UNLOAD_AFTER_EACH=false
 MODELS=()
 
 while [ "$#" -gt 0 ]; do
@@ -20,6 +22,7 @@ while [ "$#" -gt 0 ]; do
     --target-repo|-TargetRepo) TARGET_REPO="$2"; shift 2 ;;
     --config-path|-ConfigPath) CONFIG_PATH="$2"; shift 2 ;;
     --output-path|-OutputPath) OUTPUT_PATH="$2"; shift 2 ;;
+    --ollama-base-url|-OllamaBaseUrl) OLLAMA_BASE_URL="$2"; shift 2 ;;
     --continue-command|-ContinueCommand) CONTINUE_COMMAND="$2"; shift 2 ;;
     --continue-arguments-template|-ContinueArgumentsTemplate) CONTINUE_ARGS_TEMPLATE="$2"; shift 2 ;;
     --model-argument-template|-ModelArgumentTemplate) MODEL_ARGS_TEMPLATE="$2"; shift 2 ;;
@@ -27,6 +30,7 @@ while [ "$#" -gt 0 ]; do
     --include-write-smoke|-IncludeWriteSmoke) INCLUDE_WRITE_SMOKE=true; shift ;;
     --allow-non-generated-target|-AllowNonGeneratedTarget) ALLOW_NON_GENERATED_TARGET=true; shift ;;
     --dry-run|-DryRun) DRY_RUN=true; shift ;;
+    --unload-after-each|-UnloadAfterEach) UNLOAD_AFTER_EACH=true; shift ;;
     --model|-Model) MODELS+=("$2"); shift 2 ;;
     --models|-Models)
       IFS=',' read -r -a split_models <<< "$2"
@@ -49,7 +53,35 @@ if [ "$INCLUDE_WRITE_SMOKE" = true ] && [ "$ALLOW_NON_GENERATED_TARGET" != true 
 fi
 if [ "$DRY_RUN" != true ] && ! command -v "$CONTINUE_COMMAND" >/dev/null 2>&1; then printf 'Continue CLI command was not found: %s. Install Node.js/npx or pass --continue-command.\n' "$CONTINUE_COMMAND" >&2; exit 1; fi
 if [ "${#MODELS[@]}" -eq 0 ]; then MODELS+=("qwen3.5:9b"); fi
+unload_model() {
+  model_name="$1"
+  base_url="${OLLAMA_BASE_URL%/}"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsS -X POST "$base_url/api/chat" \
+      -H 'Content-Type: application/json' \
+      -d "{\"model\":\"$model_name\",\"messages\":[],\"keep_alive\":0,\"stream\":false}" >/dev/null
+  else
+    return 1
+  fi
+}
+initialize_disposable_git_baseline() {
+  run_dir="$1"
+  case "$run_dir" in *runtime-validation-output/sample-repositories*) ;; *) return 0 ;; esac
+  if [ ! -d "$run_dir/.git" ]; then git -C "$run_dir" init >/dev/null; fi
+  git -C "$run_dir" config core.autocrlf false >/dev/null
+  git -C "$run_dir" config core.eol lf >/dev/null
+  if ! git -C "$run_dir" rev-parse --verify HEAD >/dev/null 2>&1; then
+    git -C "$run_dir" add . >/dev/null
+    git -C "$run_dir" -c user.name="Local Agent Validation" -c user.email="local-agent-validation@example.invalid" commit -m "Initial generated sample" >/dev/null
+    return 0
+  fi
+  if [ -n "$(git -C "$run_dir" status --short)" ]; then
+    git -C "$run_dir" restore . >/dev/null
+    git -C "$run_dir" clean -fd >/dev/null
+  fi
+}
 mkdir -p "$(dirname "$OUTPUT_PATH")"
+initialize_disposable_git_baseline "$TARGET_REPO"
 
 printf '[1/7] Preparing Continue CLI model test run...\n' >&2
 printf '[2/7] Target repository: generated sample %s\n' "$(basename "$TARGET_REPO")" >&2
@@ -79,12 +111,16 @@ for model in "${MODELS[@]}"; do
       (cd "$TARGET_REPO" && git restore README.md >/dev/null 2>&1 || true)
     fi
   fi
+  if [ "$UNLOAD_AFTER_EACH" = true ] && [ "$DRY_RUN" != true ]; then
+    printf '[6/7] Unloading %s from Ollama...\n' "$model" >&2
+    unload_model "$model" || failures="${failures},UNLOAD_FAILED"
+  fi
   json_results+=("{\"Model\":\"$model\",\"Surface\":\"Continue CLI\",\"Target\":\"generated-sample\",\"ReadStatus\":\"$read_status\",\"WriteStatus\":\"$write_status\",\"FailureSignal\":\"$failures\"}")
   printf '%s: read=%s, write=%s, failures=%s\n' "$model" "$read_status" "$write_status" "$failures" >&2
 done
 printf '[6/7] Writing sanitized report...\n' >&2
 {
-  printf '{\n  "Surface": "Continue CLI",\n  "Target": "generated-sample",\n  "IncludeWriteSmoke": %s,\n  "DryRun": %s,\n  "Results": [\n' "$INCLUDE_WRITE_SMOKE" "$DRY_RUN"
+  printf '{\n  "Surface": "Continue CLI",\n  "Target": "generated-sample",\n  "IncludeWriteSmoke": %s,\n  "UnloadAfterEach": %s,\n  "DryRun": %s,\n  "Results": [\n' "$INCLUDE_WRITE_SMOKE" "$UNLOAD_AFTER_EACH" "$DRY_RUN"
   for i in "${!json_results[@]}"; do comma=','; [ "$i" -eq $((${#json_results[@]} - 1)) ] && comma=''; printf '    %s%s\n' "${json_results[$i]}" "$comma"; done
   printf '  ],\n  "Notes": "Report is sanitized: target paths, raw prompts, stdout, stderr, and private endpoints are intentionally omitted."\n}\n'
 } > "$OUTPUT_PATH"

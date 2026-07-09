@@ -535,8 +535,11 @@ test_cline_cli_model_testing_doc() {
     grep -q "Write Smoke Test" "$REPO_ROOT/docs/cline-cli-model-testing.md" &&
     grep -q "ClineArgumentsTemplate" "$REPO_ROOT/scripts/test-cline-cli-models.ps1" &&
     grep -q "IncludeWriteSmoke" "$REPO_ROOT/scripts/test-cline-cli-models.ps1" &&
+    grep -q "Initialize-DisposableGitBaseline" "$REPO_ROOT/scripts/test-cline-cli-models.ps1" &&
     grep -q "CLINE_ARGS_TEMPLATE" "$REPO_ROOT/scripts/test-cline-cli-models.shared.sh" &&
     grep -q "INCLUDE_WRITE_SMOKE" "$REPO_ROOT/scripts/test-cline-cli-models.shared.sh" &&
+    grep -q "UNLOAD_AFTER_EACH" "$REPO_ROOT/scripts/test-cline-cli-models.shared.sh" &&
+    grep -q "UNLOAD_AFTER_EACH" "$REPO_ROOT/scripts/test-cline-cli-models.shared.sh" &&
     grep -q "Cline CLI model test harness" "$REPO_ROOT/config/evidence-catalog.tsv" &&
     grep -q "docs/cline-cli-model-testing.md" "$REPO_ROOT/README.md"
 }
@@ -552,8 +555,11 @@ test_continue_cli_model_testing_doc() {
     grep -q "ContinueArgumentsTemplate" "$REPO_ROOT/scripts/test-continue-cli-models.ps1" &&
     grep -q "ConfigPath" "$REPO_ROOT/scripts/test-continue-cli-models.ps1" &&
     grep -q "IncludeWriteSmoke" "$REPO_ROOT/scripts/test-continue-cli-models.ps1" &&
+    grep -q "Initialize-DisposableGitBaseline" "$REPO_ROOT/scripts/test-continue-cli-models.ps1" &&
     grep -q "CONTINUE_ARGS_TEMPLATE" "$REPO_ROOT/scripts/test-continue-cli-models.shared.sh" &&
     grep -q "INCLUDE_WRITE_SMOKE" "$REPO_ROOT/scripts/test-continue-cli-models.shared.sh" &&
+    grep -q "UNLOAD_AFTER_EACH" "$REPO_ROOT/scripts/test-continue-cli-models.shared.sh" &&
+    grep -q "UNLOAD_AFTER_EACH" "$REPO_ROOT/scripts/test-continue-cli-models.shared.sh" &&
     grep -q "Continue CLI model test harness" "$REPO_ROOT/config/evidence-catalog.tsv" &&
     grep -q "docs/continue-cli-model-testing.md" "$REPO_ROOT/README.md" &&
     grep -q "docs/continue-cli-model-testing.md" "$REPO_ROOT/docs/agent-surface-options.md"

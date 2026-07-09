@@ -42,7 +42,7 @@ function Write-SampleFile {
         New-Item -ItemType Directory -Force -Path $directory | Out-Null
     }
 
-    $normalized = $Content -replace "`r`n", "`n"
+    $normalized = ($Content -replace "`r`n", "`n").TrimEnd("`n") + "`n"
     Set-Content -LiteralPath $path -Value $normalized -NoNewline
 }
 
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     print(build_health_response(Settings()))
 '@
 New-Item -ItemType Directory -Force -Path (Join-Path $root "app") | Out-Null
-Set-Content -LiteralPath (Join-Path $root "app/main.py") -Value $pythonMain -NoNewline
+Set-Content -LiteralPath (Join-Path $root "app/main.py") -Value ($pythonMain.TrimEnd("`n") + "`n") -NoNewline
 
 $root = New-SampleRoot "typescript-frontend"
 Add-Metadata $root "typescript-frontend" "TypeScript" "Frontend repository discovery and review validation."

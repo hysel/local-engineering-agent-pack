@@ -17,7 +17,7 @@ This is a focused model-screening harness. It does not replace the full runtime 
 
 - Node.js with `npx` available, or another Continue CLI command you pass explicitly.
 - A Continue config file that points at the model server you want to test.
-- A generated disposable sample repository. The scripts create the default sample if it is missing.
+- A generated disposable sample repository. The scripts create the default sample if it is missing and initialize a standalone Git baseline for external diff verification.
 
 ## Read-Only Screening
 
@@ -94,6 +94,25 @@ Example for a CLI that accepts a model flag:
   -Models "qwen3.5:9b" `
   -ModelArgumentTemplate '--model "{Model}"'
 ```
+
+
+## Model Unload Safety
+
+For online or remote Ollama testing, unload each model after its CLI run so large models do not stay resident and overload the server.
+
+Windows PowerShell:
+
+```powershell
+-UnloadAfterEach -OllamaBaseUrl "http://127.0.0.1:11434"
+```
+
+Linux/macOS:
+
+```bash
+--unload-after-each --ollama-base-url http://127.0.0.1:11434
+```
+
+The unload call uses Ollama's local API with `keep_alive` set to `0`. Runtime reports record whether unload was requested, but they still omit private endpoints.
 
 ## Evidence Flow
 
