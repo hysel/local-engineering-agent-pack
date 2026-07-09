@@ -102,7 +102,7 @@ The sanitized report is written under `runtime-validation-output/`.
 
 ## Write Smoke Test
 
-Only run write smoke tests against generated disposable samples.
+Only run write smoke tests against generated disposable samples. The scripts initialize a standalone Git baseline so write validation is isolated from the pack repository.
 
 Windows PowerShell:
 

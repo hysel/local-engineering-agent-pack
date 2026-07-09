@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TARGET_REPO="$REPO_ROOT/runtime-validation-output/sample-repositories/python-api"
 OUTPUT_PATH=""
+OLLAMA_BASE_URL="http://127.0.0.1:11434"
 CLINE_COMMAND="cline"
 CLINE_ARGS_TEMPLATE='--json "{Prompt}"'
 MODEL_ARGS_TEMPLATE=""
@@ -12,6 +13,7 @@ TIMEOUT_SECONDS=600
 INCLUDE_WRITE_SMOKE=false
 ALLOW_NON_GENERATED_TARGET=false
 DRY_RUN=false
+UNLOAD_AFTER_EACH=false
 MODELS=()
 
 while [ "$#" -gt 0 ]; do
@@ -22,6 +24,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --output-path|-OutputPath)
       OUTPUT_PATH="$2"
+      shift 2
+      ;;
+    --ollama-base-url|-OllamaBaseUrl)
+      OLLAMA_BASE_URL="$2"
       shift 2
       ;;
     --cline-command|-ClineCommand)
@@ -50,6 +56,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --dry-run|-DryRun)
       DRY_RUN=true
+      shift
+      ;;
+    --unload-after-each|-UnloadAfterEach)
+      UNLOAD_AFTER_EACH=true
       shift
       ;;
     --model|-Model)
@@ -112,8 +122,36 @@ fi
 if [ "${#MODELS[@]}" -eq 0 ]; then
   MODELS+=("qwen3-coder:30b")
 fi
+unload_model() {
+  model_name="$1"
+  base_url="${OLLAMA_BASE_URL%/}"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsS -X POST "$base_url/api/chat" \
+      -H 'Content-Type: application/json' \
+      -d "{\"model\":\"$model_name\",\"messages\":[],\"keep_alive\":0,\"stream\":false}" >/dev/null
+  else
+    return 1
+  fi
+}
+initialize_disposable_git_baseline() {
+  run_dir="$1"
+  case "$run_dir" in *runtime-validation-output/sample-repositories*) ;; *) return 0 ;; esac
+  if [ ! -d "$run_dir/.git" ]; then git -C "$run_dir" init >/dev/null; fi
+  git -C "$run_dir" config core.autocrlf false >/dev/null
+  git -C "$run_dir" config core.eol lf >/dev/null
+  if ! git -C "$run_dir" rev-parse --verify HEAD >/dev/null 2>&1; then
+    git -C "$run_dir" add . >/dev/null
+    git -C "$run_dir" -c user.name="Local Agent Validation" -c user.email="local-agent-validation@example.invalid" commit -m "Initial generated sample" >/dev/null
+    return 0
+  fi
+  if [ -n "$(git -C "$run_dir" status --short)" ]; then
+    git -C "$run_dir" restore . >/dev/null
+    git -C "$run_dir" clean -fd >/dev/null
+  fi
+}
 
 mkdir -p "$(dirname "$OUTPUT_PATH")"
+initialize_disposable_git_baseline "$TARGET_REPO"
 
 printf '[1/7] Preparing Cline CLI model test run...\n' >&2
 printf '[2/7] Target repository: generated sample %s\n' "$(basename "$TARGET_REPO")" >&2
@@ -177,6 +215,10 @@ for model in "${MODELS[@]}"; do
     fi
   fi
 
+  if [ "$UNLOAD_AFTER_EACH" = true ] && [ "$DRY_RUN" != true ]; then
+    printf '[6/7] Unloading %s from Ollama...\n' "$model" >&2
+    unload_model "$model" || failures="${failures},UNLOAD_FAILED"
+  fi
   json_results+=("{\"Model\":\"$model\",\"Surface\":\"Cline CLI\",\"Target\":\"generated-sample\",\"ReadStatus\":\"$read_status\",\"WriteStatus\":\"$write_status\",\"FailureSignal\":\"$failures\"}")
   printf '%s: read=%s, write=%s, failures=%s\n' "$model" "$read_status" "$write_status" "$failures" >&2
 done
@@ -187,6 +229,7 @@ printf '[6/7] Writing sanitized report...\n' >&2
   printf '  "Surface": "Cline CLI",\n'
   printf '  "Target": "generated-sample",\n'
   printf '  "IncludeWriteSmoke": %s,\n' "$INCLUDE_WRITE_SMOKE"
+  printf '  "UnloadAfterEach": %s,\n' "$UNLOAD_AFTER_EACH"
   printf '  "DryRun": %s,\n' "$DRY_RUN"
   printf '  "Results": [\n'
   for i in "${!json_results[@]}"; do
