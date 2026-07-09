@@ -684,6 +684,62 @@ Invoke-PackTest "Cline CLI model testing docs define automation workflow" {
     Assert-True -Condition ($catalog -match "Cline CLI model test harness") -Message "Evidence catalog should track Cline CLI harness validation."
     Assert-True -Condition ($readme -match "docs/cline-cli-model-testing.md") -Message "README should link Cline CLI model testing doc."
 }
+Invoke-PackTest "agent CLI surface testing docs define shared automation workflow" {
+    $docPath = Join-Path $repoRoot "docs/agent-cli-surface-model-testing.md"
+    $aiderDocPath = Join-Path $repoRoot "docs/aider-cli-model-testing.md"
+    $evidencePath = Join-Path $repoRoot "examples/aider-validation.md"
+    $psScriptPath = Join-Path $repoRoot "scripts/test-agent-cli-surface-models.ps1"
+    $bashScriptPath = Join-Path $repoRoot "scripts/test-agent-cli-surface-models.shared.sh"
+    $catalogPath = Join-Path $repoRoot "config/evidence-catalog.tsv"
+    $readmePath = Join-Path $repoRoot "README.md"
+    $surfaceDocPath = Join-Path $repoRoot "docs/agent-surface-options.md"
+
+    Assert-True -Condition (Test-Path -LiteralPath $docPath) -Message "Shared agent CLI testing doc should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $aiderDocPath) -Message "Aider CLI wrapper doc should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $evidencePath) -Message "Aider evidence template should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $psScriptPath) -Message "PowerShell shared agent CLI tester should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $bashScriptPath) -Message "Bash shared agent CLI tester should exist."
+
+    $doc = Get-Content -LiteralPath $docPath -Raw
+    $aiderDoc = Get-Content -LiteralPath $aiderDocPath -Raw
+    $evidence = Get-Content -LiteralPath $evidencePath -Raw
+    $psScript = Get-Content -LiteralPath $psScriptPath -Raw
+    $bashScript = Get-Content -LiteralPath $bashScriptPath -Raw
+    $catalog = Get-Content -LiteralPath $catalogPath -Raw
+    $readme = Get-Content -LiteralPath $readmePath -Raw
+    $surfaceDoc = Get-Content -LiteralPath $surfaceDocPath -Raw
+
+    Assert-True -Condition ($doc -match "Agent CLI Surface Model Testing") -Message "Shared CLI testing doc should have a clear title."
+    foreach ($surface in @("Aider", "Roo Code", "Kilo Code", "OpenCode")) {
+        Assert-True -Condition ($doc -match [regex]::Escape($surface)) -Message "Shared CLI testing doc should mention $surface."
+        Assert-True -Condition ($catalog -match [regex]::Escape($surface)) -Message "Evidence catalog should mention $surface."
+        Assert-True -Condition ($surfaceDoc -match [regex]::Escape($surface)) -Message "Agent surface docs should mention $surface."
+    }
+    Assert-True -Condition ($doc -match "OpenHands is platform-style") -Message "Shared CLI doc should avoid pretending OpenHands is a simple CLI harness target."
+    Assert-True -Condition ($doc -match "Dry run") -Message "Shared CLI doc should explain dry-run behavior."
+    Assert-True -Condition ($doc -match "UnloadAfterEach") -Message "Shared CLI doc should explain model unload support."
+    Assert-True -Condition ($doc -match "test-agent-cli-surface-models") -Message "Shared CLI doc should mention the generic harness."
+    Assert-True -Condition ($aiderDoc -match "agent-cli-surface-model-testing") -Message "Aider doc should point to the shared CLI harness doc."
+    Assert-True -Condition ($evidence -match "Aider Validation Evidence") -Message "Aider evidence template should have a clear title."
+    Assert-True -Condition ($evidence -match "Sanitization Checklist") -Message "Aider evidence template should include sanitization checklist."
+    Assert-True -Condition ($psScript -match "SurfaceName") -Message "PowerShell shared CLI tester should support surface names."
+    Assert-True -Condition ($psScript -match "AgentArgumentsTemplate") -Message "PowerShell shared CLI tester should support argument templates."
+    Assert-True -Condition ($psScript -match "IncludeWriteSmoke") -Message "PowerShell shared CLI tester should support write-smoke tests."
+    Assert-True -Condition ($psScript -match "UnloadAfterEach") -Message "PowerShell shared CLI tester should support model unload after each run."
+    Assert-True -Condition ($psScript -match "Initialize-DisposableGitBaseline") -Message "PowerShell shared CLI tester should initialize a disposable Git baseline."
+    Assert-True -Condition ($bashScript -match "AGENT_ARGS_TEMPLATE") -Message "Bash shared CLI tester should support argument templates."
+    Assert-True -Condition ($bashScript -match "UNLOAD_AFTER_EACH") -Message "Bash shared CLI tester should support model unload after each run."
+    Assert-True -Condition ($catalog -match "Shared agent CLI model test harness") -Message "Evidence catalog should track the shared CLI harness."
+    Assert-True -Condition ($readme -match "docs/agent-cli-surface-model-testing.md") -Message "README should link shared agent CLI model testing doc."
+
+    $wrapperBases = @("aider", "roo-code", "kilo-code", "opencode")
+    foreach ($base in $wrapperBases) {
+        $wrapperPs = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/test-$base-cli-models.ps1") -Raw
+        $wrapperSh = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/test-$base-cli-models.shared.sh") -Raw
+        Assert-True -Condition ($wrapperPs -match "test-agent-cli-surface-models.ps1") -Message "$base PowerShell wrapper should delegate to the shared harness."
+        Assert-True -Condition ($wrapperSh -match "test-agent-cli-surface-models.shared.sh") -Message "$base Bash wrapper should delegate to the shared harness."
+    }
+}
 Invoke-PackTest "Continue CLI model testing docs define automation workflow" {
     $docPath = Join-Path $repoRoot "docs/continue-cli-model-testing.md"
     $psScriptPath = Join-Path $repoRoot "scripts/test-continue-cli-models.ps1"
@@ -1699,6 +1755,14 @@ Invoke-PackTest "runtime context and validation wrapper scripts call shared Bash
         @{
             Name = "test-cline-cli-models.macos.sh"
             Target = "test-cline-cli-models.shared.sh"
+        },
+        @{
+            Name = "test-aider-cli-models.linux.sh"
+            Target = "test-aider-cli-models.shared.sh"
+        },
+        @{
+            Name = "test-aider-cli-models.macos.sh"
+            Target = "test-aider-cli-models.shared.sh"
         },
         @{
             Name = "generate-sample-repositories.linux.sh"

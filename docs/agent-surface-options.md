@@ -24,11 +24,11 @@ This matrix is a support boundary, not a popularity ranking. A surface can be a 
 | --- | --- | --- | --- | --- | --- |
 | Continue | VS Code-compatible extension, VSCodium extension, and CLI | Approved-write ready for the validated local editor setup; CLI harness validated by tests | Supported first path plus CLI automation harness | Allowed only after the read-only, read-content, current-folder, and scoped write smoke tests pass in the user's actual setup | Existing config, install scripts, shared asset mode, validation docs, model testing, approved-write guidance, and `docs/continue-cli-model-testing.md` target Continue today. |
 | Cline | VS Code-compatible editor agent plus CLI | Read-only validated and disposable write-smoke validated for generated Python sample with `qwen3-coder:30b` at 16k context; CLI harness validated by tests | Read/write validation guide, CLI automation guide, and sanitized evidence available | Real-project approved-write blocked | Use `docs/cline-readonly-validation.md`, `docs/cline-cli-model-testing.md`, and `examples/cline-readonly-validation.md`; a minimal README write smoke test passed, but real-project approved-write remains blocked until a realistic scoped edit passes external verification. |
-| Aider | Git-aware CLI coding assistant | Candidate | Not packaged yet | Blocked | Likely needs CLI-specific prompt bundles and a patch/diff workflow rather than Continue-style config. |
-| Kilo Code | VS Code-compatible editor agent | Candidate | Not packaged yet | Blocked | Needs config loading, tool behavior, approval flow, and write-safety validation before recommendation. |
-| OpenCode | Terminal or IDE-oriented coding agent | Candidate | Not packaged yet | Blocked | Needs repository discovery, local model/tool behavior, and deterministic output verification against generated samples. |
+| Aider | Git-aware CLI coding assistant | Candidate; shared CLI harness validated by tests | CLI automation guide and sanitized evidence template available | Blocked for real-project approved write | Use `docs/agent-cli-surface-model-testing.md`, `docs/aider-cli-model-testing.md`, and `examples/aider-validation.md`; model-backed Aider evidence and realistic scoped edit validation remain pending. |
+| Kilo Code | VS Code-compatible editor agent | Candidate; shared CLI wrapper scaffolded for future command validation | Shared CLI harness wrapper available, editor validation pending | Blocked | Needs config loading, tool behavior, approval flow, and write-safety validation before recommendation. |
+| OpenCode | Terminal or IDE-oriented coding agent | Candidate; shared CLI wrapper scaffolded for future command validation | Shared CLI harness wrapper available, live validation pending | Blocked | Needs repository discovery, local model/tool behavior, and deterministic output verification against generated samples. |
 | OpenHands | Self-hosted/platform-style agent runtime | Candidate | Not packaged yet | Blocked | More platform-like than editor-focused; needs workspace mount, sandbox, secret, and trust-boundary review before write mode. |
-| Roo Code | VS Code-compatible editor agent | Candidate | Not packaged yet | Blocked | Worth tracking as another open-source editor-agent option, but no pack-specific validation exists yet. |
+| Roo Code | VS Code-compatible editor agent | Candidate; shared CLI wrapper scaffolded for future command validation | Shared CLI harness wrapper available, editor validation pending | Blocked | Worth tracking as another open-source editor-agent option, but no pack-specific validation exists yet. |
 
 Candidate means "worth testing", not "approved for edits".
 
@@ -73,7 +73,7 @@ Every surface validation record should capture:
 
 ## Recommended Next Evaluation
 
-Start with one non-Continue surface in read-only mode. The first documented path is Cline read-only validation in `docs/cline-readonly-validation.md`.
+Start with one non-Continue surface in read-only mode. Cline has the first recorded evidence path in `docs/cline-readonly-validation.md`; Aider is the next CLI-first candidate through `docs/aider-cli-model-testing.md`; shared CLI-surface screening is documented in `docs/agent-cli-surface-model-testing.md`.
 
 Suggested order:
 

@@ -32,6 +32,8 @@ It is designed for people who want AI support to follow consistent engineering s
 | Compare other open-source agent surfaces | `docs/agent-surface-options.md` |
 | Validate Cline read-only behavior | `docs/cline-readonly-validation.md` |
 | Automate Cline CLI model tests | `docs/cline-cli-model-testing.md` |
+| Automate shared agent CLI model tests | `docs/agent-cli-surface-model-testing.md` |
+| Automate Aider CLI model tests | `docs/aider-cli-model-testing.md` |
 | Automate Continue CLI model tests | `docs/continue-cli-model-testing.md` |
 | Track multi-language support | `docs/language-support.md` |
 | Use optional language rule packs | `docs/language-rule-packs.md` |
