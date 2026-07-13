@@ -6,6 +6,8 @@ Shared asset installation is an opt-in mode for people who use this pack across 
 
 Use this mode when your editor reliably loads the global Continue config, or when you maintain several repositories and do not want each one to carry a duplicate copy of the same pack assets.
 
+Use `docs/config-generation-strategy.md` to compare project-local, global Continue, shared-assets, and future surface-specific config choices.
+
 ## Current Modes
 
 ### Project-Local Mode

@@ -518,7 +518,7 @@ Scope:
 - Add logic that evaluates detected GPU, VRAM, RAM, CPU, architecture, operating system, and model-host platform to decide which local models are reasonable candidates for the user's machine. Done for offline recommendation output.
 - Rank candidate models by workflow fit, resource fit, tool-use validation status, and conservative defaults so the user receives a clear recommended model plus alternatives. Done for offline recommendation output.
 - Generate best-fit local configuration for Continue first, including model lanes, roles, context length, max tokens, keep-alive settings, and local-only endpoint handling. Done for local-only Continue config output.
-- Keep the configuration engine surface-neutral enough to support future plugins or agent surfaces after they have compatibility evidence.
+- Keep the configuration engine surface-neutral enough to support future plugins or agent surfaces after they have compatibility evidence. Strategy documented; implementation remains evidence-gated.
 - Ensure cloud tags, provider-specific tags, MLX tags, oversized models, and unsupported local pulls are filtered or explained before any model download is attempted.
 - Keep all generated machine-specific settings in local-only config files and out of committed shared configuration.
 - Add validation coverage that proves hardware-aware selection does not expose private paths, hostnames, usernames, endpoints, or raw hardware reports.

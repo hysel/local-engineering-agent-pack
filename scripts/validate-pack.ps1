@@ -136,6 +136,7 @@ $requiredFiles = @(
     "docs/release.md",
     "docs/evidence-catalog.md",
     "docs/setup-paths.md",
+    "docs/config-generation-strategy.md",
     "docs/hardware-aware-recommendations.md",
     "docs/workflow-registry.md",
     "docs/workflow-chooser.md",

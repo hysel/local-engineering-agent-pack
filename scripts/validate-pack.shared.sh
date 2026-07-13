@@ -140,6 +140,7 @@ REQUIRED_FILES=(
   "config/sample-scenario-packs.json"
   "docs/release.md"
   "docs/setup-paths.md"
+  "docs/config-generation-strategy.md"
   "docs/compatibility.md"
   "docs/workflow-chooser.md"
   "docs/autonomous-maintainer-queue.md"

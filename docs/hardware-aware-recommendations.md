@@ -2,6 +2,8 @@
 
 The hardware-aware recommendation flow turns an existing model profile into a local model/config recommendation without contacting external services, pulling models, or rewriting editor configuration.
 
+Use `docs/config-generation-strategy.md` to decide whether recommendation output should become project-local config, global Continue config, shared-assets config, or future surface-specific config.
+
 Use it after running one of the local or remote profile scripts:
 
 Windows PowerShell:
