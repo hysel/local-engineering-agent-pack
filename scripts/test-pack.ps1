@@ -838,20 +838,30 @@ Invoke-PackTest "language support docs define staged multi-language boundary" {
     $docPath = Join-Path $repoRoot "docs/language-support.md"
     $readmePath = Join-Path $repoRoot "README.md"
     $roadmapPath = Join-Path $repoRoot "ROADMAP.md"
+    $todoPath = Join-Path $repoRoot "TODO.md"
+    $workflowEvidencePath = Join-Path $repoRoot "examples/multi-language-workflow-validation.md"
 
     Assert-True -Condition (Test-Path -LiteralPath $docPath) -Message "Language support doc should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $workflowEvidencePath) -Message "Multi-language workflow evidence should exist."
 
     $doc = Get-Content -LiteralPath $docPath -Raw
     $readme = Get-Content -LiteralPath $readmePath -Raw
     $roadmap = Get-Content -LiteralPath $roadmapPath -Raw
+    $todo = Get-Content -LiteralPath $todoPath -Raw
+    $workflowEvidence = Get-Content -LiteralPath $workflowEvidencePath -Raw
 
     Assert-True -Condition ($doc -match "\.NET.*most mature") -Message "Language support doc should identify .NET as the current mature path."
+    Assert-True -Condition ($doc -match "Milestone 15 Completion Basis") -Message "Language support doc should record Milestone 15 completion basis."
+    Assert-True -Condition ($doc -match "examples/multi-language-workflow-validation\.md") -Message "Language support doc should link multi-language workflow evidence."
     Assert-True -Condition ($doc -match "Python") -Message "Language support doc should include Python."
     Assert-True -Condition ($doc -match "JavaScript / TypeScript") -Message "Language support doc should include JavaScript/TypeScript."
     Assert-True -Condition ($doc -match "Infrastructure as Code") -Message "Language support doc should include Infrastructure as Code."
     Assert-True -Condition ($doc -match "Do not apply \.NET-specific advice") -Message "Language support doc should guard against .NET advice in non-.NET repos."
+    Assert-True -Condition (($workflowEvidence -match "Python API Sample") -and ($workflowEvidence -match "TypeScript Frontend Sample")) -Message "Workflow evidence should include Python and TypeScript samples."
+    Assert-True -Condition (($workflowEvidence -match "Repository discovery \| Passed verification \| Passed verification") -and ($workflowEvidence -match "Implementation planning \| Passed verification \| Passed verification") -and ($workflowEvidence -match "Code review \| Passed verification \| Passed verification")) -Message "Workflow evidence should show required Python and TypeScript validation passes."
     Assert-True -Condition ($readme -match "docs/language-support.md") -Message "README should link language support doc."
-    Assert-True -Condition ($roadmap -match "Milestone 15: Multi-Language Engineering Support") -Message "Roadmap should include Milestone 15."
+    Assert-True -Condition ($roadmap -match "\| Milestone 15: Multi-Language Engineering Support \| Complete \|") -Message "Roadmap should mark Milestone 15 complete."
+    Assert-True -Condition ($todo -match "\[x\] Validate repository discovery, implementation planning, and code review against Python and JavaScript/TypeScript samples") -Message "TODO should mark required Python and TypeScript validation complete."
 }
 
 

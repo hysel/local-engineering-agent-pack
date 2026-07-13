@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, Milestone 9 distribution and install experience, Milestone 10 ARM and Apple Silicon model support, Milestone 11 editor surface compatibility, Milestone 12 model tool-use validation evidence, Milestone 13 broader multi-repository validation, and Milestone 14 agent surface portability and broader-audience positioning are complete. Milestone 15 tracks multi-language engineering support so the pack does not remain .NET-only over time. Milestone 16 starts the sample repository factory, with later roadmap tracks for language rule packs, installer profiles, evidence catalogs, release packaging, hardware-aware model/config automation, script consolidation, a stable workflow registry, and a future unified starter-toolkit web UI.
+The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, Milestone 9 distribution and install experience, Milestone 10 ARM and Apple Silicon model support, Milestone 11 editor surface compatibility, Milestone 12 model tool-use validation evidence, Milestone 13 broader multi-repository validation, Milestone 14 agent surface portability and broader-audience positioning, and Milestone 15 multi-language engineering support are complete. Milestone 16 starts the sample repository factory, with later roadmap tracks for language rule packs, installer profiles, evidence catalogs, release packaging, hardware-aware model/config automation, script consolidation, a stable workflow registry, and a future unified starter-toolkit web UI.
 
 ## Stage Status
 
@@ -23,7 +23,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 12: Model Tool-Use Validation Evidence | Complete | Starter model defaults, automatic local model config generation, model lanes, local Ollama Agent model preflight tooling, read-only and read-content tool validation guidance, approved-write smoke-test guidance, duplicate approval mitigation, external write verification, platform-aware command rules, sanitized evidence templates, post-validation install flow, and optional online discovery guardrails are in place. |
 | Milestone 13: Broader Multi-Repository Validation | Complete | Sanitized legacy .NET evidence plus generated Python, TypeScript, Node, Java, Go, Rust, Infrastructure as Code, and SQL category evidence satisfy the milestone coverage target; future real-repository runs continue as evidence expansion. |
 | Milestone 14: Agent Surface Portability And Broader Audience | Complete | The project is repositioned as a local-first engineering agent pack for individual, team, and enterprise users; Continue remains the supported first path; non-Continue surfaces are tracked through evidence-gated validation levels, promotion gates, and config-bundle limits. |
-| Milestone 15: Multi-Language Engineering Support | Planned | Keep .NET as the first mature ecosystem while adding validated language guidance for Python, TypeScript, Java, Go, Rust, SQL, and infrastructure repositories. |
+| Milestone 15: Multi-Language Engineering Support | Complete | .NET remains the most mature path, optional multi-language guidance is evidence-gated, and generated Python plus TypeScript samples have repository-discovery, implementation-planning, and code-review validation evidence. |
 | Milestone 16: Sample Repository Factory | In Progress | Generate disposable local sample repositories for language, agent-surface, and runtime validation without needing private repositories; runtime context now includes non-.NET metadata from generated samples. |
 | Milestone 17: Agent Surface Compatibility Validation | In Progress | Cline has read-only and disposable write-smoke validation evidence for `qwen3-coder:30b` at 16k context; Aider has generated Python and richer disposable Node service validation evidence; real-project approved-write plus Roo Code, Kilo Code, and OpenCode live validation remain pending. |
 | Milestone 18: Language Rule Packs | In Progress | Optional Python, TypeScript, Java, Go, Rust, SQL, and Infrastructure as Code rule packs are added as evidence-gated supplemental guidance with static generated-sample validation recorded; generated editor/model workflow evidence is recorded, prompt and runner filename-fidelity guardrails are in place, and runtime runners now write filename-fidelity fallback artifacts for deterministic filename failures. Remaining empty-output failures and any non-filename guardrail repeats require separate remediation before promotion. |
@@ -421,22 +421,22 @@ Goal: Expand the pack beyond .NET while preserving the current .NET maturity and
 
 Scope:
 
-- Keep .NET and ASP.NET Core as the first mature and most validated ecosystem.
-- Add language-specific rule packs or guidance for Python, JavaScript/TypeScript, Java/Spring, Go, Rust, SQL/database projects, and Infrastructure as Code.
-- Add repository detection guidance so prompts identify project type before applying language-specific recommendations.
-- Keep shared engineering standards reusable across languages: Git, testing, security, logging, performance, architecture, documentation, and rollback planning.
-- Prevent .NET-specific recommendations from being applied to non-.NET repositories.
-- Add generated local sample repositories for planned language ecosystems when real repositories are not available.
+- Keep .NET and ASP.NET Core as the first mature and most validated ecosystem. Done.
+- Add language-specific rule packs or guidance for Python, JavaScript/TypeScript, Java/Spring, Go, Rust, SQL/database projects, and Infrastructure as Code. Done as optional rule packs and staged guidance.
+- Add repository detection guidance so prompts identify project type before applying language-specific recommendations. Done.
+- Keep shared engineering standards reusable across languages: Git, testing, security, logging, performance, architecture, documentation, and rollback planning. Done.
+- Prevent .NET-specific recommendations from being applied to non-.NET repositories. Done through project-detection guidance and evidence gates.
+- Add generated local sample repositories for planned language ecosystems when real repositories are not available. Done.
 - Validate repository discovery, implementation planning, code review, and runtime output verification against at least Python and TypeScript samples before promoting language support. Generated-sample workflow validation now runs against Python and TypeScript, with filename-drift guardrail failures recorded for documentation and release-style workflows.
-- Keep README, docs, roadmap, TODO, changelog, and wiki clear that language support is staged and evidence-based.
+- Keep README, docs, roadmap, TODO, changelog, and wiki clear that language support is staged and evidence-based. Done for repository docs and roadmap; external wiki updates remain release-process work when publishing.
 
 Exit criteria:
 
-- Repository discovery can identify common project types without inventing unsupported framework details.
-- Prompts select language-appropriate guidance or explicitly stay language-neutral when evidence is incomplete.
-- At least Python and JavaScript/TypeScript sample repositories have sanitized validation evidence.
-- README explains that .NET is currently the most mature path, not the only intended path.
-- Language-specific guidance is not treated as approved until validation evidence exists.
+- Repository discovery can identify common project types without inventing unsupported framework details. Done through project-detection docs and generated-sample validation.
+- Prompts select language-appropriate guidance or explicitly stay language-neutral when evidence is incomplete. Done through optional rule packs, project-detection references, and filename-fidelity guardrails.
+- At least Python and JavaScript/TypeScript sample repositories have sanitized validation evidence. Done in `examples/multi-language-workflow-validation.md`.
+- README explains that .NET is currently the most mature path, not the only intended path. Done.
+- Language-specific guidance is not treated as approved until validation evidence exists. Done through optional rule-pack gating and staged support docs.
 ## Milestone 16: Sample Repository Factory
 
 Goal: Generate disposable local repositories that unblock validation when real repositories are unavailable.
