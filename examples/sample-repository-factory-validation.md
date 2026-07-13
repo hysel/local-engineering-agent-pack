@@ -68,6 +68,66 @@ Do not include private repository names, private paths, private endpoints, usern
 - [x] No raw transcripts.
 - [x] No customer, employer, or internal project identifiers.
 
+## 2026-07-13 Generated Category Expansion Validation
+
+### Summary
+
+- Validation type: Generated sample repository category expansion
+- Repository categories: Node service, Java/Spring API, Go service, Rust CLI, Infrastructure as Code, SQL migrations
+- Operating system: Windows with Bash-compatible shell checks
+- Editor surface: Not used for this evidence entry
+- Continue version: Not used for this evidence entry
+- Model: Not used for this evidence entry
+- Provider: Not used
+- MCP state: Not used
+- Pack version or commit: `0.2.0` development branch after cross-platform workflow dispatcher work
+
+### Setup
+
+- Generated disposable samples with the PowerShell sample repository factory.
+- Verified the generated fixture list includes Python, TypeScript, Node, Java, Go, Rust, Infrastructure as Code, and SQL samples.
+- Generated runtime context for representative non-Python/non-TypeScript samples.
+- Kept generated files under ignored runtime output or temporary test directories.
+
+### Results
+
+| Sample | Category | Factory generation | Runtime context generation | Grounding signals |
+| --- | --- | --- | --- | --- |
+| `node-service` | Service repository | Passed | Passed | `package.json`, `Dockerfile`, `src/server.js` |
+| `java-spring-api` | Java API repository | Passed | Covered by fixture-shape tests | `pom.xml`, `HealthController.java`, `application.properties` |
+| `go-service` | Go service repository | Passed | Covered by fixture-shape tests | `go.mod`, `cmd/server/main.go`, `cmd/server/main_test.go` |
+| `rust-cli` | Rust CLI repository | Passed | Covered by fixture-shape tests | `Cargo.toml`, `src/main.rs` |
+| `iac-terraform-kubernetes` | Infrastructure repository | Passed | Passed | `terraform/main.tf`, `k8s/deployment.yaml`, `.github/workflows/validate.yml` |
+| `sql-migrations` | Database migration repository | Passed | Passed | `schema/001_create_items.sql`, `migrations/002_add_item_status.sql`, `seeds/items.sql` |
+
+### Tool Validation
+
+- File listing worked: Not applicable; this entry validates deterministic generated samples and runtime context, not editor Agent tools.
+- File content reading worked: Runtime context generation included representative files for Node, Infrastructure as Code, and SQL samples.
+- Current-folder path resolution worked: Not applicable; no editor Agent write was performed.
+- Apply target matched intended file: Not applicable; no approved write was performed.
+- External shell or git verification passed: Yes, validation and pack tests passed with generated fixture checks.
+- Failure signals: None observed during script-level generated-category validation.
+
+### Pack Follow-Up
+
+- Prompt updates needed: None from this script-level validation pass.
+- Rule updates needed: None from this script-level validation pass.
+- Documentation updates needed: Milestone 13 can treat generated category coverage as available when real repositories are not available.
+- Script or test updates needed: Keep fixture-shape and runtime-context assertions for the expanded sample categories.
+- Remaining validation: Model/editor repository-discovery, implementation-planning, code-review, and approved-write validation still require separate evidence before promoting language or agent support.
+
+### Sanitization Checklist
+
+- [x] No private repository names.
+- [x] No private local paths.
+- [x] No private endpoints, IP addresses, or hostnames.
+- [x] No usernames.
+- [x] No tokens or secrets.
+- [x] No raw private source code.
+- [x] No raw transcripts.
+- [x] No customer, employer, or internal project identifiers.
+
 ## 2026-07-05 Focused CLI Repository Discovery Validation
 
 ### Summary

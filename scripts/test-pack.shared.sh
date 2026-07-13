@@ -495,9 +495,17 @@ test_sample_repository_factory_validation_evidence() {
     grep -q "Sample Repository Factory Validation Evidence" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
     grep -q "python-api" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
     grep -q "typescript-frontend" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "Generated Category Expansion Validation" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "node-service" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "java-spring-api" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "go-service" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "rust-cli" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "iac-terraform-kubernetes" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "sql-migrations" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
     grep -q "Runtime context generation" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
     grep -q "does not prove model or editor Agent behavior" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
     grep -q "No private local paths" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
+    grep -q "Expanded generated-category evidence" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "examples/sample-repository-factory-validation.md" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "examples/sample-repository-factory-validation.md" "$REPO_ROOT/README.md"
 }

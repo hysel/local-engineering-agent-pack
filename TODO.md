@@ -238,7 +238,7 @@
 - [x] Add deterministic output verification for filename fidelity, unsafe migration patterns, and lifecycle/support claims.
 - [x] Add deterministic filename-fidelity fallback artifacts for workflows that fail runtime output verification.
 - [ ] Add workflow-specific remediation templates for non-filename deterministic output verification failures if they recur.
-- [ ] Add generated local sample repositories for additional validation categories when real repositories are not available.
+- [x] Add generated local sample repositories for additional validation categories when real repositories are not available.
 - [ ] Validate the pack against additional real repositories when suitable targets are available.
 - [ ] Convert repeated validation failures into prompt, rule, documentation, or script updates.
 - [x] Keep private repository names, local paths, endpoints, raw transcripts, customer names, and source code out of committed evidence.

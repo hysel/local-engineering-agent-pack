@@ -381,7 +381,7 @@ Scope:
 - Validate the pack against additional real repositories when suitable targets are available.
 - Convert repeated validation failures into prompt, rule, documentation, or script updates. First legacy validation findings for filename fidelity and lifecycle/support claims have been converted into prompt and test guardrails.
 - Add deterministic output verification or a stricter template fallback when local models continue to ignore filename-fidelity and lifecycle/support guardrails. Deterministic runtime output verification has been added; stricter template fallback remains available if verification shows repeated failures.
-- Add generated local sample repositories for additional validation categories when real repositories are not available.
+- Add generated local sample repositories for additional validation categories when real repositories are not available. Done for Node, Java, Go, Rust, Infrastructure as Code, and SQL generated categories with sanitized script-level evidence.
 - Keep private repository names, local paths, endpoints, raw transcripts, customer names, and source code out of committed evidence.
 
 Exit criteria:

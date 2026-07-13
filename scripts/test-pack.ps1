@@ -566,9 +566,14 @@ Invoke-PackTest "sample repository factory validation evidence is sanitized" {
     Assert-True -Condition ($evidence -match "Sample Repository Factory Validation Evidence") -Message "Evidence should have expected title."
     Assert-True -Condition ($evidence -match "python-api") -Message "Evidence should include python-api sample."
     Assert-True -Condition ($evidence -match "typescript-frontend") -Message "Evidence should include typescript-frontend sample."
+    foreach ($sample in @("node-service", "java-spring-api", "go-service", "rust-cli", "iac-terraform-kubernetes", "sql-migrations")) {
+        Assert-True -Condition ($evidence -match [regex]::Escape($sample)) -Message "Evidence should include expanded generated category sample: $sample."
+    }
+    Assert-True -Condition ($evidence -match "Generated Category Expansion Validation") -Message "Evidence should record expanded generated category validation."
     Assert-True -Condition ($evidence -match "Runtime context generation") -Message "Evidence should mention runtime context generation."
     Assert-True -Condition ($evidence -match "does not prove model or editor Agent behavior") -Message "Evidence should avoid overstating Agent validation."
     Assert-True -Condition ($evidence -match "No private local paths") -Message "Evidence should include sanitization checklist."
+    Assert-True -Condition ($doc -match "Expanded generated-category evidence") -Message "Sample factory docs should mention expanded generated-category evidence."
     Assert-True -Condition ($doc -match "examples/sample-repository-factory-validation\.md") -Message "Sample factory doc should link evidence."
     Assert-True -Condition ($readme -match "examples/sample-repository-factory-validation\.md") -Message "README should link evidence."
 }
