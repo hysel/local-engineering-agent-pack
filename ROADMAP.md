@@ -529,7 +529,7 @@ Scope:
 - Design a unified starter-toolkit web UI for people who want to use local AI for coding, with guided flows for setup, hardware profiling, model choice, config generation, agent-surface testing, and validation.
 - Keep the web UI evidence-first: show what was tested, what passed, what failed, and what is only a recommendation before applying changes.
 - Generate a local evidence dashboard from validation JSON so users can compare models, agent surfaces, operating systems, write readiness, and risks before installing anything. Done for committed evidence catalog and surface readiness data; deeper runtime JSON ingestion remains future work.
-- Add a beginner setup mode that guides users through the common local-AI coding path with minimal questions and exact next commands.
+- Add a beginner setup mode that guides users through the common local-AI coding path with minimal questions and exact next commands. Done for a registry-backed command plan; future UI can turn the plan into guided controls.
 - Add a health check workflow that verifies Ollama reachability, generated config, duplicate local references, repository detection, and runtime validation output status. Done for current PowerShell and shell-wrapper scope.
 - Add a safe cleanup workflow with dry-run support for stale runtime outputs, generated samples, failed diagnostic artifacts, and obsolete backup folders. Done for local artifact cleanup; model deletion remains explicit in model-testing workflows.
 - Add a release readiness gate that runs validation, tests, release package dry-run, git state, workflow registry checks, and agent-surface parity checks before release or push. Done for local gate scope; optional remote workflow status remains future work.

@@ -78,6 +78,21 @@
       }
     },
     {
+      "id": "get-beginner-setup-plan",
+      "name": "Get Beginner Setup Plan",
+      "purpose": "Create an ordered first-run setup plan that links beginner commands to stable workflow registry entries.",
+      "category": "onboarding",
+      "safetyLevel": "read-only",
+      "uiReady": true,
+      "inputs": ["platform", "outputPath", "markdownOutputPath"],
+      "outputs": ["beginnerSetupPlanJson", "beginnerSetupPlanMarkdown"],
+      "entryPoints": {
+        "windows": "scripts/get-beginner-setup-plan.ps1",
+        "linux": "scripts/get-beginner-setup-plan.linux.sh",
+        "macos": "scripts/get-beginner-setup-plan.macos.sh"
+      }
+    },
+    {
       "id": "pull-local-agent-models",
       "name": "Pull Local Agent Models",
       "purpose": "Download selected local model candidates after hardware and validation review.",

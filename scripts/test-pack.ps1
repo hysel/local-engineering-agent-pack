@@ -2355,6 +2355,7 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
         "discover-online-models",
         "generate-model-scorecard",
         "generate-evidence-dashboard",
+        "get-beginner-setup-plan",
         "test-local-agent-models",
         "recommend-agent-config",
         "apply-agent-config",
@@ -2583,6 +2584,44 @@ Invoke-PackTest "evidence dashboard summarizes catalog and surface status" {
         $dispatch = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "generate-evidence-dashboard", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-AsJson"]')
         Assert-Equal -Actual $dispatch.ExitCode -Expected 0 -Message "Workflow dispatcher should resolve evidence dashboard."
         Assert-True -Condition ($dispatch.Output -match "scripts/generate-evidence-dashboard\.ps1") -Message "Dispatcher should point at the evidence dashboard script."
+    }
+    finally {
+        Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+Invoke-PackTest "beginner setup plan maps first-run commands to workflows" {
+    $scriptPath = Join-Path $repoRoot "scripts/get-beginner-setup-plan.ps1"
+    $dispatcherPath = Join-Path $repoRoot "scripts/invoke-workflow.ps1"
+    $docPath = Join-Path $repoRoot "docs/beginner-setup-mode.md"
+    $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "beginner-setup-test-$([guid]::NewGuid())"
+    $jsonPath = Join-Path $tempRoot "beginner-plan.json"
+    $markdownPath = Join-Path $tempRoot "beginner-plan.md"
+
+    try {
+        New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null
+
+        $result = Invoke-CommandCapture -FilePath $scriptPath -Arguments @("-Platform", "windows", "-OutputPath", $jsonPath, "-MarkdownOutputPath", $markdownPath, "-AsJson")
+        Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "Beginner setup plan generation should succeed."
+        Assert-True -Condition (Test-Path -LiteralPath $jsonPath) -Message "Beginner setup plan should write JSON output."
+        Assert-True -Condition (Test-Path -LiteralPath $markdownPath) -Message "Beginner setup plan should write Markdown output."
+
+        $report = Get-Content -LiteralPath $jsonPath -Raw | ConvertFrom-Json
+        $markdown = Get-Content -LiteralPath $markdownPath -Raw
+        $doc = Get-Content -LiteralPath $docPath -Raw
+
+        Assert-Equal -Actual $report.SchemaVersion -Expected 1 -Message "Beginner setup plan schema version should be stable."
+        Assert-Equal -Actual $report.Platform -Expected "windows" -Message "Beginner setup plan should preserve selected platform."
+        Assert-True -Condition ($report.StepCount -ge 8) -Message "Beginner setup plan should include the first-run path."
+        Assert-True -Condition (@($report.Steps | Where-Object { $_.WorkflowId -eq "test-local-agent-health" }).Count -eq 1) -Message "Beginner setup plan should include health check."
+        Assert-True -Condition (@($report.Steps | Where-Object { $_.WorkflowId -eq "generate-evidence-dashboard" }).Count -eq 1) -Message "Beginner setup plan should include evidence dashboard."
+        Assert-True -Condition (@($report.Steps | Where-Object { $_.WorkflowId -eq "apply-agent-config" -and $_.RequiresReviewBeforeApply -eq $true }).Count -eq 1) -Message "Beginner setup plan should require review before config apply."
+        Assert-True -Condition ($markdown -match "Beginner Setup Plan") -Message "Beginner setup markdown should include title."
+        Assert-True -Condition ($markdown -match "<your-project-path>") -Message "Beginner setup markdown should preserve target placeholder."
+        Assert-True -Condition ($doc -match "RequiresReviewBeforeApply") -Message "Beginner setup docs should explain review boundary."
+
+        $dispatch = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "get-beginner-setup-plan", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-AsJson"]')
+        Assert-Equal -Actual $dispatch.ExitCode -Expected 0 -Message "Workflow dispatcher should resolve beginner setup plan."
+        Assert-True -Condition ($dispatch.Output -match "scripts/get-beginner-setup-plan\.ps1") -Message "Dispatcher should point at the beginner setup script."
     }
     finally {
         Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue

@@ -308,7 +308,7 @@
 - [ ] Add the unified web UI wrapper after script-level workflows are stable.
 - [ ] Keep the UI evidence-first by showing tested, passed, failed, and recommended-only states before applying changes.
 - [x] Generate a local evidence dashboard from committed evidence and surface readiness data.
-- [ ] Add beginner setup mode for the common local-AI coding setup path.
+- [x] Add beginner setup mode for the common local-AI coding setup path.
 - [x] Add a health check workflow for Ollama, models, config, duplicate rules, repository detection, and validation status.
 - [x] Add a safe cleanup workflow with dry-run support for failed models, stale runtime output, generated samples, and old backups.
 - [x] Add a release readiness gate for validation, tests, docs/wiki freshness, whitespace checks, and optional remote workflow status.

@@ -20,6 +20,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Pick the right local model | `docs/local-model-selection.md` |
 | Generate a hardware-aware model/config recommendation | `docs/hardware-aware-recommendations.md` |
 | Review stable workflow entry points | `docs/workflow-registry.md` |
+| Generate a beginner setup plan | `docs/beginner-setup-mode.md` |
 | Plan shared assets for multiple projects | `docs/shared-asset-installation.md` |
 | Profile a remote LLM machine | `docs/remote-hardware-profile.md` |
 | Evaluate newer model candidates | `docs/online-model-discovery.md` |
@@ -45,6 +46,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Validate this pack | `Quick Validation` |
 | Build release artifacts | `docs/release.md` |
 | Review validation evidence | `docs/evidence-catalog.md` and `config/evidence-catalog.tsv` |
+| Generate evidence and setup summaries | `docs/evidence-dashboard.md` and `docs/beginner-setup-mode.md` |
 | Fix setup problems | `Common Problems` and `docs/troubleshooting.md` |
 
 ## Quick Start
