@@ -981,6 +981,26 @@ test_shared_asset_installation_doc() {
     grep -q "centralized shared asset" "$REPO_ROOT/TODO.md" &&
     grep -q "centralized shared asset" "$REPO_ROOT/ROADMAP.md"
 }
+
+test_solution_architecture_review_doc() {
+  [ -f "$REPO_ROOT/docs/solution-architecture-review.md" ] &&
+    grep -q "Review Standard" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "Milestone Audit" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "1: Minimum Usable Pack" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "17: Agent Surface Compatibility Validation" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "18: Language Rule Packs" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "19: Installer Profiles" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "20: Hardware-Aware Model" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "Input-Dependent Decisions" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "Roo Code, Kilo Code, and OpenCode" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "EMPTY_MODEL_OUTPUT" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "docs/solution-architecture-review.md" "$REPO_ROOT/README.md" &&
+    grep -q "Solution Architecture Review Backlog" "$REPO_ROOT/TODO.md" &&
+    grep -q "\\[x\\] Add a milestone solution completeness audit" "$REPO_ROOT/TODO.md" &&
+    grep -q "\\[ \\] Provide or approve suitable non-generated repositories" "$REPO_ROOT/TODO.md" &&
+    grep -q "\\[ \\] Confirm real command shapes for Roo Code, Kilo Code, and OpenCode" "$REPO_ROOT/TODO.md" &&
+    grep -q "\\[ \\] Confirm scope and priority for the unified starter-toolkit web UI" "$REPO_ROOT/TODO.md"
+}
 run_test "validate-pack succeeds for repository" test_validate_succeeds
 run_test "validate-pack fails for wrong expected version" test_validate_fails_for_wrong_version
 run_test "release packaging scripts define archives, checksums, and sanitized dry runs" test_release_packaging_scripts
@@ -1022,6 +1042,7 @@ run_test "prompt quality guardrails require filename fidelity and sourced lifecy
 run_test "tool-use docs define platform-aware approved write behavior" test_tool_use_docs_define_platform_aware_write_behavior
 run_test "hardware-aware recommendation scripts emit sanitized model lanes" test_hardware_aware_recommendation_scripts
 run_test "shared asset installation docs define centralized config strategy" test_shared_asset_installation_doc
+run_test "solution architecture review tracks milestone gaps" test_solution_architecture_review_doc
 run_test "recommended agent config generation writes local-only config" test_recommended_agent_config_generation
 
 if [ "$FAILED" -eq 1 ]; then

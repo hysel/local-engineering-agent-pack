@@ -2843,6 +2843,32 @@ Invoke-PackTest "agent surface solutions define install configure and test" {
     Assert-True -Condition ($todo -match "surface-neutral install/configure/test solution catalog") -Message "TODO should track solution catalog completion."
     Assert-True -Condition ($todo -match "\[x\] Decide whether install scripts should generate surface-specific config bundles") -Message "TODO should mark config bundle decision complete."
 }
+Invoke-PackTest "solution architecture review tracks milestone gaps" {
+    $docPath = Join-Path $repoRoot "docs/solution-architecture-review.md"
+    $readmePath = Join-Path $repoRoot "README.md"
+    $todoPath = Join-Path $repoRoot "TODO.md"
+
+    Assert-True -Condition (Test-Path -LiteralPath $docPath) -Message "Solution architecture review doc should exist."
+
+    $doc = Get-Content -LiteralPath $docPath -Raw
+    $readme = Get-Content -LiteralPath $readmePath -Raw
+    $todo = Get-Content -LiteralPath $todoPath -Raw
+
+    Assert-True -Condition ($doc -match "Review Standard") -Message "Solution architecture review should define review standard."
+    Assert-True -Condition ($doc -match "Milestone Audit") -Message "Solution architecture review should include milestone audit."
+    foreach ($milestone in @("1: Minimum Usable Pack", "17: Agent Surface Compatibility Validation", "18: Language Rule Packs", "19: Installer Profiles", "20: Hardware-Aware Model")) {
+        Assert-True -Condition ($doc -match [regex]::Escape($milestone)) -Message "Solution architecture review should cover milestone $milestone."
+    }
+    Assert-True -Condition ($doc -match "Input-Dependent Decisions") -Message "Solution architecture review should list input-dependent decisions."
+    Assert-True -Condition ($doc -match "Roo Code, Kilo Code, and OpenCode") -Message "Solution architecture review should track unconfirmed agent wrapper command shapes."
+    Assert-True -Condition ($doc -match "EMPTY_MODEL_OUTPUT") -Message "Solution architecture review should track language validation failure signals."
+    Assert-True -Condition ($readme -match "docs/solution-architecture-review\.md") -Message "README should link solution architecture review."
+    Assert-True -Condition ($todo -match "Solution Architecture Review Backlog") -Message "TODO should include solution architecture backlog."
+    Assert-True -Condition ($todo -match "\[x\] Add a milestone solution completeness audit") -Message "TODO should mark solution audit doc complete."
+    Assert-True -Condition ($todo -match "\[ \] Provide or approve suitable non-generated repositories") -Message "TODO should track input-needed real repository targets."
+    Assert-True -Condition ($todo -match "\[ \] Confirm real command shapes for Roo Code, Kilo Code, and OpenCode") -Message "TODO should track input-needed wrapper command shapes."
+    Assert-True -Condition ($todo -match "\[ \] Confirm scope and priority for the unified starter-toolkit web UI") -Message "TODO should track UI scope input."
+}
 Invoke-PackTest "sample scenario packs reference existing assets" {
     $scenarioPath = Join-Path $repoRoot "config/sample-scenario-packs.json"
     $registryPath = Join-Path $repoRoot "config/workflows.json"

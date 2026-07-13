@@ -303,6 +303,22 @@
 - [ ] Validate Roo Code, Kilo Code, and OpenCode wrappers against generated samples when their real command shapes are confirmed.
 - [ ] Run explicitly approved non-generated repository validation before promoting any non-Continue surface to real-project approved-write ready.
 
+## Milestone 18: Language Rule Packs
+
+- [x] Add optional Python rule pack.
+- [x] Add optional TypeScript rule pack.
+- [x] Add optional Java, Go, Rust, SQL, and Infrastructure as Code rule packs.
+- [x] Add evidence-gated rule selection guidance for optional Python, TypeScript, Java, Go, Rust, SQL, and Infrastructure as Code packs.
+- [x] Validate optional language rule packs against generated sample repositories with static evidence checks.
+- [ ] Validate rule packs against editor/model repository-discovery, implementation-planning, and code-review workflows. Partial generated-sample evidence is recorded for Java, Go, Rust, SQL, and Infrastructure; remaining failures must be resolved before marking complete.
+
+## Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging
+
+- [x] Add installer profile options for read-only review and approved-write workflows.
+- [ ] Add future surface-specific profile generation after non-Continue validation.
+- [x] Add a sanitized evidence catalog for model, surface, OS, language, and write-readiness results.
+- [x] Add release archive, checksum, and install-command guidance.
+
 ## Milestone 20: Hardware-Aware Model And Config Automation
 
 - [x] Add offline hardware-aware recommendation scripts for Windows, Linux, and macOS.
@@ -334,18 +350,12 @@
 - [ ] Generate surface-specific plugin profiles only after compatibility evidence exists.
 - [x] Add sample scenario packs for legacy migration, config refactoring, bug fixing, security review, test generation, and documentation cleanup.
 
-## Milestone 18: Language Rule Packs
+## Solution Architecture Review Backlog
 
-- [x] Add optional Python rule pack.
-- [x] Add optional TypeScript rule pack.
-- [x] Add optional Java, Go, Rust, SQL, and Infrastructure as Code rule packs.
-- [x] Add evidence-gated rule selection guidance for optional Python, TypeScript, Java, Go, Rust, SQL, and Infrastructure as Code packs.
-- [x] Validate optional language rule packs against generated sample repositories with static evidence checks.
-- [ ] Validate rule packs against editor/model repository-discovery, implementation-planning, and code-review workflows. Partial generated-sample evidence is recorded for Java, Go, Rust, SQL, and Infrastructure; remaining failures must be resolved before marking complete.
-
-## Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging
-
-- [x] Add installer profile options for read-only review and approved-write workflows.
-- [ ] Add future surface-specific profile generation after non-Continue validation.
-- [x] Add a sanitized evidence catalog for model, surface, OS, language, and write-readiness results.
-- [x] Add release archive, checksum, and install-command guidance.
+- [x] Add a milestone solution completeness audit covering completed and active roadmap stages.
+- [ ] Provide or approve suitable non-generated repositories for future real-repository validation.
+- [ ] Confirm real command shapes for Roo Code, Kilo Code, and OpenCode wrapper validation.
+- [ ] Confirm whether surface-specific install/configure profiles should be prioritized before more non-Continue evidence exists.
+- [ ] Confirm scope and priority for the unified starter-toolkit web UI.
+- [ ] Confirm whether external wiki publishing is required for the next release.
+- [ ] Resolve Milestone 18 editor/model workflow failures before promoting Java, Go, Rust, SQL, and Infrastructure rule packs beyond evidence-gated status.
