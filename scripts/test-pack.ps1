@@ -2363,7 +2363,8 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
         "cleanup-local-agent-artifacts",
         "test-agent-cli-surface",
         "validate-pack",
-        "test-pack"
+        "test-pack",
+        "test-release-readiness"
     )
 
     Assert-Equal -Actual $registry.schemaVersion -Expected 1 -Message "Workflow registry schema version changed."
@@ -2481,6 +2482,35 @@ Invoke-PackTest "agent surface capability matrix preserves parity" {
     Assert-True -Condition ($doc -match "config/agent-surface-capabilities\.json") -Message "Parity doc should point to matrix."
     Assert-True -Condition ($options -match "Compatibility Matrix") -Message "Surface options doc should retain compatibility matrix."
     Assert-True -Condition ($todo -match "surface-specific config") -Message "TODO should track surface-specific config work."
+}
+Invoke-PackTest "release readiness gate checks core release invariants" {
+    $scriptPath = Join-Path $repoRoot "scripts/test-release-readiness.ps1"
+    $dispatcherPath = Join-Path $repoRoot "scripts/invoke-workflow.ps1"
+    $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "release-readiness-test-$([guid]::NewGuid())"
+    $outputPath = Join-Path $tempRoot "release-readiness.json"
+
+    try {
+        New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null
+
+        $result = Invoke-CommandCapture -FilePath $scriptPath -Arguments @("-AllowDirty", "-SkipValidation", "-SkipTests", "-SkipPackageDryRun", "-AsJson", "-OutputPath", $outputPath)
+        Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "Release readiness gate should support non-recursive test mode."
+        Assert-True -Condition (Test-Path -LiteralPath $outputPath) -Message "Release readiness gate should write JSON report."
+
+        $report = Get-Content -LiteralPath $outputPath -Raw | ConvertFrom-Json
+        Assert-Equal -Actual $report.SchemaVersion -Expected 1 -Message "Release readiness report schema version should be stable."
+        Assert-True -Condition ($report.OverallStatus -in @("pass", "warn", "skip")) -Message "Release readiness gate should not fail in skipped-command test mode."
+        Assert-True -Condition (@($report.Checks | Where-Object { $_.Id -eq "workflow.registry" -and $_.Status -eq "pass" }).Count -eq 1) -Message "Release readiness gate should check workflow registry."
+        Assert-True -Condition (@($report.Checks | Where-Object { $_.Id -eq "surface.parity" -and $_.Status -eq "pass" }).Count -eq 1) -Message "Release readiness gate should check surface parity."
+        Assert-True -Condition (@($report.Checks | Where-Object { $_.Id -eq "validate-pack" -and $_.Status -eq "skip" }).Count -eq 1) -Message "Release readiness gate should record skipped validation."
+        Assert-True -Condition ($result.Output -notmatch "192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|token|secret") -Message "Release readiness output should stay sanitized."
+
+        $dispatch = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "test-release-readiness", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-AllowDirty","-SkipTests"]')
+        Assert-Equal -Actual $dispatch.ExitCode -Expected 0 -Message "Workflow dispatcher should resolve release readiness gate."
+        Assert-True -Condition ($dispatch.Output -match "scripts/test-release-readiness\.ps1") -Message "Dispatcher should point at the release readiness script."
+    }
+    finally {
+        Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }
 Invoke-PackTest "local agent health check reports setup status" {
     $scriptPath = Join-Path $repoRoot "scripts/test-local-agent-health.ps1"

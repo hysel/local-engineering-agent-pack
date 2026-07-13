@@ -258,6 +258,21 @@
       }
     },
     {
+      "id": "test-release-readiness",
+      "name": "Test Release Readiness",
+      "purpose": "Run the release gate for validation, tests, release package dry-run, git state, workflow registry, and agent-surface parity.",
+      "category": "release-readiness",
+      "safetyLevel": "controlled-write",
+      "uiReady": true,
+      "inputs": ["expectedVersion", "releaseVersion", "outputPath", "allowDirty", "skipValidation", "skipTests", "skipPackageDryRun"],
+      "outputs": ["releaseReadinessReportJson", "releaseReadinessConsoleOutput"],
+      "entryPoints": {
+        "windows": "scripts/test-release-readiness.ps1",
+        "linux": "scripts/test-release-readiness.linux.sh",
+        "macos": "scripts/test-release-readiness.macos.sh"
+      }
+    },
+    {
       "id": "build-release-package",
       "name": "Build Release Package",
       "purpose": "Create release archives, checksums, and release artifacts after validation passes.",

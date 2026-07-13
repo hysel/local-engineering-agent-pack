@@ -52,7 +52,7 @@
         },
         "release-readiness": {
           "status": "supported",
-          "entryPoints": ["validate-pack", "test-pack", "build-release-package"],
+          "entryPoints": ["validate-pack", "test-pack", "test-release-readiness", "build-release-package"],
           "evidence": ["docs/release.md"]
         },
         "model-selection": {
@@ -100,7 +100,7 @@
         },
         "release-readiness": {
           "status": "supported",
-          "entryPoints": ["validate-pack", "test-pack"],
+          "entryPoints": ["validate-pack", "test-pack", "test-release-readiness"],
           "evidence": ["docs/release.md"]
         },
         "model-selection": {
@@ -148,7 +148,7 @@
         },
         "release-readiness": {
           "status": "supported",
-          "entryPoints": ["validate-pack", "test-pack"],
+          "entryPoints": ["validate-pack", "test-pack", "test-release-readiness"],
           "evidence": ["docs/release.md"]
         },
         "model-selection": {
@@ -196,7 +196,7 @@
         },
         "release-readiness": {
           "status": "supported",
-          "entryPoints": ["validate-pack", "test-pack"],
+          "entryPoints": ["validate-pack", "test-pack", "test-release-readiness"],
           "evidence": ["docs/release.md"]
         },
         "model-selection": {
@@ -244,7 +244,7 @@
         },
         "release-readiness": {
           "status": "supported",
-          "entryPoints": ["validate-pack", "test-pack"],
+          "entryPoints": ["validate-pack", "test-pack", "test-release-readiness"],
           "evidence": ["docs/release.md"]
         },
         "model-selection": {
@@ -292,7 +292,7 @@
         },
         "release-readiness": {
           "status": "supported",
-          "entryPoints": ["validate-pack", "test-pack"],
+          "entryPoints": ["validate-pack", "test-pack", "test-release-readiness"],
           "evidence": ["docs/release.md"]
         },
         "model-selection": {
@@ -340,7 +340,7 @@
         },
         "release-readiness": {
           "status": "supported",
-          "entryPoints": ["validate-pack", "test-pack"],
+          "entryPoints": ["validate-pack", "test-pack", "test-release-readiness"],
           "evidence": ["docs/release.md"]
         },
         "model-selection": {

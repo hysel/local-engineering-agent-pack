@@ -32,6 +32,7 @@ Update `DECISIONS.md` when the release includes a durable policy, architecture, 
 
 Before tagging a release:
 
+- [ ] Run the local release readiness gate: `.\scripts\test-release-readiness.ps1`.
 - [ ] Enable local Git hooks once per clone: `.\scripts\install-git-hooks.ps1`.
 - [ ] Run Windows validation: `.\scripts\validate-pack.ps1` and `.\scripts\test-pack.ps1`.
 - [ ] Run Linux validation when Bash is available: `./scripts/validate-pack.linux.sh` and `./scripts/test-pack.linux.sh`.
@@ -77,8 +78,18 @@ Preview the package plan without writing files:
 .\scripts\build-release-package.ps1 -Version 0.2.0 -DryRun
 ```
 
+The release readiness gate combines validation, tests, package dry-run, Git state, workflow registry checks, and agent-surface parity checks:
+
+```powershell
+.\scripts\test-release-readiness.ps1
+```
+
 ```bash
 ./scripts/build-release-package.linux.sh --version 0.2.0 --dry-run
+```
+
+```bash
+./scripts/test-release-readiness.linux.sh
 ```
 
 The default output folder is `dist/`, which is ignored by Git.
