@@ -42,6 +42,27 @@ The planned web UI should read this registry rather than hard-code every script.
 
 The UI should remain a wrapper over tested scripts and shared engines. It should not reimplement hardware profiling, model selection, model testing, install, or validation logic.
 
+## Dispatcher Boundary
+
+`scripts/invoke-workflow.ps1` is the first stable dispatcher over the registry. It is intentionally small:
+
+- `-List` prints the available workflow IDs, names, categories, safety levels, and UI readiness.
+- `-WorkflowId <id> -DryRun` resolves the platform-specific entry point without invoking it.
+- `-WorkflowId <id> -- <args>` invokes the resolved script and passes remaining arguments through in an interactive shell.
+- `-WorkflowArgumentsJson '["<arg>","<value>"]'` passes workflow-specific arguments through in automation that shells through `pwsh -File`.
+- `-Json` emits machine-readable list or resolution output for future UI callers.
+
+Examples:
+
+```powershell
+.\scripts\invoke-workflow.ps1 -List
+.\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -DryRun
+.\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -- -ExpectedVersion 0.2.0
+pwsh -NoProfile -File .\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -WorkflowArgumentsJson '["-ExpectedVersion","0.2.0"]'
+```
+
+The dispatcher does not reinterpret workflow-specific arguments. Each underlying script remains the source of behavior, validation, and safety checks.
+
 ## Maintenance Rules
 
 - Keep paths repository-relative.

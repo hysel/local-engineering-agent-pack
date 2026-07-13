@@ -173,6 +173,7 @@ $requiredFiles = @(
     "scripts/generate-sample-repositories.macos.sh",
     "scripts/generate-sample-repositories.shared.sh",
     "scripts/build-release-package.ps1",
+    "scripts/invoke-workflow.ps1",
     "scripts/build-release-package.linux.sh",
     "scripts/build-release-package.macos.sh",
     "scripts/recommend-local-agent-config.ps1",

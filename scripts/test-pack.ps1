@@ -2334,12 +2334,14 @@ Invoke-PackTest "shared asset installation docs define centralized config strate
 }
 Invoke-PackTest "workflow registry defines stable UI entry points" {
     $registryPath = Join-Path $repoRoot "config/workflows.json"
+    $dispatcherPath = Join-Path $repoRoot "scripts/invoke-workflow.ps1"
     $docPath = Join-Path $repoRoot "docs/workflow-registry.md"
     $readmePath = Join-Path $repoRoot "README.md"
     $roadmapPath = Join-Path $repoRoot "ROADMAP.md"
     $todoPath = Join-Path $repoRoot "TODO.md"
 
     Assert-True -Condition (Test-Path -LiteralPath $registryPath) -Message "Workflow registry should exist."
+    Assert-True -Condition (Test-Path -LiteralPath $dispatcherPath) -Message "Workflow dispatcher should exist."
     Assert-True -Condition (Test-Path -LiteralPath $docPath) -Message "Workflow registry docs should exist."
 
     $registry = Get-Content -LiteralPath $registryPath -Raw | ConvertFrom-Json
@@ -2397,9 +2399,26 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
     Assert-True -Condition ($doc -match "Safety Levels") -Message "Workflow registry docs should explain safety levels."
     Assert-True -Condition ($doc -match "UI Direction") -Message "Workflow registry docs should explain UI direction."
     Assert-True -Condition ($doc -match "config/workflows\.json") -Message "Workflow registry docs should reference the JSON file."
+    Assert-True -Condition ($doc -match "scripts/invoke-workflow\.ps1") -Message "Workflow registry docs should reference the dispatcher."
+    Assert-True -Condition ($doc -match "-List") -Message "Workflow registry docs should document dispatcher list mode."
+    Assert-True -Condition ($doc -match "-DryRun") -Message "Workflow registry docs should document dispatcher dry-run mode."
     Assert-True -Condition ($readme -match "docs/workflow-registry.md") -Message "README should link workflow registry docs."
     Assert-True -Condition ($roadmap -match "workflow registry") -Message "Roadmap should track workflow registry work."
     Assert-True -Condition ($todo -match "workflow registry") -Message "TODO should track workflow registry work."
+
+    $listResult = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-List", "-Json")
+    Assert-Equal -Actual $listResult.ExitCode -Expected 0 -Message "Workflow dispatcher list mode should succeed."
+    Assert-True -Condition ($listResult.Output -match '"Id":\s*"validate-pack"') -Message "Workflow dispatcher list output should include validate-pack."
+
+    $dryRunResult = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "validate-pack", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-ExpectedVersion","0.2.0"]')
+    Assert-Equal -Actual $dryRunResult.ExitCode -Expected 0 -Message "Workflow dispatcher dry run should succeed."
+    Assert-True -Condition ($dryRunResult.Output -match "scripts/validate-pack\.ps1") -Message "Workflow dispatcher dry run should resolve validate-pack script."
+    Assert-True -Condition ($dryRunResult.Output -match "read-only") -Message "Workflow dispatcher dry run should include safety level."
+    Assert-True -Condition ($dryRunResult.Output -match "ExpectedVersion") -Message "Workflow dispatcher dry run should preserve passthrough arguments."
+
+    $missingResult = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "missing-workflow", "-DryRun")
+    Assert-True -Condition ($missingResult.ExitCode -ne 0) -Message "Workflow dispatcher should fail for an unknown workflow."
+    Assert-True -Condition ($missingResult.Output -match "Workflow not found") -Message "Workflow dispatcher should report an unknown workflow."
 }
 if ($failed) {
     Write-Host "Test run failed. $testCount tests executed." -ForegroundColor Red
