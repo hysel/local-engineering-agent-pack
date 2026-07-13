@@ -283,6 +283,7 @@
 - [x] Use generated samples for focused read-only Continue CLI repository-discovery validation evidence.
 - [x] Use generated samples for model-backed multi-language validation evidence.
 - [x] Improve runtime context generation for non-.NET project metadata as new ecosystems are added.
+- [x] Complete Milestone 16 sample repository factory exit criteria with evidence and regression tests.
 
 ## Milestone 17: Agent Surface Compatibility Validation
 

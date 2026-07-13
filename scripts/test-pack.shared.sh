@@ -521,14 +521,24 @@ test_sample_repository_factory_validation_evidence() {
 
 test_sample_repository_factory_doc() {
   [ -f "$REPO_ROOT/docs/sample-repository-factory.md" ] &&
+    grep -q "Milestone 16 Completion Basis" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "examples/sample-repository-factory-validation.md" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "python-api" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "typescript-frontend" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "node-service" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "java-spring-api" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "go-service" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "rust-cli" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "iac-terraform-kubernetes" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "sql-migrations" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "generate-sample-repositories.ps1" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "generate-sample-repositories.linux.sh" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "generate-sample-repositories.macos.sh" "$REPO_ROOT/docs/sample-repository-factory.md" &&
     grep -q "production starter projects" "$REPO_ROOT/docs/sample-repository-factory.md" &&
+    grep -q "Generated Category Expansion Validation" "$REPO_ROOT/examples/sample-repository-factory-validation.md" &&
     grep -q "docs/sample-repository-factory.md" "$REPO_ROOT/README.md" &&
-    grep -q "Milestone 16: Sample Repository Factory" "$REPO_ROOT/ROADMAP.md"
+    grep -q "| Milestone 16: Sample Repository Factory | Complete |" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "\\[x\\] Complete Milestone 16 sample repository factory exit criteria" "$REPO_ROOT/TODO.md"
 }
 
 test_agent_surface_options_doc() {
