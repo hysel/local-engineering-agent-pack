@@ -2,6 +2,8 @@
 
 The pack should generate surface-specific config bundles, but only after each surface has enough compatibility evidence to make that output useful and safe.
 
+Use `docs/config-generation-strategy.md` for the shared decision model that chooses project-local, shared-assets, global Continue, or future surface-specific config output.
+
 ## Decision
 
 Continue remains the only supported generated config bundle today.

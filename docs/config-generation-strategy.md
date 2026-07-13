@@ -1,0 +1,57 @@
+# Config Generation Strategy
+
+The config-generation strategy decides how recommendation data becomes local agent configuration without turning planned surfaces into supported ones.
+
+## Current Supported Output
+
+Continue is the only supported generated config target today.
+
+Supported Continue outputs:
+
+- Project-local `.continue/config.local.yaml`.
+- Global Continue config with target-repository references.
+- Shared-assets global Continue config when the user explicitly chooses shared-assets mode.
+
+## Input Data Model
+
+Future surfaces should reuse the same recommendation data model where possible:
+
+- Hardware profile from local or remote profiling.
+- Curated model recommendations from `config/model-recommendations.tsv`.
+- Validation evidence from `config/evidence-catalog.tsv`.
+- Surface status from `config/agent-surface-solutions.json`.
+- Config bundle policy from `docs/surface-specific-config-bundles.md`.
+
+The recommendation data can be surface-neutral. Generated config files cannot be surface-neutral; each surface needs its own native config shape.
+
+## Output Choice
+
+| Situation | Recommended output |
+| --- | --- |
+| One project, beginner setup, or least surprising install | Project-local assets plus local-only Continue config. |
+| Multiple projects on one machine with a reliable global Continue config | Shared assets plus generated global Continue config. |
+| Editor loads global config more reliably than project-local config | Generated global Continue config with explicit target references. |
+| Candidate non-Continue surface | No generated config until install/configure/test evidence passes promotion gates. |
+| Platform-style surface such as OpenHands | No generated config until workspace, sandbox, and credential boundaries are documented. |
+
+## Safety Rules
+
+- Dry-run first for install and config apply workflows.
+- Keep local endpoints, model choices, absolute paths, and machine-specific settings out of committed files.
+- Do not generate config for a surface with `planned` or `blocked` install/configure status.
+- Do not copy Continue config syntax into another surface.
+- Do not treat model recommendation as tool-use validation.
+- Require external Git or shell verification before promoting approved-write config behavior.
+
+## Future Surface Path
+
+Before adding a non-Continue config generator:
+
+1. Confirm the surface's install path.
+2. Confirm its local model config format.
+3. Validate read-only repository discovery.
+4. Validate scoped disposable writes if write roles are generated.
+5. Update `config/agent-surface-solutions.json`.
+6. Add tests proving generated output is local-only and sanitized.
+
+This lets Cline, Aider, Roo Code, Kilo Code, OpenCode, or future tools reuse the same recommendation evidence without inheriting Continue-specific assumptions.

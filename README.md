@@ -20,6 +20,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Choose beginner or team setup path | `docs/setup-paths.md` |
 | Pick the right local model | `docs/local-model-selection.md` |
 | Generate a hardware-aware model/config recommendation | `docs/hardware-aware-recommendations.md` |
+| Understand config generation choices | `docs/config-generation-strategy.md` |
 | Review stable workflow entry points | `docs/workflow-registry.md` |
 | Compare all workflow commands and safety levels | `docs/workflow-chooser.md` |
 | See maintainer tasks that can proceed without extra prompts | `docs/autonomous-maintainer-queue.md` |
