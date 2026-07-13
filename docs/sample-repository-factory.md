@@ -6,6 +6,12 @@ The sample repository factory creates local, disposable repositories for validat
 
 The generated repositories are intentionally small. They are not production templates and they do not install dependencies. Their purpose is to provide realistic file names, project markers, source files, tests, documentation, configuration, infrastructure, and database signals that an agent can inspect safely.
 
+## Milestone 16 Completion Basis
+
+Milestone 16 is complete for the current scope because contributors can generate all sample repositories with one documented command on Windows, Linux, or macOS, and the generated samples cover Python, TypeScript, Node, Java, Go, Rust, Infrastructure as Code, and SQL validation categories.
+
+The committed evidence in `examples/sample-repository-factory-validation.md` records script-level generation, sanitized fixture coverage, runtime context generation, and expanded generated-category validation. Pack tests verify fixture markers, wrapper scripts, generated output safety, runtime context coverage for non-.NET metadata, and that generated samples remain disposable validation fixtures rather than production starter projects.
+
 ## Generated Samples
 
 | Sample | Purpose |

@@ -598,15 +598,24 @@ Invoke-PackTest "sample repository factory docs define generated fixtures" {
     $doc = Get-Content -LiteralPath $docPath -Raw
     $readme = Get-Content -LiteralPath (Join-Path $repoRoot "README.md") -Raw
     $roadmap = Get-Content -LiteralPath (Join-Path $repoRoot "ROADMAP.md") -Raw
+    $todo = Get-Content -LiteralPath (Join-Path $repoRoot "TODO.md") -Raw
+    $evidence = Get-Content -LiteralPath (Join-Path $repoRoot "examples/sample-repository-factory-validation.md") -Raw
 
+    Assert-True -Condition ($doc -match "Milestone 16 Completion Basis") -Message "Sample factory doc should record Milestone 16 completion basis."
+    Assert-True -Condition ($doc -match "examples/sample-repository-factory-validation\.md") -Message "Sample factory doc should link committed evidence."
     Assert-True -Condition ($doc -match "python-api") -Message "Sample factory doc should list python-api."
     Assert-True -Condition ($doc -match "typescript-frontend") -Message "Sample factory doc should list typescript-frontend."
+    foreach ($sample in @("node-service", "java-spring-api", "go-service", "rust-cli", "iac-terraform-kubernetes", "sql-migrations")) {
+        Assert-True -Condition ($doc -match [regex]::Escape($sample)) -Message "Sample factory doc should list expanded generated category sample: $sample."
+    }
     Assert-True -Condition ($doc -match "generate-sample-repositories\.ps1") -Message "Sample factory doc should include the Windows script."
     Assert-True -Condition ($doc -match "generate-sample-repositories\.linux\.sh") -Message "Sample factory doc should include the Linux script."
     Assert-True -Condition ($doc -match "generate-sample-repositories\.macos\.sh") -Message "Sample factory doc should include the macOS script."
     Assert-True -Condition ($doc -match "production starter projects") -Message "Sample factory doc should include guardrails."
+    Assert-True -Condition ($evidence -match "Generated Category Expansion Validation") -Message "Sample factory evidence should include expanded validation."
     Assert-True -Condition ($readme -match "docs/sample-repository-factory\.md") -Message "README should link to sample factory docs."
-    Assert-True -Condition ($roadmap -match "Milestone 16: Sample Repository Factory") -Message "Roadmap should include Milestone 16."
+    Assert-True -Condition ($roadmap -match "\| Milestone 16: Sample Repository Factory \| Complete \|") -Message "Roadmap should mark Milestone 16 complete."
+    Assert-True -Condition ($todo -match "\[x\] Complete Milestone 16 sample repository factory exit criteria") -Message "TODO should mark Milestone 16 completion audit complete."
 }
 
 Invoke-PackTest "agent surface docs define portability boundary" {

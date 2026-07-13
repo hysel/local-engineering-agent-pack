@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, Milestone 9 distribution and install experience, Milestone 10 ARM and Apple Silicon model support, Milestone 11 editor surface compatibility, Milestone 12 model tool-use validation evidence, Milestone 13 broader multi-repository validation, Milestone 14 agent surface portability and broader-audience positioning, and Milestone 15 multi-language engineering support are complete. Milestone 16 starts the sample repository factory, with later roadmap tracks for language rule packs, installer profiles, evidence catalogs, release packaging, hardware-aware model/config automation, script consolidation, a stable workflow registry, and a future unified starter-toolkit web UI.
+The repository is in early implementation stage. Milestone 1, Milestone 2, Milestone 3, release hardening for version 0.1.3, CI validation for version 0.1.4, runtime validation tooling for version 0.1.5, Milestone 4 runtime validation and CI, Milestone 5 prompt quality hardening, Milestone 6 applied tooling and adaptive models, Milestone 7 cross-platform contributor experience, Milestone 8 real repository validation, Milestone 9 distribution and install experience, Milestone 10 ARM and Apple Silicon model support, Milestone 11 editor surface compatibility, Milestone 12 model tool-use validation evidence, Milestone 13 broader multi-repository validation, Milestone 14 agent surface portability and broader-audience positioning, Milestone 15 multi-language engineering support, and Milestone 16 sample repository factory are complete. Later roadmap tracks cover agent surface compatibility, language rule packs, installer profiles, evidence catalogs, release packaging, hardware-aware model/config automation, script consolidation, a stable workflow registry, and a future unified starter-toolkit web UI.
 
 ## Stage Status
 
@@ -24,7 +24,7 @@ The repository is in early implementation stage. Milestone 1, Milestone 2, Miles
 | Milestone 13: Broader Multi-Repository Validation | Complete | Sanitized legacy .NET evidence plus generated Python, TypeScript, Node, Java, Go, Rust, Infrastructure as Code, and SQL category evidence satisfy the milestone coverage target; future real-repository runs continue as evidence expansion. |
 | Milestone 14: Agent Surface Portability And Broader Audience | Complete | The project is repositioned as a local-first engineering agent pack for individual, team, and enterprise users; Continue remains the supported first path; non-Continue surfaces are tracked through evidence-gated validation levels, promotion gates, and config-bundle limits. |
 | Milestone 15: Multi-Language Engineering Support | Complete | .NET remains the most mature path, optional multi-language guidance is evidence-gated, and generated Python plus TypeScript samples have repository-discovery, implementation-planning, and code-review validation evidence. |
-| Milestone 16: Sample Repository Factory | In Progress | Generate disposable local sample repositories for language, agent-surface, and runtime validation without needing private repositories; runtime context now includes non-.NET metadata from generated samples. |
+| Milestone 16: Sample Repository Factory | Complete | Disposable sample repositories can be generated on Windows, Linux, and macOS for Python, TypeScript, Node, Java, Go, Rust, Infrastructure as Code, and SQL validation; evidence and tests cover fixture shape, runtime context, and sanitization. |
 | Milestone 17: Agent Surface Compatibility Validation | In Progress | Cline has read-only and disposable write-smoke validation evidence for `qwen3-coder:30b` at 16k context; Aider has generated Python and richer disposable Node service validation evidence; real-project approved-write plus Roo Code, Kilo Code, and OpenCode live validation remain pending. |
 | Milestone 18: Language Rule Packs | In Progress | Optional Python, TypeScript, Java, Go, Rust, SQL, and Infrastructure as Code rule packs are added as evidence-gated supplemental guidance with static generated-sample validation recorded; generated editor/model workflow evidence is recorded, prompt and runner filename-fidelity guardrails are in place, and runtime runners now write filename-fidelity fallback artifacts for deterministic filename failures. Remaining empty-output failures and any non-filename guardrail repeats require separate remediation before promotion. |
 | Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging | In Progress | Installer profiles, the sanitized evidence catalog, and release packaging guidance are implemented for current scope; future surface-specific profiles remain after non-Continue validation. |
@@ -443,18 +443,18 @@ Goal: Generate disposable local repositories that unblock validation when real r
 
 Scope:
 
-- Add Windows, Linux, and macOS sample repository factory scripts.
-- Generate deterministic samples for Python API, TypeScript frontend, Node service, Java/Spring API, Go service, Rust CLI, Infrastructure as Code, and SQL migrations.
-- Keep samples dependency-free and offline by default.
-- Include metadata in each generated sample explaining that it is a validation fixture, not a production starter template.
-- Document how to use generated samples for repository discovery, planning, code review, runtime output verification, and agent-surface testing.
-- Keep generated sample output under `runtime-validation-output` by default so it is not committed accidentally.
+- Add Windows, Linux, and macOS sample repository factory scripts. Done.
+- Generate deterministic samples for Python API, TypeScript frontend, Node service, Java/Spring API, Go service, Rust CLI, Infrastructure as Code, and SQL migrations. Done.
+- Keep samples dependency-free and offline by default. Done.
+- Include metadata in each generated sample explaining that it is a validation fixture, not a production starter template. Done.
+- Document how to use generated samples for repository discovery, planning, code review, runtime output verification, and agent-surface testing. Done.
+- Keep generated sample output under `runtime-validation-output` by default so it is not committed accidentally. Done.
 
 Exit criteria:
 
-- A contributor can generate all sample repositories with one documented command.
-- Tests verify the factory creates expected language/project markers and runtime context captures non-.NET metadata.
-- Generated samples are suitable for read-only and approved-write validation in disposable workspaces.
+- A contributor can generate all sample repositories with one documented command. Done.
+- Tests verify the factory creates expected language/project markers and runtime context captures non-.NET metadata. Done.
+- Generated samples are suitable for read-only and approved-write validation in disposable workspaces. Done for disposable validation setup; any surface or language promotion still needs separate evidence.
 
 ## Milestone 17: Agent Surface Compatibility Validation
 
