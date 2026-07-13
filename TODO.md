@@ -248,7 +248,7 @@
 - [x] Reposition the project name and top-level purpose beyond Continue-only and enterprise-only language.
 - [x] Add an agent-surface compatibility matrix for Continue, Cline, Aider, Kilo Code, OpenCode, OpenHands, and other credible open-source options.
 - [x] Define validation levels for each agent surface: read-only, plan validated, approved-write ready.
-- [ ] Evaluate at least one non-Continue open-source agent surface with sanitized evidence.
+- [x] Evaluate at least one non-Continue open-source agent surface with sanitized evidence.
 - [ ] Decide whether install scripts should generate surface-specific config bundles instead of only `.continue` assets.
 - [ ] Keep beginner-friendly local setup guidance aligned with enterprise-safe review and audit guidance.
 
@@ -290,7 +290,7 @@
 - [x] Validate Cline approved-write smoke test against a disposable generated sample with external verification.
 - [x] Add Cline CLI automation scripts for future read-only and disposable write-smoke model screening.
 - [x] Add Continue CLI automation scripts for future read-only and disposable write-smoke model screening.
-- [ ] Keep real-project approved-write status blocked until a realistic scoped edit passes.
+- [x] Keep real-project approved-write status blocked until generated-sample scoped edit validation passes; continue blocking real-project approval until explicitly approved non-generated repository validation passes.
 
 ## Milestone 20: Hardware-Aware Model And Config Automation
 

@@ -4,7 +4,7 @@ This file records sanitized Aider validation evidence for this pack. It should n
 
 ## Current Status
 
-Aider is currently a candidate agent surface. Model-backed read-only context validation, disposable write-smoke validation, and realistic scoped-edit validation have passed for `qwen3-coder:30b` against the generated Python sample. Real-project approved-write readiness is still blocked until validation passes in a realistic disposable application or an explicitly approved non-generated repository.
+Aider is currently a candidate agent surface. Model-backed read-only context validation, disposable write-smoke validation, and realistic scoped-edit validation have passed for `qwen3-coder:30b` against the generated Python sample. A richer disposable Node service scoped edit has also passed with external Node test verification. Real-project approved-write readiness is still blocked until validation passes in an explicitly approved non-generated repository.
 
 ## Evidence: 2026-07-13 Read-Only Context Validation
 
@@ -135,6 +135,55 @@ Aider is currently a candidate agent surface. Model-backed read-only context val
 - Approved-write position: blocked pending realistic scoped-edit validation
 - Failure signals: none
 - Follow-up: Run a realistic scoped-edit validation in a disposable or explicitly approved repository before marking Aider approved-write ready.
+
+### Sanitization Checklist
+
+- [x] No private endpoints.
+- [x] No private IP addresses.
+- [x] No local filesystem paths.
+- [x] No usernames.
+- [x] No private repository names.
+- [x] No customer names.
+- [x] No tokens or secrets.
+- [x] No raw private-code transcript.
+
+## Evidence: 2026-07-13 Richer Disposable Node Service Scoped-Edit Validation
+
+### Summary
+
+- Date: 2026-07-13
+- Surface: Aider CLI
+- Aider version: 0.86.2
+- Operating system: Windows
+- CPU architecture: x64
+- Model: qwen3-coder:30b
+- Provider: Ollama
+- Target repository type: Node service sample
+- Target repository source: generated disposable sample
+- Tool/write mode: realistic scoped edit
+- Git status before test: clean standalone sample baseline
+- Git status after test: restored to clean
+- Private details removed: Yes
+
+### Tests
+
+| Test | Result | Notes |
+| --- | --- | --- |
+| Scoped source/test edit | Pass | Aider updated only `src/server.js` and `test/server.test.js`. |
+| Unrelated file protection | Pass | README, sample metadata, package configuration, Dockerfile, and other files were unchanged. |
+| External changed-file verification | Pass | Git showed exactly the expected two changed files. |
+| Whitespace verification | Pass | `git diff --check` passed. |
+| Runtime test verification | Pass | `node --test` passed with ten tests. |
+| Edge behavior verification | Pass after correction | An external assertion caught a missed whitespace-only fallback; a follow-up Aider diff-format correction fixed the behavior. |
+| Model unload after validation | Pass | The model was explicitly unloaded and the Ollama process list was empty afterward. |
+| Disposable sample cleanup | Pass | The generated sample repository was restored to clean after evidence capture. |
+
+### Decision
+
+- Validation level: richer-disposable-scoped-edit-validated
+- Approved-write position: still blocked for real projects pending explicitly approved non-generated repository validation
+- Failure signals: initial implementation missed whitespace-only service-name fallback; corrected by Aider using diff edit format
+- Follow-up: Use an explicitly approved non-generated repository before marking Aider approved-write ready for real projects.
 
 ### Sanitization Checklist
 
