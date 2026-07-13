@@ -4,15 +4,15 @@
 
 This document tracks how the Local Engineering Agent Pack should grow beyond its current .NET-centered guidance.
 
-.NET, ASP.NET Core, APIs, and Clean Architecture remain the most mature and most validated path today. Multi-language support is a planned direction, not a claim that every ecosystem is already equally supported.
+.NET, ASP.NET Core, APIs, and Clean Architecture remain the most mature and most validated path today. Multi-language support is now staged and evidence-gated, not a claim that every ecosystem is already equally supported.
 
 ## Current Position
 
 | Ecosystem | Current status | Notes |
 | --- | --- | --- |
 | .NET / ASP.NET Core | Most mature | Existing rules, prompts, examples, and validation are strongest here. |
-| Python | Optional rule pack added; static generated-sample validation recorded | Needs implementation-planning, code-review, and editor/model validation before promotion. |
-| JavaScript / TypeScript | Optional rule pack added; static generated-sample validation recorded | Needs implementation-planning, code-review, and editor/model validation before promotion. |
+| Python | Optional rule pack added; generated-sample workflow validation recorded | Repository discovery, implementation planning, and code review passed generated-sample validation; real-repository and editor Apply validation remain future evidence work. |
+| JavaScript / TypeScript | Optional rule pack added; generated-sample workflow validation recorded | Repository discovery, implementation planning, and code review passed generated-sample validation; real-repository and editor Apply validation remain future evidence work. |
 | Java / Spring | Optional rule pack added; static generated-sample validation recorded | Needs implementation-planning, code-review, and editor/model validation before promotion. |
 | Go | Optional rule pack added; static generated-sample validation recorded | Needs implementation-planning, code-review, and editor/model validation before promotion. |
 | Rust | Optional rule pack added; static generated-sample validation recorded | Needs implementation-planning, code-review, and editor/model validation before promotion. |
@@ -22,6 +22,12 @@ This document tracks how the Local Engineering Agent Pack should grow beyond its
 ## Project Detection
 
 Use `docs/project-detection.md` as the source of truth for ecosystem signals, evidence strength, confidence labels, and unconfirmed assumptions. Language-specific guidance should not be applied until project detection has enough repository evidence.
+
+## Milestone 15 Completion Basis
+
+Milestone 15 is complete for the current scope because the pack now treats multi-language support as staged, evidence-gated guidance rather than .NET-only advice. .NET remains the most mature path, while Python, JavaScript/TypeScript, Java, Go, Rust, SQL, and Infrastructure as Code have optional guidance that stays outside the default `.continue/config.yaml`.
+
+The required Python and JavaScript/TypeScript generated-sample validation is recorded in `examples/multi-language-workflow-validation.md`: repository discovery, implementation planning, and code review passed verification for both samples. `docs/project-detection.md` and `docs/language-rule-packs.md` keep language-specific recommendations gated by detected repository evidence, and broader real-repository/editor validation remains future evidence expansion.
 
 ## Shared Guidance
 

@@ -591,13 +591,22 @@ test_continue_cli_model_testing_doc() {
 }
 test_language_support_doc() {
   [ -f "$REPO_ROOT/docs/language-support.md" ] &&
+    [ -f "$REPO_ROOT/examples/multi-language-workflow-validation.md" ] &&
     grep -q ".NET.*most mature" "$REPO_ROOT/docs/language-support.md" &&
+    grep -q "Milestone 15 Completion Basis" "$REPO_ROOT/docs/language-support.md" &&
+    grep -q "examples/multi-language-workflow-validation.md" "$REPO_ROOT/docs/language-support.md" &&
     grep -q "Python" "$REPO_ROOT/docs/language-support.md" &&
     grep -q "JavaScript / TypeScript" "$REPO_ROOT/docs/language-support.md" &&
     grep -q "Infrastructure as Code" "$REPO_ROOT/docs/language-support.md" &&
     grep -q "Do not apply .NET-specific advice" "$REPO_ROOT/docs/language-support.md" &&
+    grep -q "Python API Sample" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
+    grep -q "TypeScript Frontend Sample" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
+    grep -q "Repository discovery | Passed verification | Passed verification" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
+    grep -q "Implementation planning | Passed verification | Passed verification" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
+    grep -q "Code review | Passed verification | Passed verification" "$REPO_ROOT/examples/multi-language-workflow-validation.md" &&
     grep -q "docs/language-support.md" "$REPO_ROOT/README.md" &&
-    grep -q "Milestone 15: Multi-Language Engineering Support" "$REPO_ROOT/ROADMAP.md"
+    grep -q "| Milestone 15: Multi-Language Engineering Support | Complete |" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "\\[x\\] Validate repository discovery, implementation planning, and code review against Python and JavaScript/TypeScript samples" "$REPO_ROOT/TODO.md"
 }
 
 
