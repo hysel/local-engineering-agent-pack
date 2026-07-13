@@ -2360,6 +2360,7 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
         "generate-runtime-context",
         "run-runtime-validation",
         "test-local-agent-health",
+        "cleanup-local-agent-artifacts",
         "test-agent-cli-surface",
         "validate-pack",
         "test-pack"
@@ -2444,6 +2445,53 @@ Invoke-PackTest "local agent health check reports setup status" {
         $dispatch = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "test-local-agent-health", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-SkipOllama","-AsJson"]')
         Assert-Equal -Actual $dispatch.ExitCode -Expected 0 -Message "Workflow dispatcher should resolve health check."
         Assert-True -Condition ($dispatch.Output -match "scripts/test-local-agent-health\.ps1") -Message "Dispatcher should point at the health check script."
+    }
+    finally {
+        Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+Invoke-PackTest "local agent cleanup workflow is dry-run first" {
+    $scriptPath = Join-Path $repoRoot "scripts/cleanup-local-agent-artifacts.ps1"
+    $dispatcherPath = Join-Path $repoRoot "scripts/invoke-workflow.ps1"
+    $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "continue-cleanup-test-$([guid]::NewGuid())"
+    $runtimeFile = Join-Path $tempRoot "runtime-validation-output/run/raw-output.md"
+    $sampleFile = Join-Path $tempRoot "runtime-validation-output/sample-repositories/python-api/SAMPLE-METADATA.md"
+    $backupFile = Join-Path $tempRoot ".continue.backup-20260713/config.yaml"
+    $dryRunPath = Join-Path $tempRoot "cleanup-dry-run.json"
+    $applyPath = Join-Path $tempRoot "cleanup-apply.json"
+
+    try {
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $runtimeFile) | Out-Null
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $sampleFile) | Out-Null
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $backupFile) | Out-Null
+        Set-Content -LiteralPath $runtimeFile -Value "raw local output"
+        Set-Content -LiteralPath $sampleFile -Value "generated sample"
+        Set-Content -LiteralPath $backupFile -Value "backup"
+
+        $dryRun = Invoke-CommandCapture -FilePath $scriptPath -Arguments @("-TargetRepo", $tempRoot, "-AsJson", "-OutputPath", $dryRunPath)
+        Assert-Equal -Actual $dryRun.ExitCode -Expected 0 -Message "Cleanup dry run should succeed."
+        Assert-True -Condition (Test-Path -LiteralPath $runtimeFile) -Message "Cleanup dry run should not remove runtime output."
+        Assert-True -Condition (Test-Path -LiteralPath $backupFile) -Message "Cleanup dry run should not remove backups."
+
+        $dryRunReport = Get-Content -LiteralPath $dryRunPath -Raw | ConvertFrom-Json
+        Assert-Equal -Actual $dryRunReport.SchemaVersion -Expected 1 -Message "Cleanup report schema version should be stable."
+        Assert-True -Condition ($dryRunReport.Applied -eq $false) -Message "Cleanup dry-run report should state it was not applied."
+        Assert-True -Condition ($dryRunReport.ItemCount -ge 2) -Message "Cleanup dry run should find runtime output and backup artifacts."
+        Assert-True -Condition (@($dryRunReport.Items | Where-Object { $_.Category -eq "runtime-output" }).Count -eq 1) -Message "Cleanup dry run should include runtime output."
+        Assert-True -Condition (@($dryRunReport.Items | Where-Object { $_.Category -eq "backup" }).Count -eq 1) -Message "Cleanup dry run should include backup folders."
+
+        $dispatch = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "cleanup-local-agent-artifacts", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-AsJson"]')
+        Assert-Equal -Actual $dispatch.ExitCode -Expected 0 -Message "Workflow dispatcher should resolve cleanup workflow."
+        Assert-True -Condition ($dispatch.Output -match "scripts/cleanup-local-agent-artifacts\.ps1") -Message "Dispatcher should point at the cleanup script."
+
+        $apply = Invoke-CommandCapture -FilePath $scriptPath -Arguments @("-TargetRepo", $tempRoot, "-Apply", "-AsJson", "-OutputPath", $applyPath)
+        Assert-Equal -Actual $apply.ExitCode -Expected 0 -Message "Cleanup apply should succeed for disposable temp artifacts."
+        Assert-True -Condition (-not (Test-Path -LiteralPath (Join-Path $tempRoot "runtime-validation-output"))) -Message "Cleanup apply should remove runtime output."
+        Assert-True -Condition (-not (Test-Path -LiteralPath (Split-Path -Parent $backupFile))) -Message "Cleanup apply should remove backup folders."
+
+        $applyReport = Get-Content -LiteralPath $applyPath -Raw | ConvertFrom-Json
+        Assert-True -Condition ($applyReport.Applied -eq $true) -Message "Cleanup apply report should state it was applied."
+        Assert-True -Condition (@($applyReport.Items | Where-Object { $_.Removed -eq $true }).Count -ge 2) -Message "Cleanup apply report should mark removed items."
     }
     finally {
         Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
