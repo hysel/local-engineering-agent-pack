@@ -56,3 +56,12 @@ Before finishing a change, verify:
 - New agent content does not encode a full task workflow.
 - README claims match implemented behavior.
 - TODO and ROADMAP remain consistent with the actual state.
+
+## Push Completion Contract
+
+After every push, run the platform-specific `verify-hosted-ci` script for the
+full pushed commit SHA. Do not report success until the exact-SHA `Validate
+Pack` run concludes successfully and all required Windows, Linux, and macOS
+jobs pass. Report the SHA, run URL, and one of `Pushed`, `CI running`, `CI
+passed`, or `CI failed`. On failure, inspect failed logs and fix the new commit
+before continuing. See `docs/hosted-ci-verification.md`.

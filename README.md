@@ -307,6 +307,18 @@ tracked pre-push hook once per clone:
 The hook runs the pack tests before `git push`, including the executable-bit
 check for Linux and macOS shell scripts.
 
+After pushing, verify the exact commit on GitHub rather than assuming the push
+is complete because local tests passed:
+
+```powershell
+$sha = git rev-parse HEAD
+.\scripts\verify-hosted-ci.ps1 -CommitSha $sha
+```
+
+Linux and macOS use `verify-hosted-ci.linux.sh` and
+`verify-hosted-ci.macos.sh`. A push is complete only when the script reports
+`CI passed`. See `docs/hosted-ci-verification.md`.
+
 Windows PowerShell:
 
 ```powershell

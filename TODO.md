@@ -367,6 +367,7 @@
 - [x] Add a health check workflow for Ollama, models, config, duplicate rules, repository detection, and validation status.
 - [x] Add a safe cleanup workflow with dry-run support for failed models, stale runtime output, generated samples, and old backups.
 - [x] Add a release readiness gate for validation, tests, docs/wiki freshness, whitespace checks, and optional remote workflow status.
+- [x] Enforce exact-SHA hosted CI verification after every push, including required Windows/Linux/macOS jobs, failed-log retrieval, and explicit push/CI states.
 - [x] Add a model scorecard for tool support, speed, quality, write behavior, context size, hardware tier, and recommended use.
 - [ ] Generate surface-specific plugin profiles only after compatibility evidence exists.
 - [x] Add sample scenario packs for legacy migration, config refactoring, bug fixing, security review, test generation, and documentation cleanup.

@@ -1254,6 +1254,31 @@ test_solution_architecture_review_doc() {
     grep -q "\\[ \\] Add the unified web UI wrapper only after evidence v2, project-profile activation, lane scoring, one non-Continue adapter, and workflow envelopes are validated" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[ \\] Confirm scope and priority for the unified starter-toolkit web UI" "$REPO_ROOT/TODO.md"
 }
+test_hosted_ci_verifier_contract() {
+  windows="$REPO_ROOT/scripts/verify-hosted-ci.ps1"
+  shared="$REPO_ROOT/scripts/verify-hosted-ci.shared.sh"
+  linux="$REPO_ROOT/scripts/verify-hosted-ci.linux.sh"
+  macos="$REPO_ROOT/scripts/verify-hosted-ci.macos.sh"
+  doc="$REPO_ROOT/docs/hosted-ci-verification.md"
+
+  [ -f "$windows" ] &&
+    [ -f "$shared" ] &&
+    [ -f "$linux" ] &&
+    [ -f "$macos" ] &&
+    [ -f "$doc" ] &&
+    grep -q -- '--commit' "$shared" &&
+    grep -q 'headSha' "$shared" &&
+    grep -q 'run watch' "$shared" &&
+    grep -q -- '--exit-status' "$shared" &&
+    grep -q -- '--log-failed' "$shared" &&
+    grep -q 'Windows PowerShell validation' "$shared" &&
+    grep -q 'Linux script smoke tests' "$shared" &&
+    grep -q 'macOS script smoke tests' "$shared" &&
+    grep -q 'State: %s' "$shared" &&
+    grep -q 'exact 40-character commit SHA' "$doc" &&
+    grep -q 'Never reuse a successful run' "$doc"
+}
+
 run_test "validate-pack succeeds for repository" test_validate_succeeds
 run_test "validate-pack fails for wrong expected version" test_validate_fails_for_wrong_version
 run_test "release packaging scripts define archives, checksums, and sanitized dry runs" test_release_packaging_scripts
@@ -1302,6 +1327,7 @@ run_test "solution architecture review tracks milestone gaps" test_solution_arch
 run_test "recommended agent config generation writes local-only config" test_recommended_agent_config_generation
 run_test "Aider surface adapter plans installs configures and reports health safely" test_aider_surface_adapter
 run_test "workflow envelope contract is versioned private by default and cross-platform" test_workflow_envelope_contract
+run_test "hosted CI verifier enforces exact-SHA cross-platform completion" test_hosted_ci_verifier_contract
 
 if [ "$FAILED" -eq 1 ]; then
   printf 'Test run failed. %s tests executed.\n' "$TEST_COUNT" >&2

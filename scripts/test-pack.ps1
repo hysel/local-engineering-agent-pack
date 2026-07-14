@@ -2804,7 +2804,8 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
         "test-agent-cli-surface",
         "validate-pack",
         "test-pack",
-        "test-release-readiness"
+        "test-release-readiness",
+        "verify-hosted-ci"
     )
 
     Assert-Equal -Actual $registry.schemaVersion -Expected 1 -Message "Workflow registry schema version changed."
@@ -2874,9 +2875,9 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
     Assert-True -Condition ($autonomousQueue -match "docs/script-consolidation-plan.md") -Message "Autonomous queue should link script consolidation plan."
     Assert-True -Condition ($autonomousQueue -match "scripts/test-pack.ps1") -Message "Autonomous queue should require pack tests."
     Assert-True -Condition ($autonomousQueue -match "git status --short --branch") -Message "Autonomous queue should start from git status."
-    Assert-True -Condition ($autonomousQueue -match "gh run list --branch main --limit 5") -Message "Autonomous queue should require checking hosted GitHub Actions status after push."
-    Assert-True -Condition ($autonomousQueue -match "gh run watch <run-id> --exit-status") -Message "Autonomous queue should require watching the pushed GitHub Actions run."
-    Assert-True -Condition ($autonomousQueue -match "Report the commit id and hosted GitHub Actions result") -Message "Autonomous queue should require reporting the pushed commit and hosted CI result."
+    Assert-True -Condition ($autonomousQueue -match "verify-hosted-ci\.ps1 -CommitSha <full-sha>") -Message "Autonomous queue should require exact-SHA hosted GitHub Actions verification after push."
+    Assert-True -Condition ($autonomousQueue -match "gh run watch --exit-status") -Message "Autonomous queue should require watching the exact pushed GitHub Actions run."
+    Assert-True -Condition ($autonomousQueue -match "exact commit SHA and run URL") -Message "Autonomous queue should require reporting the pushed commit and hosted CI run URL."
     Assert-True -Condition ($consolidation -match "shared engines") -Message "Script consolidation plan should define shared engine direction."
     Assert-True -Condition ($consolidation -match "thin wrappers") -Message "Script consolidation plan should define thin wrapper direction."
     Assert-True -Condition ($consolidation -match "config/workflows\.json") -Message "Script consolidation plan should reference workflow registry."
@@ -3690,6 +3691,43 @@ Invoke-PackTest "local agent cleanup workflow is dry-run first" {
         Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
+Invoke-PackTest "hosted CI verifier enforces exact-SHA cross-platform completion" {
+    $windowsPath = Join-Path $repoRoot "scripts/verify-hosted-ci.ps1"
+    $sharedPath = Join-Path $repoRoot "scripts/verify-hosted-ci.shared.sh"
+    $linuxPath = Join-Path $repoRoot "scripts/verify-hosted-ci.linux.sh"
+    $macosPath = Join-Path $repoRoot "scripts/verify-hosted-ci.macos.sh"
+    $docPath = Join-Path $repoRoot "docs/hosted-ci-verification.md"
+    $queuePath = Join-Path $repoRoot "docs/autonomous-maintainer-queue.md"
+
+    foreach ($path in @($windowsPath, $sharedPath, $linuxPath, $macosPath, $docPath, $queuePath)) {
+        Assert-True -Condition (Test-Path -LiteralPath $path) -Message "Hosted CI verifier asset should exist: $path"
+    }
+
+    $windows = Get-Content -LiteralPath $windowsPath -Raw
+    $shared = Get-Content -LiteralPath $sharedPath -Raw
+    $doc = Get-Content -LiteralPath $docPath -Raw
+    $queue = Get-Content -LiteralPath $queuePath -Raw
+
+    foreach ($content in @($windows, $shared)) {
+        Assert-True -Condition ($content -match "40") -Message "Verifier should require a full commit SHA."
+        Assert-True -Condition ($content -match "--commit") -Message "Verifier should discover runs by commit."
+        Assert-True -Condition ($content -match "headSha") -Message "Verifier should compare the hosted run SHA."
+        Assert-True -Condition ($content -match "run.+watch") -Message "Verifier should wait for the hosted run."
+        Assert-True -Condition ($content -match "--exit-status") -Message "Verifier should propagate hosted run failure."
+        Assert-True -Condition ($content -match "--log-failed") -Message "Verifier should retrieve failed logs."
+        foreach ($job in @("Windows PowerShell validation", "Linux script smoke tests", "macOS script smoke tests")) {
+            Assert-True -Condition ($content -match [regex]::Escape($job)) -Message "Verifier should require hosted job: $job"
+        }
+        foreach ($state in @("Pushed", "CI running", "CI passed", "CI failed")) {
+            Assert-True -Condition ($content -match [regex]::Escape($state)) -Message "Verifier should report state: $state"
+        }
+    }
+
+    Assert-True -Condition ($doc -match "exact 40-character commit SHA") -Message "Hosted CI docs should require exact-SHA verification."
+    Assert-True -Condition ($doc -match "Never reuse a successful run") -Message "Hosted CI docs should reject stale run evidence."
+    Assert-True -Condition ($queue -match 'Never call a push successful before `CI passed`') -Message "Maintainer queue should forbid premature success claims."
+}
+
 if ($failed) {
     Write-Host "Test run failed. $testCount tests executed." -ForegroundColor Red
     exit 1

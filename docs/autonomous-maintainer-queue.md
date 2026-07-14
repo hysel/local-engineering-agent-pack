@@ -31,10 +31,13 @@ Use it after the repository is clean, tests are passing, and the requested direc
 2. Choose the smallest pending item that is already supported by roadmap or TODO.
 3. Prefer registry-backed docs, generators, and tests over one-off prose.
 4. Run the narrow command first, then `scripts/test-pack.ps1`.
-5. Commit and push when tests pass.
-6. After pushing, check the GitHub Actions status for the pushed commit with `gh run list --branch main --limit 5` and, when a new run starts, watch it to completion with `gh run watch <run-id> --exit-status`.
-7. Report the commit id and hosted GitHub Actions result before moving on.
-8. Continue to the next safe item only after the repo is clean again and the pushed commit status is known.
+5. Commit and push when tests pass; record the full pushed commit SHA.
+6. Run `scripts/verify-hosted-ci.ps1 -CommitSha <full-sha>` or the native Linux/macOS equivalent. The verifier must find the exact-SHA run, use `gh run watch --exit-status`, and check all required hosted jobs.
+7. If verification fails, inspect the automatically retrieved failed logs, fix the issue, rerun local validation, push the new commit, and verify the new SHA.
+8. Report `Pushed`, `CI running`, `CI passed`, or `CI failed` with the exact commit SHA and run URL. Never call a push successful before `CI passed`.
+9. Continue to the next safe item only after the repository is clean and the exact pushed commit has a known hosted conclusion.
+
+See `docs/hosted-ci-verification.md` for the enforced contract and platform commands.
 
 ## Current Priority Order
 

@@ -11,6 +11,7 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Added cross-platform exact-SHA GitHub Actions verification with required Windows, Linux, and macOS job checks, automatic failed-log retrieval, and explicit push/CI reporting states.
 - Added cross-platform, filename-only project classification with sanitized profile output and automatic project-local activation of matching optional language rule packs.
 - Added the `classify-project` workflow registry entry and documented the project-neutral limitation of centralized shared-assets mode.
 - Added lane-specific model scoring policy version 1 with exact capability-evidence gates, reliability-first WRITE SAFE selection, capacity-aware PLAN ONLY and DEEP REVIEW selection, and transparent per-candidate rationale.

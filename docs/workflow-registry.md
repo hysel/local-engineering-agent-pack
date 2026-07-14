@@ -28,6 +28,11 @@ Each workflow records:
 
 `setup-agent-surface` is the approved-write adapter boundary for surface-native setup. Its first implementation supports Aider plan, isolated install, explicit local-only Ollama configuration, and health checks on Windows, Linux, and macOS. See `docs/aider-cli-model-testing.md`.
 
+`verify-hosted-ci` is the post-push release boundary. It resolves a GitHub
+Actions run by exact commit SHA, waits with exit status, checks all required
+cross-platform jobs, and retrieves failed logs. See
+`docs/hosted-ci-verification.md`.
+
 ## Safety Levels
 
 | Safety level | Meaning |

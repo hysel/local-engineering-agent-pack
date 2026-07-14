@@ -45,6 +45,7 @@ Use `docs/workflow-chooser.md` for a generated complete workflow list before dro
 | `test-pack` | Run the repository test suite used before commits, pushes, and releases. | `controlled-write` | yes | `scripts/test-pack.ps1` | `docs/release.md` |
 | `test-release-readiness` | Run the release gate for validation, tests, release package dry-run, git state, workflow registry, and agent-surface parity. | `controlled-write` | yes | `scripts/test-release-readiness.ps1` | `docs/release.md` |
 | `validate-pack` | Run static pack validation for config, docs, scripts, references, and safety invariants. | `read-only` | yes | `scripts/validate-pack.ps1` | `docs/release.md` |
+| `verify-hosted-ci` | Verify the exact pushed commit through GitHub Actions, wait for completion, check required cross-platform jobs, and retrieve failed logs. | `network-read` | yes | `scripts/verify-hosted-ci.ps1` | `docs/hosted-ci-verification.md` |
 | `verify-runtime-output` | Check runtime validation output for invented filenames, unsupported claims, and other deterministic failure signals. | `read-only` | yes | `scripts/verify-runtime-output.ps1` | `docs/runtime-output-verification.md` |
 
 ## Direct Invocation

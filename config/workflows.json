@@ -378,6 +378,21 @@
       }
     },
     {
+      "id": "verify-hosted-ci",
+      "name": "Verify Hosted CI",
+      "purpose": "Verify the exact pushed commit through GitHub Actions, wait for completion, check required cross-platform jobs, and retrieve failed logs.",
+      "category": "release-readiness",
+      "safetyLevel": "network-read",
+      "uiReady": true,
+      "inputs": ["repository", "commitSha", "workflow", "runId", "discoveryTimeoutSeconds"],
+      "outputs": ["pushState", "commitSha", "runUrl", "requiredJobResults"],
+      "entryPoints": {
+        "windows": "scripts/verify-hosted-ci.ps1",
+        "linux": "scripts/verify-hosted-ci.linux.sh",
+        "macos": "scripts/verify-hosted-ci.macos.sh"
+      }
+    },
+    {
       "id": "build-release-package",
       "name": "Build Release Package",
       "purpose": "Create release archives, checksums, and release artifacts after validation passes.",

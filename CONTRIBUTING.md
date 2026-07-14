@@ -86,6 +86,10 @@ Also review:
 
 Follow `docs/release.md` for version updates, validation, commit, tag, and push guidance.
 
+After every push, use the platform-specific `verify-hosted-ci` script with the
+full commit SHA. A push is not verified until the exact-SHA workflow and all
+required hosted jobs report success. See `docs/hosted-ci-verification.md`.
+
 ## Pull Request Checklist
 
 - [ ] The change follows `STYLEGUIDE.md`.

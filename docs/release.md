@@ -53,6 +53,26 @@ Before tagging a release:
 - [ ] Confirm new examples and fixtures are sanitized.
 - [ ] Confirm shell scripts and hooks are executable in Git before pushing.
 - [ ] Confirm `CHANGELOG.md` has a release entry.
+- [ ] After pushing, run the exact-SHA hosted verifier and require `CI passed` for the Windows, Linux, and macOS jobs.
+
+## Verify The Pushed Commit
+
+Local release readiness is only the pre-push gate. After pushing, verify the
+exact commit with GitHub Actions:
+
+```powershell
+$sha = git rev-parse HEAD
+.\scripts\verify-hosted-ci.ps1 -CommitSha $sha
+```
+
+```bash
+./scripts/verify-hosted-ci.linux.sh --commit-sha "$(git rev-parse HEAD)"
+```
+
+The verifier waits with `gh run watch --exit-status`, checks the required
+Windows, Linux, and macOS jobs, and retrieves failed logs automatically. Report
+the exact SHA, run URL, and one of `Pushed`, `CI running`, `CI passed`, or
+`CI failed`. See `docs/hosted-ci-verification.md`.
 
 
 ## Build Release Artifacts
