@@ -896,6 +896,9 @@ with open(sys.argv[1], "r", encoding="utf-8") as handle:
 text = json.dumps(report, sort_keys=True)
 assert report["Recommendation"]["Status"] == "recommended"
 assert report["Recommendation"]["WriteSafeModel"] == "qwen3.5:9b"
+assert report["ModelLanes"]["Contract"] == "surface-neutral"
+assert report["ModelLanes"]["WriteSafe"]["ToolUse"] == "approved-write"
+assert "edit" in report["ModelLanes"]["WriteSafe"]["RecommendedRoles"]
 assert "edit" in report["ContinueProfiles"]["WriteSafe"]["Roles"]
 assert "edit" not in report["ContinueProfiles"]["PlanOnly"]["Roles"]
 assert report["ModelProfilePath"] == "redacted"
@@ -906,7 +909,9 @@ PY
   grep -q "VramSelectionMode" "$REPO_ROOT/scripts/recommend-local-agent-config.ps1" &&
     grep -q "config/evidence-catalog.tsv" "$REPO_ROOT/scripts/recommend-local-agent-config.ps1" &&
     grep -q "python3 is required" "$REPO_ROOT/scripts/recommend-local-agent-config.shared.sh" &&
+    grep -q '"ModelLanes"' "$REPO_ROOT/scripts/recommend-local-agent-config.shared.sh" &&
     grep -q "HardwareProfileSentOnline" "$REPO_ROOT/scripts/recommend-local-agent-config.shared.sh" &&
+    grep -q "ModelLanes" "$REPO_ROOT/docs/hardware-aware-recommendations.md" &&
     grep -q "WRITE SAFE" "$REPO_ROOT/docs/hardware-aware-recommendations.md" &&
     grep -q "does not read repository source code" "$REPO_ROOT/docs/hardware-aware-recommendations.md" &&
     grep -q "hardware-aware model/config recommendation" "$REPO_ROOT/README.md"
@@ -1013,6 +1018,7 @@ test_solution_architecture_review_doc() {
     grep -q "docs/unified-starter-toolkit-ui.md" "$REPO_ROOT/README.md" &&
     grep -q "Solution Architecture Review Backlog" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[x\\] Add a milestone solution completeness audit" "$REPO_ROOT/TODO.md" &&
+    grep -q "\\[x\\] Reuse the recommendation data model for future non-Continue agent surfaces" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[ \\] Provide or approve suitable non-generated repositories" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[ \\] Confirm real command shapes for Roo Code, Kilo Code, and OpenCode" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[x\\] Design a unified web UI" "$REPO_ROOT/TODO.md" &&

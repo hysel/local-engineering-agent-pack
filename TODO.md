@@ -326,7 +326,7 @@
 - [x] Emit WRITE SAFE, PLAN ONLY, and DEEP REVIEW recommendation lanes without contacting external services.
 - [x] Add validation coverage for recommendation scripts, docs, and sanitized output behavior.
 - [x] Generate local-only Continue config directly from the recommendation output.
-- [ ] Reuse the recommendation data model for future non-Continue agent surfaces.
+- [x] Reuse the recommendation data model for future non-Continue agent surfaces.
 - [x] Add a surface-neutral install/configure/test solution catalog for every tracked agent surface.
 - [x] Add config-generation strategy that can choose between project-local assets and centralized shared assets for Continue and future agent plugins.
 - [x] Add a script consolidation plan for shared engines, registries, dispatchers, thin wrappers, and no-consolidate-yet cases.

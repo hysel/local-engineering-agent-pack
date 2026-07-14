@@ -47,6 +47,7 @@ The output is a sanitized JSON recommendation under `runtime-validation-output/`
 - Detected platform, architecture, RAM, and selected VRAM estimate.
 - Candidate models with platform and VRAM fit signals.
 - WRITE SAFE, PLAN ONLY, and DEEP REVIEW model lanes.
+- A surface-neutral `ModelLanes` contract that future surfaces can read without inheriting Continue config syntax.
 - Suggested Continue defaults for roles, context length, max tokens, and keep-alive.
 - Privacy fields showing that paths, endpoints, hostnames, usernames, repository content, and raw hardware reports are not written.
 
@@ -60,6 +61,8 @@ The first implementation is deliberately conservative:
 - Cloud tags are not considered local Ollama pull candidates.
 - MLX-tagged models are skipped unless the model host platform is macOS.
 - Oversized models are marked as not fitting the available VRAM estimate instead of being pulled.
+
+`ModelLanes` is the reusable recommendation contract for future surfaces. `ContinueProfiles` is the current Continue-specific projection used by the apply script. Do not generate Cline, Aider, Roo Code, Kilo Code, OpenCode, or other surface config directly from `ContinueProfiles`.
 
 ## VRAM Mode
 
