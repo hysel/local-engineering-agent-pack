@@ -19,10 +19,13 @@ Future surfaces should reuse the same recommendation data model where possible:
 - Hardware profile from local or remote profiling.
 - Curated model recommendations from `config/model-recommendations.tsv`.
 - Validation evidence from `config/evidence-catalog.tsv`.
+- Surface-neutral `ModelLanes` from the recommendation JSON.
 - Surface status from `config/agent-surface-solutions.json`.
 - Config bundle policy from `docs/surface-specific-config-bundles.md`.
 
 The recommendation data can be surface-neutral. Generated config files cannot be surface-neutral; each surface needs its own native config shape.
+
+`ModelLanes` is the shared contract for future generators. `ContinueProfiles` is a Continue-only projection and must not be copied into other tools.
 
 ## Output Choice
 

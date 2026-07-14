@@ -323,6 +323,33 @@ $report = [pscustomobject]@{
         Reason = "Selected from catalog and validation evidence using platform compatibility, VRAM fit, and workflow validation status."
         NextStep = $nextStep
     }
+    ModelLanes = [pscustomobject]@{
+        Contract = "surface-neutral"
+        WriteSafe = [pscustomobject]@{
+            Model = if ($writeModel) { $writeModel.Model } else { $null }
+            RequiresValidationStatus = "approved-write-ready"
+            ToolUse = "approved-write"
+            RecommendedRoles = @("chat", "edit", "apply")
+            RequiresSurfaceConfigGenerator = $true
+            RequiresEditorSmokeTest = $true
+        }
+        PlanOnly = [pscustomobject]@{
+            Model = if ($planModel) { $planModel.Model } else { $null }
+            RequiresValidationStatus = "approved-write-ready, read-only-tool-validated, or plan-review-candidate"
+            ToolUse = "plan-review"
+            RecommendedRoles = @("chat")
+            RequiresSurfaceConfigGenerator = $true
+            RequiresEditorSmokeTest = $true
+        }
+        DeepReview = [pscustomobject]@{
+            Model = if ($reviewModel) { $reviewModel.Model } else { $null }
+            RequiresValidationStatus = "validated non-candidate model"
+            ToolUse = "deep-review"
+            RecommendedRoles = @("chat")
+            RequiresSurfaceConfigGenerator = $true
+            RequiresEditorSmokeTest = $true
+        }
+    }
     ContinueProfiles = [pscustomobject]@{
         WriteSafe = [pscustomobject]@{
             Model = if ($writeModel) { $writeModel.Model } else { $null }

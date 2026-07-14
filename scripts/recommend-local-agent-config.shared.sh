@@ -282,6 +282,33 @@ report = {
         "Reason": "Selected from catalog and validation evidence using platform compatibility, VRAM fit, and workflow validation status.",
         "NextStep": next_step,
     },
+    "ModelLanes": {
+        "Contract": "surface-neutral",
+        "WriteSafe": {
+            "Model": write_model["Model"] if write_model else None,
+            "RequiresValidationStatus": "approved-write-ready",
+            "ToolUse": "approved-write",
+            "RecommendedRoles": ["chat", "edit", "apply"],
+            "RequiresSurfaceConfigGenerator": True,
+            "RequiresEditorSmokeTest": True,
+        },
+        "PlanOnly": {
+            "Model": plan_model["Model"] if plan_model else None,
+            "RequiresValidationStatus": "approved-write-ready, read-only-tool-validated, or plan-review-candidate",
+            "ToolUse": "plan-review",
+            "RecommendedRoles": ["chat"],
+            "RequiresSurfaceConfigGenerator": True,
+            "RequiresEditorSmokeTest": True,
+        },
+        "DeepReview": {
+            "Model": review_model["Model"] if review_model else None,
+            "RequiresValidationStatus": "validated non-candidate model",
+            "ToolUse": "deep-review",
+            "RecommendedRoles": ["chat"],
+            "RequiresSurfaceConfigGenerator": True,
+            "RequiresEditorSmokeTest": True,
+        },
+    },
     "ContinueProfiles": {
         "WriteSafe": {"Model": write_model["Model"] if write_model else None, "Roles": ["chat", "edit", "apply"], "ContextLength": 16384, "MaxTokens": 2048, "KeepAlive": 1800, "RequiresEditorSmokeTest": True},
         "PlanOnly": {"Model": plan_model["Model"] if plan_model else None, "Roles": ["chat"], "ContextLength": 16384, "MaxTokens": 2048, "KeepAlive": 1800},
