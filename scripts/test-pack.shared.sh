@@ -63,7 +63,7 @@ test_release_packaging_scripts() {
     grep -q "| Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging | Partial |" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "Cross-agent parity gap" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "\\[x\\] Complete Milestone 19 Continue installer profile, evidence catalog, and release packaging exit criteria" "$REPO_ROOT/TODO.md" &&
-    grep -q "\\[ \\] Complete Milestone 19 cross-agent install/configure/test script parity" "$REPO_ROOT/TODO.md" &&
+    grep -q "\\[x\\] Complete Milestone 19 install/configure/health parity for evidence-backed CLI adapters" "$REPO_ROOT/TODO.md" &&
     grep -q "Solution Architecture Review Backlog" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[ \\] Add future surface-specific profile generation after non-Continue validation" "$REPO_ROOT/TODO.md" &&
     grep -Fxq "dist/" "$REPO_ROOT/.gitignore"
@@ -1241,7 +1241,7 @@ JSON
     grep -q "Do not commit this file" "$REPO_ROOT/docs/hardware-aware-recommendations.md"
 }
 
-test_aider_surface_adapter() {
+test_agent_surface_adapters() {
   temp_root="$(mktemp -d)"
   trap 'rm -rf "$temp_root"' RETURN
   mkdir -p "$temp_root/.git/info"
@@ -1279,6 +1279,39 @@ JSON
 
   "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --action Health --target-repo "$temp_root" --aider-command sh >/tmp/aider-adapter-health.out 2>&1 || return 1
   grep -q 'Aider adapter health: healthy' /tmp/aider-adapter-health.out || return 1
+
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Plan >/tmp/kilo-adapter-plan.out 2>&1 || return 1
+  grep -q '@kilocode/cli' /tmp/kilo-adapter-plan.out || return 1
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Install --dry-run >/tmp/kilo-adapter-install.out 2>&1 || return 1
+  grep -q '@kilocode/cli' /tmp/kilo-adapter-install.out || return 1
+  grep -q 'no network install' /tmp/kilo-adapter-install.out || return 1
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Configure --target-repo "$temp_root" --recommendation-path "$recommendation_path" --lane WriteSafe --ollama-base-url 'http://example.invalid:11434' >/tmp/kilo-adapter-configure.out 2>&1 || return 1
+  python3 - "$temp_root/.kilo.local.json" <<'PY' || return 1
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as handle: config = json.load(handle)
+assert config["model"] == "local-ollama/qwen3.5:9b"
+assert config["provider"]["local-ollama"]["options"]["baseURL"] == "http://example.invalid:11434/v1"
+assert config["permission"]["*"] == "ask"
+PY
+  grep -Fxq '.kilo.local.json' "$temp_root/.git/info/exclude" || return 1
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Health --target-repo "$temp_root" --kilo-command sh >/tmp/kilo-adapter-health.out 2>&1 || return 1
+  grep -q 'Kilo Code adapter health: healthy' /tmp/kilo-adapter-health.out || return 1
+
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface opencode --action Plan >/tmp/opencode-adapter-plan.out 2>&1 || return 1
+  grep -q 'opencode-ai' /tmp/opencode-adapter-plan.out || return 1
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface opencode --action Install --dry-run >/tmp/opencode-adapter-install.out 2>&1 || return 1
+  grep -q 'opencode-ai' /tmp/opencode-adapter-install.out || return 1
+  grep -q 'no network install' /tmp/opencode-adapter-install.out || return 1
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface opencode --action Configure --target-repo "$temp_root" --recommendation-path "$recommendation_path" --lane PlanOnly --ollama-base-url 'http://example.invalid:11434' >/tmp/opencode-adapter-configure.out 2>&1 || return 1
+  python3 - "$temp_root/.opencode.local.json" <<'PY' || return 1
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as handle: config = json.load(handle)
+assert config["model"] == "ollama/devstral-small-2:24b"
+assert config["provider"]["ollama"]["options"]["baseURL"] == "http://example.invalid:11434/v1"
+PY
+  grep -Fxq '.opencode.local.json' "$temp_root/.git/info/exclude" || return 1
+  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface opencode --action Health --target-repo "$temp_root" --opencode-command sh >/tmp/opencode-adapter-health.out 2>&1 || return 1
+  grep -q 'OpenCode adapter health: healthy' /tmp/opencode-adapter-health.out || return 1
   ! grep -q 'pwsh' "$REPO_ROOT/scripts/setup-agent-surface.shared.sh"
 }
 
@@ -1319,10 +1352,10 @@ test_solution_architecture_review_doc() {
     grep -q "Kilo Code" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "Complete for positioning, partial for full cross-agent parity" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "comparable install/configure/test support is not complete" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "Complete for Cline and Aider, partial for active tracked surfaces" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "Complete for Cline, Aider, and OpenCode, partial for active tracked surfaces" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "OpenHands do not yet have full live validation evidence" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "Complete for Continue and Aider, partial for cross-agent parity" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "install/configure/test script parity is still missing" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "Complete for Continue, Aider, and OpenCode, partial for cross-agent parity" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "install/configure/test parity remains blocked" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "EMPTY_MODEL_OUTPUT" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "Evidence States" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
     grep -q "tested-passed" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
@@ -1416,7 +1449,7 @@ run_test "hardware-aware recommendation scripts emit sanitized model lanes" test
 run_test "shared asset installation docs define centralized config strategy" test_shared_asset_installation_doc
 run_test "solution architecture review tracks milestone gaps" test_solution_architecture_review_doc
 run_test "recommended agent config generation writes local-only config" test_recommended_agent_config_generation
-run_test "Aider surface adapter plans installs configures and reports health safely" test_aider_surface_adapter
+run_test "agent surface adapters plan installs configure and report health safely" test_agent_surface_adapters
 run_test "workflow envelope contract is versioned private by default and cross-platform" test_workflow_envelope_contract
 run_test "hosted CI verifier enforces exact-SHA cross-platform completion" test_hosted_ci_verifier_contract
 

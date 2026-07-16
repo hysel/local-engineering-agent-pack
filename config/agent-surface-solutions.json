@@ -15,7 +15,7 @@
     "retired"
   ],
   "configBundlePolicy": {
-    "decision": "Generate surface-specific config bundles only after compatibility evidence exists for that surface. Continue and Aider have supported generated local config paths today.",
+    "decision": "Generate surface-specific config bundles only after compatibility evidence exists for that surface. Continue, Aider, and OpenCode have supported generated local config paths today.",
     "defaultSurface": "continue",
     "sharedAssetStrategy": "Shared prompts, rules, docs, templates, validation scripts, and evidence formats should stay reusable across surfaces; generated surface config files must stay surface-specific.",
     "promotionCriteria": [
@@ -226,24 +226,24 @@
       "type": "cli-agent",
       "currentValidationLevel": "partial",
       "configBundle": {
-        "status": "scaffolded",
-        "strategy": "Generate an explicit local-only OpenCode Ollama config through the unified adapter; do not treat generation as live surface validation.",
+        "status": "supported",
+        "strategy": "Generate an explicit local-only OpenCode Ollama config through the unified adapter; generated-sample evidence supports installation and configuration, but does not approve real-project writes.",
         "outputKind": "local-only .opencode.local.json",
         "evidence": ["docs/opencode-cli-model-testing.md", "docs/surface-specific-config-bundles.md"]
       },
       "install": {
-        "status": "scaffolded",
-        "solution": "Use the unified adapter's explicit npm install plan; generated-sample CLI evidence exists, while non-generated-repository validation remains pending.",
+        "status": "supported",
+        "solution": "Use the unified adapter's explicit npm install plan and dry-run-safe health contract; generated-sample CLI evidence exists, while non-generated-repository validation remains pending.",
         "workflowIds": ["setup-agent-surface"],
         "evidence": ["docs/opencode-cli-model-testing.md"],
-        "blockedReason": "The installed CLI has generated-sample evidence, but repeatable install verification across supported platforms remains pending."
+        "blockedReason": ""
       },
       "configure": {
-        "status": "scaffolded",
-        "solution": "Generate a local-only OpenCode JSON config with an Ollama provider and launch it through OPENCODE_CONFIG.",
+        "status": "supported",
+        "solution": "Generate a local-only OpenCode JSON config with an Ollama provider, repository-local exclusion, and launch it through OPENCODE_CONFIG.",
         "workflowIds": ["setup-agent-surface"],
         "evidence": ["docs/opencode-cli-model-testing.md"],
-        "blockedReason": "The generated config has deterministic coverage and generated-sample CLI evidence, but non-generated-repository validation remains pending."
+        "blockedReason": ""
       },
       "test": {
         "status": "validated",

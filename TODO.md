@@ -340,7 +340,7 @@
 - [x] Define Capability Evidence Contract v2 keyed by surface, model, provider, OS, surface version, operation, and validation mode.
 - [x] Migrate evidence lookup away from first-row-per-model behavior and aggregate duplicate evidence conservatively with provenance.
 - [x] Prevent write-readiness evidence from one agent surface from being inherited by another surface.
-- [ ] Complete Milestone 19 cross-agent install/configure/test script parity.
+- [x] Complete Milestone 19 install/configure/health parity for evidence-backed CLI adapters: Aider and OpenCode share dry-run-safe setup, local-only config, repository-local exclusion, health checks, and deterministic cross-platform contract tests. Cline, Kilo Code, and OpenHands remain separately evidence-blocked.
 - [x] Keep Cline install/configure automation blocked with exact evidence gaps: npm installation is documented and validated, but provider setup requires an isolated CLI data directory plus headless auto-approval for tools; no general write profile is generated.
 - [x] Add Aider install/configure automation with an explicit local-only config and supported isolated install methods.
 - [ ] Resolve Kilo Code's local-model task execution, then rerun generated-sample validation before promoting its scaffolded adapter; do not create new Roo Code automation.

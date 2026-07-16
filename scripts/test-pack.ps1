@@ -229,7 +229,7 @@ Invoke-PackTest "release packaging scripts define archives, checksums, and sanit
     Assert-True -Condition ($roadmap -match "\| Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging \| Partial \|") -Message "Roadmap should mark Milestone 19 partial for cross-agent parity."
     Assert-True -Condition ($roadmap -match "Cross-agent parity gap") -Message "Roadmap should state the Milestone 19 cross-agent parity gap."
     Assert-True -Condition ($todo -match "\[x\] Complete Milestone 19 Continue installer profile, evidence catalog, and release packaging exit criteria") -Message "TODO should mark Continue-scoped Milestone 19 completion complete."
-    Assert-True -Condition ($todo -match "\[ \] Complete Milestone 19 cross-agent install/configure/test script parity") -Message "TODO should keep cross-agent Milestone 19 parity pending."
+    Assert-True -Condition ($todo -match "\[x\] Complete Milestone 19 install/configure/health parity for evidence-backed CLI adapters") -Message "TODO should record completed adapter parity without promoting blocked surfaces."
     Assert-True -Condition ($todo -match "Solution Architecture Review Backlog") -Message "TODO should keep future surface profile work in the architecture backlog."
     Assert-True -Condition ($todo -match "\[ \] Add future surface-specific profile generation after non-Continue validation") -Message "TODO should keep future surface-specific profile generation pending."
     Assert-True -Condition ((Get-Content -LiteralPath $gitignorePath) -contains "dist/") -Message "dist output should be ignored."
@@ -3347,7 +3347,7 @@ Invoke-PackTest "agent surface solutions define install configure and test" {
             Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot $evidence)) -Message "$($surface.id) config bundle evidence should exist: $evidence"
         }
 
-        if ($surface.id -in @("continue", "aider")) {
+        if ($surface.id -in @("continue", "aider", "opencode")) {
             Assert-Equal -Actual $surface.configBundle.status -Expected "supported" -Message "$($surface.id) config bundle should be supported after evidence gates pass."
         } else {
             Assert-True -Condition ($surface.configBundle.status -ne "supported") -Message "$($surface.id) config bundle should not be supported before evidence gates pass."
@@ -3391,7 +3391,7 @@ Invoke-PackTest "agent surface solutions define install configure and test" {
     Assert-True -Condition ($doc -match "Test") -Message "Solution docs should mention test."
     Assert-True -Condition ($doc -match "surface-specific-config-bundles\.md") -Message "Solution docs should link config bundle policy."
     Assert-True -Condition ($doc -match "agent-surface-promotion-gates\.md") -Message "Solution docs should link promotion gates."
-    Assert-True -Condition ($bundleDoc -match "Continue and Aider") -Message "Config bundle docs should identify the supported generated config surfaces."
+    Assert-True -Condition ($bundleDoc -match "Continue, Aider, and OpenCode") -Message "Config bundle docs should identify the supported generated config surfaces."
     Assert-True -Condition ($bundleDoc -match "Scoped write validation") -Message "Config bundle docs should require write validation before promotion."
     Assert-True -Condition ($promotionGates -match "Install supported") -Message "Promotion gates should define install promotion."
     Assert-True -Condition ($promotionGates -match "Configure supported") -Message "Promotion gates should define configure promotion."
@@ -3454,6 +3454,34 @@ Invoke-PackTest "agent surface adapters plan installs configure and report healt
         Assert-True -Condition ($kiloConfig.permission.'*' -eq "ask" -and $kiloConfig.permission.edit -eq "ask") -Message "Kilo Code config should require approval for writes."
         Assert-True -Condition (@(Get-Content -LiteralPath (Join-Path $tempRoot ".git/info/exclude")) -contains ".kilo.local.json") -Message "Generated Kilo Code config should be locally excluded from Git."
 
+        $kiloInstall = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Install", "-Surface", "kilo", "-DryRun")
+        Assert-Equal -Actual $kiloInstall.ExitCode -Expected 0 -Message "Kilo Code install dry run should succeed."
+        Assert-True -Condition ($kiloInstall.Output -match "@kilocode/cli" -and $kiloInstall.Output -match "no network install") -Message "Kilo Code install dry run should be explicit and non-networking."
+
+        $kiloHealth = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Health", "-Surface", "kilo", "-TargetRepo", $tempRoot, "-KiloCommand", (Get-Process -Id $PID).Path)
+        Assert-Equal -Actual $kiloHealth.ExitCode -Expected 0 -Message "Kilo Code health should pass with an available command and valid local config."
+        Assert-True -Condition ($kiloHealth.Output -match '"Status":\s*"healthy"') -Message "Kilo Code health should emit a healthy structured result."
+
+        $openCodePlan = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Plan", "-Surface", "opencode")
+        Assert-Equal -Actual $openCodePlan.ExitCode -Expected 0 -Message "OpenCode adapter plan should succeed."
+        Assert-True -Condition ($openCodePlan.Output -match "opencode-ai" -and $openCodePlan.Output -match "local-only") -Message "OpenCode plan should describe its npm install and local config boundary."
+
+        $openCodeInstall = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Install", "-Surface", "opencode", "-DryRun")
+        Assert-Equal -Actual $openCodeInstall.ExitCode -Expected 0 -Message "OpenCode install dry run should succeed."
+        Assert-True -Condition ($openCodeInstall.Output -match "opencode-ai" -and $openCodeInstall.Output -match "no network install") -Message "OpenCode install dry run should be explicit and non-networking."
+
+        $openCodeConfigure = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Configure", "-Surface", "opencode", "-TargetRepo", $tempRoot, "-RecommendationPath", $recommendationPath, "-Lane", "PlanOnly", "-OllamaBaseUrl", "http://example.invalid:11434")
+        Assert-Equal -Actual $openCodeConfigure.ExitCode -Expected 0 -Message "OpenCode config generation should succeed."
+        $openCodeConfigPath = Join-Path $tempRoot ".opencode.local.json"
+        $openCodeConfig = Get-Content -LiteralPath $openCodeConfigPath -Raw | ConvertFrom-Json
+        Assert-Equal -Actual $openCodeConfig.model -Expected "ollama/devstral-small-2:24b" -Message "OpenCode config should use the requested recommendation lane."
+        Assert-Equal -Actual $openCodeConfig.provider.ollama.options.baseURL -Expected "http://example.invalid:11434/v1" -Message "OpenCode config should use an OpenAI-compatible Ollama endpoint."
+        Assert-True -Condition (@(Get-Content -LiteralPath (Join-Path $tempRoot ".git/info/exclude")) -contains ".opencode.local.json") -Message "Generated OpenCode config should be locally excluded from Git."
+
+        $openCodeHealth = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Health", "-Surface", "opencode", "-TargetRepo", $tempRoot, "-OpenCodeCommand", (Get-Process -Id $PID).Path)
+        Assert-Equal -Actual $openCodeHealth.ExitCode -Expected 0 -Message "OpenCode health should pass with an available command and valid local config."
+        Assert-True -Condition ($openCodeHealth.Output -match '"Status":\s*"healthy"') -Message "OpenCode health should emit a healthy structured result."
+
         $health = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Health", "-TargetRepo", $tempRoot, "-AiderCommand", (Get-Process -Id $PID).Path)
         Assert-Equal -Actual $health.ExitCode -Expected 0 -Message "Aider health should pass with an available command and valid local config."
         Assert-True -Condition ($health.Output -match '"Status":\s*"healthy"') -Message "Aider health should emit a healthy structured result."
@@ -3499,10 +3527,10 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($doc -match "Kilo Code's current local-model task-execution failure") -Message "Solution architecture review should track the remaining Kilo Code live-validation gap."
     Assert-True -Condition ($doc -match "Complete for positioning, partial for full cross-agent parity") -Message "Solution architecture review should classify Milestone 14 accurately."
     Assert-True -Condition ($doc -match "comparable install/configure/test support is not complete") -Message "Solution architecture review should keep Milestone 14 parity gap visible."
-    Assert-True -Condition ($doc -match "Complete for Cline and Aider, partial for active tracked surfaces") -Message "Solution architecture review should classify Milestone 17 accurately."
+    Assert-True -Condition ($doc -match "Complete for Cline, Aider, and OpenCode, partial for active tracked surfaces") -Message "Solution architecture review should classify Milestone 17 accurately."
     Assert-True -Condition ($doc -match "OpenHands do not yet have full live validation evidence") -Message "Solution architecture review should keep full surface validation gap visible."
-    Assert-True -Condition ($doc -match "Complete for Continue and Aider, partial for cross-agent parity") -Message "Solution architecture review should classify Milestone 19 accurately."
-    Assert-True -Condition ($doc -match "install/configure/test script parity is still missing") -Message "Solution architecture review should keep remaining surface install/configure gaps visible."
+    Assert-True -Condition ($doc -match "Complete for Continue, Aider, and OpenCode, partial for cross-agent parity") -Message "Solution architecture review should classify Milestone 19 accurately."
+    Assert-True -Condition ($doc -match "install/configure/test parity remains blocked") -Message "Solution architecture review should keep remaining surface install/configure gaps visible."
     Assert-True -Condition ($doc -match "EMPTY_MODEL_OUTPUT") -Message "Solution architecture review should track language validation failure signals."
     Assert-True -Condition ($uiDoc -match "Evidence States") -Message "Unified UI design should define evidence states."
     foreach ($state in @("tested-passed", "tested-partial", "failed", "recommended-only", "blocked")) {

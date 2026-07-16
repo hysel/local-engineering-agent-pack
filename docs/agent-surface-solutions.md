@@ -10,7 +10,7 @@ It answers the same three questions for every surface:
 
 The catalog does not make planned or blocked surfaces look ready. It records the current solution, status, evidence, and blocked reason for each agent.
 
-It also records the config-bundle policy. Continue and Aider have supported generated local config paths; future surface-specific bundles are gated by `docs/surface-specific-config-bundles.md`. Platform-agent validation must also follow `docs/openhands-validation-boundary.md`.
+It also records the config-bundle policy. Continue, Aider, and OpenCode have supported generated local config paths; future surface-specific bundles are gated by `docs/surface-specific-config-bundles.md`. Platform-agent validation must also follow `docs/openhands-validation-boundary.md`.
 
 ## Current Summary
 
@@ -21,7 +21,7 @@ It also records the config-bundle policy. Continue and Aider have supported gene
 | Aider | supported | supported | validated |
 | Roo Code | retired | retired | retired |
 | Kilo Code | scaffolded | scaffolded | scaffolded |
-| OpenCode | scaffolded | scaffolded | validated |
+| OpenCode | supported | supported | validated |
 | OpenHands | blocked | blocked | planned |
 
 ## Rules
@@ -48,11 +48,12 @@ Ollama config generation, and health checks; use `scripts/test-aider-cli-models.
 for read-only and disposable write validation. This does not promote Aider to
 real-project approved-write readiness.
 
-OpenCode has a scaffolded local-only Ollama config and installer path through
-the same adapter. Devstral Small 2 24B passed disposable read and write-smoke
-validation with the installed CLI. See [OpenCode CLI model testing](opencode-cli-model-testing.md).
-It remains a candidate until explicitly approved non-generated repository
-validation passes.
+OpenCode has supported local-only Ollama configuration, dry-run-safe install
+planning, and adapter health checks through the same adapter. Devstral Small 2
+24B passed disposable read, write-smoke, and constrained scoped-edit validation
+with the installed CLI. See [OpenCode CLI model testing](opencode-cli-model-testing.md).
+It remains partial for real-project approved-write readiness until explicitly
+approved non-generated repository validation passes.
 
 Kilo Code now has an explicit npm install plan and a local-only
 `.kilo.local.json` generator through the same adapter. It uses the documented

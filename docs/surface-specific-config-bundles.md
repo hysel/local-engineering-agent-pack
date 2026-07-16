@@ -6,9 +6,9 @@ Use `docs/config-generation-strategy.md` for the shared decision model that choo
 
 ## Decision
 
-Continue and Aider have supported generated local configuration paths today.
+Continue, Aider, and OpenCode have supported generated local configuration paths today.
 
-Future Cline, Kilo Code, OpenCode, or platform-agent bundles should be added only after the surface has:
+Future Cline, Kilo Code, or platform-agent bundles should be added only after the surface has:
 
 - Documented install behavior.
 - Documented local model configuration format.
@@ -40,7 +40,7 @@ Generated config files should stay surface-specific. Continue config does not co
 | Aider | supported | Generate explicit local-only `.aider.conf.local.yml` through `setup-agent-surface.*`; launch with `aider --config` and keep real-project approved write blocked. |
 | Roo Code | retired | Do not generate new bundles; evaluate a maintained successor separately. |
 | Kilo Code | scaffolded | Generate a local-only `.kilo.local.json` through the unified adapter. Keep real-project writes blocked: current remote-Ollama live runs reached models but did not execute repository tasks or tools. |
-| OpenCode | scaffolded | Generate a local-only `.opencode.local.json` through the unified adapter. Devstral Small 2 24B passed generated-sample read/write-smoke and constrained scoped-edit validation; non-generated-repository validation remains pending. |
+| OpenCode | supported | Generate a local-only `.opencode.local.json` through the unified adapter with dry-run-safe install planning, repository-local exclusion, and health checks. Devstral Small 2 24B passed generated-sample read/write-smoke and constrained scoped-edit validation; non-generated-repository validation remains pending for real-project approved-write claims. |
 | OpenHands | blocked | Do not generate platform-agent config while workspace, sandbox, and credential boundaries remain outside this pack. |
 
 ## Implementation Rule
