@@ -35,6 +35,10 @@ Discovery, planning, and review require sanitized saved output that references
 real fixture filenames. Scoped writes additionally require external Git diff
 verification proving that only the approved files changed.
 
+The runners reject an otherwise filename-complete response when it explicitly
+states that the source was unavailable or not inspected. That result receives
+the `UNREAD_SOURCE_CLAIM` failure signal and cannot become language evidence.
+
 ## Promotion Gate
 
 A rule pack remains optional and evidence-gated until the matrix records a
@@ -98,9 +102,13 @@ loss, check `/api/ps` before starting another run.
 
 A bounded JavaScript/TypeScript batch on the same host validated repository
 discovery, implementation planning, and scoped write. Its code-review cell
-returned empty output twice, including a one-cell retry, so the JavaScript /
-TypeScript slice is not promoted for this model and host. The model was
-verified unloaded after both runs.
+initially returned empty output twice. A fresh native Apple Silicon retest on
+2026-07-16 exposed a stricter issue: the model first claimed that source files
+were unavailable, then returned `TOOLS_UNAVAILABLE` when explicitly required
+to read them. The runner now records `UNREAD_SOURCE_CLAIM` for the former
+response and `MODEL_FAILURE_SIGNAL` for the latter. The JavaScript/TypeScript
+slice is not promoted for this model and host. The model was verified unloaded
+after every run.
 
 The Windows and Bash runners refuse to start when Ollama already has a loaded
 model. This protects the 64 GB validation budget from accidental concurrent

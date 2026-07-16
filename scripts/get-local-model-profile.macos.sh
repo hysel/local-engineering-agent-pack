@@ -82,7 +82,7 @@ format_vram_label() {
 
 find_model() {
   for pattern in "$@"; do
-    for model in "${OLLAMA_MODELS[@]}"; do
+    for model in "${OLLAMA_MODELS[@]-}"; do
       if printf '%s' "$model" | grep -Eiq "$pattern"; then
         printf '%s' "$model"
         return 0
