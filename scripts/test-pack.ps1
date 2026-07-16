@@ -1413,6 +1413,8 @@ Invoke-PackTest "medium language workflow matrix is complete and evidence-gated"
         Assert-True -Condition ($sharedRunner -match "--readonly") -Message "Shared native matrix runner should separate read-only mode."
         Assert-True -Condition ($sharedRunner -match "--auto") -Message "Shared native matrix runner should use explicit approved-write mode."
         Assert-True -Condition ($sharedRunner -match "unload_models") -Message "Shared native matrix runner should support unloading models."
+        Assert-True -Condition ($sharedRunner -match "UNREAD_SOURCE_CLAIM") -Message "Shared native matrix runner should reject reviews that admit source was not read."
+        Assert-True -Condition ($sharedRunner -match "Use the available read tools to open every named evidence file") -Message "Shared native matrix runner should require actual file reads before analysis."
         Assert-True -Condition ($sharedRunner -match "trap handle_interruption HUP INT TERM") -Message "Shared native matrix runner should release models when interrupted."
         Assert-True -Condition ($sharedRunner -match "--allow-loaded-models") -Message "Shared native matrix runner should require an explicit override for an already loaded Ollama model."
         Assert-True -Condition ($runner -match "AllowLoadedModels") -Message "Windows matrix runner should require an explicit override for an already loaded Ollama model."
@@ -1421,6 +1423,8 @@ Invoke-PackTest "medium language workflow matrix is complete and evidence-gated"
         Assert-True -Condition ($runner -match "git -C .* diff --name-only") -Message "Matrix runner should externally verify changed files."
         Assert-True -Condition ($runner -match "ConvertTo-SanitizedOutput") -Message "Matrix runner should sanitize committed evidence."
         Assert-True -Condition ($runner -match "UnloadAfterRun") -Message "Matrix runner should support unloading tested models."
+        Assert-True -Condition ($runner -match "UNREAD_SOURCE_CLAIM") -Message "Windows matrix runner should reject reviews that admit source was not read."
+        Assert-True -Condition ($runner -match "Use the available read tools to open every named evidence file") -Message "Windows matrix runner should require actual file reads before analysis."
     }
     finally {
         Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue

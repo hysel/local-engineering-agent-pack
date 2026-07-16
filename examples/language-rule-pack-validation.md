@@ -195,3 +195,20 @@ to a fixture directory, and Bash 3.2 incompatibility. It also exposed a
 headless-output gap and an ambiguous marker prompt. Structured JSON output and
 an isolated marker line fixed those issues. The native macOS Python slice is
 now validated; the remaining language packs remain untested on macOS.
+
+## Evidence: 2026-07-16 Native macOS TypeScript Tooling Blocker
+
+- Surface: Continue CLI `1.5.47`
+- Operating system: native Apple Silicon macOS, 16 GB unified memory
+- Provider: local Ollama; endpoint omitted
+- Model: `qwen3.5:9b`
+- Fixture: `typescript-service-medium`
+- Operation: code review
+- Model unload: verified after every run
+
+The first retest named the expected files but admitted it had not read them.
+The matrix runner now rejects that output with `UNREAD_SOURCE_CLAIM`. After the
+prompt explicitly required read tools, the model returned `TOOLS_UNAVAILABLE`.
+This is a safe failed-model-validation result, not language-rule-pack evidence.
+Do not promote JavaScript/TypeScript or any other remaining macOS language pack
+for this surface/model lane from filename-only output.

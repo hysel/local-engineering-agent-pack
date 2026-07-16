@@ -59,13 +59,13 @@ function Get-OperationPrompt {
     $fileText = $files -join ", "
     switch ($Operation) {
         "repository-discovery" {
-            return "Inspect this repository in read-only mode for the $($Entry.ecosystem) component. Do not modify or create files. Begin the final answer with 'Evidence files inspected:' and list each of these exact repository paths on its own bullet before the analysis: $fileText. Then identify the project structure, architecture, source, tests, configuration, risks, and next steps. Copy paths exactly; do not invent or shorten filenames."
+            return "Inspect this repository in read-only mode for the $($Entry.ecosystem) component. Do not modify or create files. Use the available read tools to open every named evidence file before writing the answer. If a read tool cannot open every named file, respond exactly TOOLS_UNAVAILABLE and stop. Do not treat a filename as evidence that its contents were read. Begin the final answer with 'Evidence files inspected:' and list each of these exact repository paths on its own bullet before the analysis: $fileText. Then identify the project structure, architecture, source, tests, configuration, risks, and next steps. Copy paths exactly; do not invent or shorten filenames."
         }
         "implementation-plan" {
-            return "Create a read-only implementation plan for the scenario in SCENARIO.md, scoped to the $($Entry.ecosystem) component. Do not modify or create files. Begin the final answer with 'Evidence files inspected:' and list each of these exact repository paths on its own bullet before the plan: $fileText. Include affected components, ordered steps, tests, risks, and rollback. Copy paths exactly; do not invent or shorten filenames."
+            return "Create a read-only implementation plan for the scenario in SCENARIO.md, scoped to the $($Entry.ecosystem) component. Do not modify or create files. Use the available read tools to open every named evidence file before writing the plan. If a read tool cannot open every named file, respond exactly TOOLS_UNAVAILABLE and stop. Do not treat a filename as evidence that its contents were read. Begin the final answer with 'Evidence files inspected:' and list each of these exact repository paths on its own bullet before the plan: $fileText. Include affected components, ordered steps, tests, risks, and rollback. Copy paths exactly; do not invent or shorten filenames."
         }
         "code-review" {
-            return "Review the $($Entry.ecosystem) component in read-only mode. Do not modify or create files. Begin the final answer with 'Evidence files inspected:' and list each of these exact repository paths on its own bullet before the findings: $fileText. Then lead with correctness, security, regression, maintainability, and missing-test findings. Copy paths exactly; do not invent or shorten filenames."
+            return "Review the $($Entry.ecosystem) component in read-only mode. Do not modify or create files. Use the available read tools to open every named evidence file before writing findings. If a read tool cannot open every named file, respond exactly TOOLS_UNAVAILABLE and stop. Do not treat a filename as evidence that its contents were read. Begin the final answer with 'Evidence files inspected:' and list each of these exact repository paths on its own bullet before the findings: $fileText. Then lead with correctness, security, regression, maintainability, and missing-test findings. Copy paths exactly; do not invent or shorten filenames."
         }
         "scoped-write" {
             $target = $Entry.operationEvidence.'scoped-write'.targetFile
@@ -309,6 +309,9 @@ try {
         else {
             foreach ($expectedFile in @($entry.operationEvidence.$operation)) {
                 if ($run.Stdout -notmatch [regex]::Escape($expectedFile)) { $signals.Add("EXPECTED_FILE_MISSING:$expectedFile") }
+            }
+            if ($run.Stdout -match '(?i)no readable (source )?code was provided|inspection requires access to file contents|please provide or upload these files|cannot be validated against actual (file )?contents|without (inspecting|viewing|reviewing|seeing) (the )?(actual )?(implementation|source|file contents|code)|unable to (evaluate|assess).*(without|in absence of).*(source|code)|cannot (verify|assess|evaluate|identify).*(without|in absence of).*(implementation|source|file contents|code)') {
+                $signals.Add("UNREAD_SOURCE_CLAIM")
             }
             if ((& git -C $samplePath status --short | Out-String).Trim()) { $signals.Add("UNEXPECTED_READ_WRITE") }
         }

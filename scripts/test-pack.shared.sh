@@ -956,6 +956,8 @@ PY
     grep -q "trap handle_interruption HUP INT TERM" "$shared_runner" &&
     grep -q -- "--format json" "$shared_runner" &&
     grep -q "unload_models" "$shared_runner" &&
+    grep -q "UNREAD_SOURCE_CLAIM" "$shared_runner" &&
+    grep -q "Use the available read tools to open every named evidence file" "$shared_runner" &&
     grep -q 'http://127.0.0.1:11434' "$shared_runner" &&
     grep -q 'resolve_existing_path' "$shared_runner" &&
     ! grep -q 'mapfile' "$shared_runner" &&
