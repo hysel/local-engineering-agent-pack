@@ -563,6 +563,10 @@ The macOS helper reports MLX tooling separately when it can detect common comman
 
 Detection means the tooling is visible to the current shell. It does not prove that an MLX model is installed, loaded, served through an API, or compatible with Continue.
 
+For the pack-managed macOS MLX runtime, the profile also detects
+`$HOME/.local-engineering-agent-pack-mlx/bin/mlx_lm.server` even when the
+virtual environment is not on `PATH`.
+
 When MLX tooling is detected, the macOS helper also reports a separate MLX recommendation from `config/model-recommendations.mlx.tsv`. This recommendation is a candidate, not a verified installed model. It does not replace the Ollama recommendation and it does not change the default beginner setup path.
 
 If you want to use MLX with Continue:
@@ -571,6 +575,12 @@ If you want to use MLX with Continue:
 - Configure Continue locally to use that endpoint.
 - Keep the endpoint, model names, and machine-specific settings out of committed config.
 - Run the same read-only tool validation before using Agent mode or approved write mode.
+
+Current evidence: `mlx-community/Qwen3.5-9B-OptiQ-4bit` passed a direct local
+OpenAI-compatible tool-call check, Continue CLI read-tool validation, and a
+disposable scoped-write smoke test on Apple Silicon. It is a bounded Continue
+CLI result, not a claim of editor Agent compatibility or broad write approval.
+Use the macOS bootstrap guide for the local-only serving configuration.
 
 Do not add MLX-only model names to `config/model-recommendations.tsv`. Use `config/model-recommendations.mlx.tsv` for MLX candidate guidance. If future providers are added, prefer provider-specific catalogs or a richer provider-aware schema instead of mixing discovery mechanisms in one file.
 

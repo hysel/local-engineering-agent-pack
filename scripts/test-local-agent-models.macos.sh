@@ -2,4 +2,4 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-"$SCRIPT_DIR/test-local-agent-models.shared.sh" "$@"
+exec "$SCRIPT_DIR/run-macos-wrapper.sh" "$0" "$SCRIPT_DIR/test-local-agent-models.shared.sh" "$@"

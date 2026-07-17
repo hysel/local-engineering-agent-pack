@@ -156,6 +156,19 @@ test_shell_scripts_executable() {
   done < <(git -C "$REPO_ROOT" ls-files -s 'scripts/*.sh' '.githooks/pre-push')
 }
 
+test_macos_wrapper_help_surface() {
+  [ -x "$REPO_ROOT/scripts/run-macos-wrapper.sh" ] || return 1
+  [ -x "$REPO_ROOT/scripts/test-macos-script-surface.macos.sh" ] || return 1
+  grep -q -- '--with-mlx' "$REPO_ROOT/scripts/bootstrap-macos-agent-host.sh" || return 1
+  grep -q 'python@3.12' "$REPO_ROOT/scripts/bootstrap-macos-agent-host.sh" || return 1
+  grep -q 'incompatible-python' "$REPO_ROOT/scripts/bootstrap-macos-agent-host.sh" || return 1
+  grep -q 'pack virtual environment: mlx_lm.server' "$REPO_ROOT/scripts/get-local-model-profile.macos.sh" || return 1
+  for script in "$REPO_ROOT/scripts"/*.macos.sh; do
+    bash -n "$script" || return 1
+    bash "$script" --help >/dev/null || return 1
+  done
+}
+
 test_linux_macos_scripts_do_not_require_pwsh() {
   ! grep -Eq 'pwsh|PowerShell 7' \
     "$REPO_ROOT/scripts/validate-pack.linux.sh" \
@@ -1409,6 +1422,7 @@ run_test "model recommendation catalog has valid schema" test_catalog_schema
 run_test "committed config uses starter sample model" test_committed_config_uses_starter_model
 run_test "MLX model recommendation catalog has valid schema" test_mlx_catalog_schema
 run_test "shell wrapper scripts and hooks are executable in git" test_shell_scripts_executable
+run_test "native macOS wrappers have a validated help surface and MLX bootstrap contract" test_macos_wrapper_help_surface
 run_test "Linux/macOS user-facing scripts do not require PowerShell" test_linux_macos_scripts_do_not_require_pwsh
 run_test "runtime context generation captures useful files and excludes build output" test_runtime_context_generation
 run_test "install script dry run does not modify target repository" test_install_dry_run

@@ -189,6 +189,7 @@
 - [x] Decide whether MLX or ARM recommendations belong in the shared TSV catalog or provider-specific catalogs.
 - [x] Document unified-memory and shared-memory guidance for model sizing.
 - [x] Keep ARM/MLX endpoints, private model names, and machine-specific paths out of committed config.
+- [x] Validate a current MLX runtime and an Apple Silicon MLX candidate through local endpoint tool calls plus Continue CLI read, plan, review, and disposable scoped-write smoke checks.
 
 ## Milestone 11: Editor Surface Compatibility
 

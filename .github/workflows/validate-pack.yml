@@ -90,6 +90,10 @@ jobs:
         shell: bash
         run: ./scripts/test-pack.macos.sh
 
+      - name: Validate every macOS wrapper surface
+        shell: bash
+        run: ./scripts/test-macos-script-surface.macos.sh
+
       - name: Run macOS hardware profile smoke test
         shell: bash
         run: |

@@ -21,6 +21,10 @@ while [ "$#" -gt 0 ]; do
       MLX_MODEL_CATALOG_PATH="$2"
       shift 2
       ;;
+    --help|-h)
+      printf '%s\n' 'Usage: ./scripts/get-local-model-profile.macos.sh [--json] [--model-catalog <path>] [--mlx-model-catalog <path>]'
+      exit 0
+      ;;
     *)
       printf 'Unknown argument: %s\n' "$1" >&2
       exit 1
@@ -249,6 +253,10 @@ if command_exists ollama; then
 fi
 
 MLX_TOOLS=()
+PACK_MLX_SERVER="$HOME/.local-engineering-agent-pack-mlx/bin/mlx_lm.server"
+if [ -x "$PACK_MLX_SERVER" ]; then
+  MLX_TOOLS+=("pack virtual environment: mlx_lm.server")
+fi
 for tool in mlx-lm mlx_lm.generate mlx_lm.chat mlx_lm.server; do
   if command_exists "$tool"; then
     MLX_TOOLS+=("$tool")

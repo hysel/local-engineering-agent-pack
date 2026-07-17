@@ -11,6 +11,10 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Added an opt-in macOS MLX bootstrap path using a pack-managed Python 3.12 virtual environment, including safe migration of incompatible older MLX environments.
+- Added native Apple Silicon MLX evidence for an OpenAI-compatible endpoint and bounded Continue CLI read, plan, review, and disposable scoped-write smoke workflows.
+- Added CI-enforced syntax and help-surface validation for every native macOS wrapper.
+
 - Added medium-complexity Python, TypeScript, and polyglot language fixtures plus an evidence-gated validation matrix for repository discovery, planning, review, and scoped-write workflows.
 - Added a deterministic Continue CLI matrix runner and recorded 19 of 28 validated medium-fixture workflow cells, with failed write and filename-fidelity cells preserved as blockers.
 - Added cross-platform exact-SHA GitHub Actions verification with required Windows, Linux, and macOS job checks, automatic failed-log retrieval, and explicit push/CI reporting states.

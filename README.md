@@ -34,6 +34,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Plan shared assets for multiple projects | `docs/shared-asset-installation.md` |
 | Profile a remote LLM machine | `docs/remote-hardware-profile.md` |
 | Bootstrap a native macOS model host | `docs/macos-agent-host-bootstrap.md` |
+| Validate MLX models on Apple Silicon | `docs/macos-agent-host-bootstrap.md` and `docs/local-model-selection.md` |
 | Evaluate newer model candidates | `docs/online-model-discovery.md` |
 | Validate whether a model can use tools | `docs/model-tool-use-validation.md` |
 | Automate local model preflight tests | `docs/local-agent-model-testing.md` |
