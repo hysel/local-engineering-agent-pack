@@ -11,7 +11,7 @@ This document tracks how the Local Engineering Agent Pack should grow beyond its
 | Ecosystem | Current status | Notes |
 | --- | --- | --- |
 | .NET / ASP.NET Core | Most mature | Existing rules, prompts, examples, and validation are strongest here. |
-| Python | Optional rule pack with complete generated-fixture CLI evidence | All four operations passed on Windows, Linux, and native macOS with evidence-backed lanes; real-repository and editor Apply validation remain future work. |
+| Python | Optional rule pack with complete generated-fixture CLI evidence plus one macOS editor scoped edit | All four CLI operations passed on Windows, Linux, and native macOS with evidence-backed lanes. One VSCodium MLX generated-Python scoped edit passed external verification; real-repository and broader editor validation remain future work. |
 | JavaScript / TypeScript | Optional rule pack with complete generated-fixture CLI evidence | All four operations passed on Windows, Linux, and native macOS with evidence-backed lanes; real-repository and editor Apply validation remain future work. |
 | Java / Spring | Optional rule pack with complete generated-fixture CLI evidence | All four operations passed on Windows, Linux, and native macOS with the validated Devstral lane; real-repository and editor validation remain future work. |
 | Go | Optional rule pack with complete generated-fixture CLI evidence | All four operations passed on Windows, Linux, and native macOS with the validated Devstral lane; real-repository and editor validation remain future work. |
@@ -71,8 +71,9 @@ Python and JavaScript/TypeScript remain the first generated-sample workflow
 validation targets because they cover common personal, small-team, and
 open-source project shapes. Java, Go, Rust, SQL, and Infrastructure as Code now
 also have complete generated-fixture Continue CLI validation on Windows, Linux,
-and native macOS through evidence-backed lanes. Real-repository and editor
-validation remain separate promotion work.
+and native macOS through evidence-backed lanes. Python additionally has one
+bounded VSCodium MLX generated-fixture scoped edit. Real-repository and broader
+editor validation remain separate promotion work.
 
 Suggested sequence:
 

@@ -50,3 +50,22 @@ with a larger response allowance. The endpoint and runner were healthy. Keep
 the model eligible for its bounded smoke workflows, but do not promote it as a
 full cross-language default until all required matrix cells emit evidence-
 bearing output and scoped writes pass external diff verification.
+
+## 2026-07-17 VSCodium Continue Agent Scoped Edit
+
+This later interactive editor validation used the same OptiQ MLX model through
+the loopback-only OpenAI-compatible endpoint. The Continue and VSCodium
+versions were not recorded, so this is deliberately narrow evidence.
+
+| Capability | Result | External verification | Boundary |
+| --- | --- | --- | --- |
+| VSCodium Continue Agent repository read | Passed | The agent listed the generated Python fixture's actual top-level files and folders. | One generated fixture and one interactive editor session. |
+| VSCodium Continue Agent Python scoped edit | Passed | The agent changed only `app/settings.py`, `app/main.py`, and `tests/test_main.py` to add a default version value and expose it through the health response. `python -m app.main`, `python -m pytest`, and `git diff --check` passed. | Manual Apply/save was required in the editor. This is generated-sample evidence only, not real-project or broad-write approval. |
+
+The successful edit was performed after the Python fixture's disposable virtual
+environment was prepared. The fixture ignores `.venv`, `__pycache__`, and
+`.pytest_cache`, so test artifacts did not affect the changed-file check.
+
+Do not infer support for another editor, Continue version, MLX server version,
+model quantization, language, or repository from this result. Repeat the
+read, edit, direct-run, test, and external-diff checks for each intended setup.

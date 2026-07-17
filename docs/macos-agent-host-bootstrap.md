@@ -77,11 +77,12 @@ models:
     capabilities: [tool_use]
 ```
 
-The model above passed direct OpenAI-compatible tool-call validation plus
-Continue CLI read tooling and a disposable single-file write smoke test on an
-Apple Silicon host. This does not promote it to editor Agent or multi-language
-matrix support; repeat validation for every surface and workflow you intend to
-use.
+The model above passed direct OpenAI-compatible tool-call validation, Continue
+CLI read tooling, and a disposable single-file write smoke test on an Apple
+Silicon host. It also has one VSCodium Continue Agent generated-Python scoped
+edit pass with external direct-run, pytest, and whitespace verification. This
+remains bounded evidence: repeat validation for every editor version, model
+quantization, repository type, and workflow you intend to use.
 
 ## Generate Continue Config For The MLX Server
 

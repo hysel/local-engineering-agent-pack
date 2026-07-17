@@ -185,3 +185,10 @@ passed repository discovery, implementation planning, code review, and scoped
 write. The runner verified the constrained external diff for every scoped-write
 cell and unloaded the model after every bounded ecosystem run. This is native
 macOS CLI evidence only; it does not claim editor-extension validation.
+
+Separately, on 2026-07-17, the MLX OptiQ Qwen 3.5 9B model completed one
+VSCodium Continue Agent scoped edit on the generated Python fixture. The edit
+changed only the approved Python source and test files, then passed direct run,
+pytest, and external whitespace checks. This is limited editor evidence for
+that exact model, runtime, editor session, and Python fixture; it does not
+extend editor validation to the rest of the matrix.

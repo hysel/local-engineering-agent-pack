@@ -307,17 +307,25 @@ VALIDATION_NOTE=""
 MLX_RECOMMENDED_MODEL=""
 MLX_RECOMMENDED_USE=""
 MLX_VALIDATION_NOTE=""
+MLX_TIER="Low"
+
+# Unified memory is shared by macOS, the editor, and the MLX runtime. Keep the
+# MLX recommendation more conservative than the generic Ollama RAM tier.
+if [ "$RAM_INT" -ge 32 ]; then
+  MLX_TIER="High"
+elif [ "$RAM_INT" -ge 24 ]; then
+  MLX_TIER="Medium"
+fi
 
 if [ "$TIER" = "High resource candidate" ]; then
   recommend_from_catalog "High"
-  recommend_mlx_from_catalog "High"
 elif [ "$TIER" = "Medium resource candidate" ]; then
   recommend_from_catalog "Medium"
-  recommend_mlx_from_catalog "Medium"
 else
   recommend_from_catalog "Low"
-  recommend_mlx_from_catalog "Low"
 fi
+
+recommend_mlx_from_catalog "$MLX_TIER"
 
 GENERATED="$(date '+%Y-%m-%d %H:%M')"
 

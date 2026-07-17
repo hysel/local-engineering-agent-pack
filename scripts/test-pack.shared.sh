@@ -163,6 +163,8 @@ test_macos_wrapper_help_surface() {
   grep -q 'python@3.12' "$REPO_ROOT/scripts/bootstrap-macos-agent-host.sh" || return 1
   grep -q 'incompatible-python' "$REPO_ROOT/scripts/bootstrap-macos-agent-host.sh" || return 1
   grep -q 'pack virtual environment: mlx_lm.server' "$REPO_ROOT/scripts/get-local-model-profile.macos.sh" || return 1
+  grep -q 'MLX_TIER="Low"' "$REPO_ROOT/scripts/get-local-model-profile.macos.sh" || return 1
+  grep -q '\[ "$RAM_INT" -ge 24 \]' "$REPO_ROOT/scripts/get-local-model-profile.macos.sh" || return 1
   grep -q -- '--mlx-config' "$REPO_ROOT/scripts/install-continue-pack.shared.sh" || return 1
   grep -q 'provider: openai' "$REPO_ROOT/scripts/install-continue-pack.shared.sh" || return 1
   grep -q 'MlxStatus.*\[\[:space:\]\]\*' "$REPO_ROOT/scripts/install-continue-pack.shared.sh" || return 1

@@ -569,6 +569,12 @@ virtual environment is not on `PATH`.
 
 When MLX tooling is detected, the macOS helper also reports a separate MLX recommendation from `config/model-recommendations.mlx.tsv`. This recommendation is a candidate, not a verified installed model. It does not replace the Ollama recommendation and it does not change the default beginner setup path.
 
+MLX tiering is intentionally more conservative than the generic RAM tier
+because unified memory is shared by macOS, the editor, and the model runtime.
+The current profile chooses MLX `High` at 32 GB or more, `Medium` at 24-31 GB,
+and `Low` below 24 GB. A 16 GB Apple Silicon host therefore receives the
+validated 4B MLX candidate rather than the 9B recommendation.
+
 If you want to use MLX with Continue:
 
 - Run an MLX-compatible local server that exposes an OpenAI-compatible API.
@@ -578,8 +584,11 @@ If you want to use MLX with Continue:
 
 Current evidence: `mlx-community/Qwen3.5-9B-OptiQ-4bit` passed a direct local
 OpenAI-compatible tool-call check, Continue CLI read-tool validation, and a
-disposable scoped-write smoke test on Apple Silicon. It is a bounded Continue
-CLI result, not a claim of editor Agent compatibility or broad write approval.
+disposable scoped-write smoke test on Apple Silicon. It also passed one
+VSCodium Continue Agent scoped edit on a generated Python fixture with direct
+run, pytest, and external whitespace verification. These are bounded results,
+not broad real-project approval or evidence for other editor, runtime, or
+model versions.
 Use the macOS bootstrap guide for the local-only serving configuration.
 
 `mlx-community/Qwen3.5-9B-4bit` also passed the endpoint tool-call, focused
