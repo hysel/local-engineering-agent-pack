@@ -341,3 +341,24 @@ instead of accepting the model's completion claim.
 Failure signals: `SCOPED_EDIT_SCOPE_FAILED`,
 `SCOPED_EDIT_DIFF_CHECK_FAILED`, and `SCOPED_EDIT_LINE_ENDINGS_FAILED`.
 Scoped-edit promotion remains blocked.
+
+## 2026-07-20 Cline Windows Cross-Model Edit Comparison
+
+Two additional disposable diagnostics tested whether the failed line-ending
+gate was specific to Devstral Small 2 24B.
+
+| Model and task | Scope | Requested behavior | `git diff --check` | LF-only | Result |
+| --- | --- | --- | --- | --- | --- |
+| `devstral-small-2:24b`, one-file string replacement | Passed; only `app/main.py` changed | Passed | Failed | Failed | Rejected |
+| `qwen3-coder:30b`, hardened read plus two-file scoped edit | Scoped-edit file set passed | Failed | Failed | Failed | Rejected |
+
+The Qwen read phase also emitted raw tool-call markup instead of satisfying the
+grounded read-output gate. Its scoped phase touched the expected files but did
+not produce the required behavior. Both models were unloaded, the temporary
+Cline profiles were removed, and the disposable fixture was restored.
+
+### Decision
+
+- Treat LF/whitespace-safe Windows writes as blocked for Cline CLI 3.0.46, not as a model-specific promotion path.
+- Keep the earlier minimal editor write-smoke evidence scoped to that exact run; it does not override the stricter CLI source-edit failures.
+- Do not spend more model runs on this Cline version. Retest after a Cline editor-tool or line-ending fix, or after upgrading to a version whose release notes indicate relevant Windows editing changes.
