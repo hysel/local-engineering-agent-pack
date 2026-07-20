@@ -1,4 +1,5 @@
 .vscode/
 .continue/config.local*.yaml
+config/model-runtime-policy.local.json
 runtime-validation-output/
 dist/

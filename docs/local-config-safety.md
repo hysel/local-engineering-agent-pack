@@ -34,6 +34,7 @@ This repository already ignores:
 
 ```text
 .continue/config.local*.yaml
+config/model-runtime-policy.local.json
 ```
 
 That means local files such as these should not be committed:
@@ -83,6 +84,15 @@ apiBase: http://your-private-ollama-address:11434
 ```
 
 Do not copy that value back into committed docs or `.continue/config.yaml`.
+
+## Model Residency Policy
+
+Copy `config/model-runtime-policy.sample.json` to
+`config/model-runtime-policy.local.json` to choose whether a local model is
+unloaded after a run or remains loaded for interactive use. The default policy
+unloads after a run and permits only one resident model. Model launchers read
+Ollama's live resident-model list before loading; they warn about an existing
+model and block a second model at the configured limit.
 
 ## Before You Commit
 
