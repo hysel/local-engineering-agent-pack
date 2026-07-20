@@ -52,7 +52,7 @@ This audit applies the stricter completion standard from the maintainer discussi
 These should stay on `TODO.md` until the user or project owner provides input:
 
 - Suitable non-generated repositories for additional real-repository validation.
-- Kilo Code generated-sample validation with the documented project-local `.kilo/kilo.jsonc` adapter and isolated user profile, followed by read, write-smoke, and scoped-edit validation; and evaluation of a maintained Roo Code successor.
+- Resolution of Kilo Code's current local-model task-execution failure with the documented project-local `.kilo/kilo.jsonc` adapter and isolated user profile, followed by write-smoke and scoped-edit validation; and evaluation of a maintained Roo Code successor.
 - Safe validation boundary for OpenHands as a platform-style agent.
 - Which surface should receive the next install/configure adapter after Aider.
 - Whether Milestone 19 should require actual install/configure/test scripts for every tracked candidate or only promoted surfaces before being marked complete.
