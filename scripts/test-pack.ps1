@@ -193,6 +193,57 @@ Invoke-PackTest "GitHub Actions dependencies are current and monitored" {
     Assert-True -Condition ($dependabot -match "interval:\s*weekly") -Message "GitHub Actions dependency checks should run weekly."
 }
 
+Invoke-PackTest "commands and workflows resolve for the active operating system" {
+    $modulePath = Join-Path $repoRoot "scripts/CommandResolution.psm1"
+    Import-Module $modulePath -Force
+    $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "command-resolution-test-$([guid]::NewGuid())"
+    New-Item -ItemType Directory -Path $tempRoot | Out-Null
+
+    try {
+        $scriptShim = Join-Path $tempRoot "mock-agent.ps1"
+        $cmdShim = Join-Path $tempRoot "mock-agent.cmd"
+        $standaloneScript = Join-Path $tempRoot "standalone.ps1"
+        "param()`nexit 0" | Set-Content -LiteralPath $scriptShim
+        "@exit /b 0" | Set-Content -LiteralPath $cmdShim
+        "param()`nexit 0" | Set-Content -LiteralPath $standaloneScript
+
+        $shimResolution = Resolve-ExternalCommand -Command $scriptShim
+        if ($IsWindows) {
+            Assert-Equal -Actual $shimResolution.LaunchKind -Expected "windows-cmd-shim" -Message "Windows should prefer the adjacent cmd shim."
+            Assert-Equal -Actual $shimResolution.FilePath -Expected $cmdShim -Message "Windows cmd shim path should be preserved."
+        }
+        else {
+            Assert-Equal -Actual $shimResolution.LaunchKind -Expected "powershell-script" -Message "Unix PowerShell should launch ps1 scripts through pwsh."
+        }
+
+        $scriptResolution = Resolve-ExternalCommand -Command $standaloneScript
+        Assert-Equal -Actual $scriptResolution.LaunchKind -Expected "powershell-script" -Message "Standalone ps1 scripts should use an explicit PowerShell host."
+        Assert-True -Condition ($scriptResolution.ArgumentPrefix -match "-NoProfile -File") -Message "PowerShell script resolution should include an explicit file invocation."
+    }
+    finally {
+        Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    $registry = Get-Content -LiteralPath (Join-Path $repoRoot "config/workflows.json") -Raw | ConvertFrom-Json
+    foreach ($workflow in $registry.workflows) {
+        foreach ($platform in @("windows", "linux", "macos")) {
+            $entryPoint = [string]$workflow.entryPoints.$platform
+            Assert-True -Condition (-not [string]::IsNullOrWhiteSpace($entryPoint)) -Message "$($workflow.id) should define a $platform entry point."
+            Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot $entryPoint)) -Message "$($workflow.id) $platform entry point should exist: $entryPoint"
+        }
+        Assert-True -Condition ([string]$workflow.entryPoints.windows -match "\.ps1$") -Message "$($workflow.id) Windows entry point should be a ps1 script."
+        Assert-True -Condition ([string]$workflow.entryPoints.linux -match "\.linux\.sh$") -Message "$($workflow.id) Linux entry point should be a linux.sh wrapper."
+        Assert-True -Condition ([string]$workflow.entryPoints.macos -match "\.macos\.sh$") -Message "$($workflow.id) macOS entry point should be a macos.sh wrapper."
+    }
+
+    $defaults = Get-Content -LiteralPath (Join-Path $repoRoot "config/agent-cli-surface-defaults.json") -Raw
+    Assert-True -Condition ($defaults -notmatch '\{TempDir\}\\') -Message "Shared CLI templates must not append Windows-only separators to TempDir."
+    $clineHarness = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/test-cline-cli-models.ps1") -Raw
+    $agentHarness = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/test-agent-cli-surface-models.ps1") -Raw
+    Assert-True -Condition ($clineHarness -match "Resolve-ExternalCommand") -Message "Cline should use shared OS-aware command resolution."
+    Assert-True -Condition ($agentHarness -match "Resolve-ExternalCommand") -Message "The shared agent harness should use OS-aware command resolution."
+}
+
 
 Invoke-PackTest "release packaging scripts define archives, checksums, and sanitized dry runs" {
     $psScriptPath = Join-Path $repoRoot "scripts/build-release-package.ps1"
@@ -3994,7 +4045,9 @@ Invoke-PackTest "model residency policy is applied across runtime and config pat
     foreach ($path in $paths) { Assert-True -Condition ((Get-Content -LiteralPath $path -Raw) -match "model-runtime-policy|runtimePolicy|RUNTIME_RESIDENCY_MODE") -Message "Runner should consume the residency policy: $path" }
     $continueLauncher = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/run-continue-with-runtime-policy.ps1") -Raw
     Assert-True -Condition ($continueLauncher -match "Invoke-OllamaUnload") -Message "Continue launcher should explicitly unload models."
-    Assert-True -Condition ($continueLauncher -match "npx\.cmd|ChangeExtension") -Message "Continue launcher should support the Windows npx command shim."
+    Assert-True -Condition ($continueLauncher -match "Resolve-ExternalCommand") -Message "Continue launcher should use shared OS-aware command resolution."
+    $commandResolver = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/CommandResolution.psm1") -Raw
+    Assert-True -Condition ($commandResolver -match "windows-cmd-shim" -and $commandResolver -match "ChangeExtension") -Message "Shared command resolution should support Windows npm cmd shims."
 }
 
 if ($failed) {

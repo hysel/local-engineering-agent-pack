@@ -169,6 +169,29 @@ test_github_actions_dependencies() {
     grep -Eq 'interval:[[:space:]]*weekly' "$REPO_ROOT/.github/dependabot.yml"
 }
 
+test_os_aware_command_contract() {
+  [ -f "$REPO_ROOT/scripts/CommandResolution.psm1" ] &&
+    grep -q 'windows-cmd-shim' "$REPO_ROOT/scripts/CommandResolution.psm1" &&
+    grep -q 'powershell-script' "$REPO_ROOT/scripts/CommandResolution.psm1" &&
+    grep -q 'Resolve-ExternalCommand' "$REPO_ROOT/scripts/test-cline-cli-models.ps1" &&
+    grep -q 'Resolve-ExternalCommand' "$REPO_ROOT/scripts/test-agent-cli-surface-models.ps1" &&
+    ! grep -q '{TempDir}\\' "$REPO_ROOT/config/agent-cli-surface-defaults.json" &&
+    python3 - "$REPO_ROOT" <<'PY'
+import json
+import pathlib
+import sys
+
+root = pathlib.Path(sys.argv[1])
+registry = json.loads((root / "config/workflows.json").read_text(encoding="utf-8"))
+suffixes = {"windows": ".ps1", "linux": ".linux.sh", "macos": ".macos.sh"}
+for workflow in registry["workflows"]:
+    for platform, suffix in suffixes.items():
+        entry = workflow["entryPoints"][platform]
+        assert entry.endswith(suffix), (workflow["id"], platform, entry)
+        assert (root / entry).is_file(), (workflow["id"], platform, entry)
+PY
+}
+
 test_macos_wrapper_help_surface() {
   [ -x "$REPO_ROOT/scripts/run-macos-wrapper.sh" ] || return 1
   [ -x "$REPO_ROOT/scripts/test-macos-script-surface.macos.sh" ] || return 1
@@ -1472,6 +1495,7 @@ run_test "committed config uses starter sample model" test_committed_config_uses
 run_test "MLX model recommendation catalog has valid schema" test_mlx_catalog_schema
 run_test "shell wrapper scripts and hooks are executable in git" test_shell_scripts_executable
 run_test "GitHub Actions dependencies are current and monitored" test_github_actions_dependencies
+run_test "commands and workflows are OS aware" test_os_aware_command_contract
 run_test "native macOS wrappers have a validated help surface and MLX bootstrap contract" test_macos_wrapper_help_surface
 run_test "Linux/macOS user-facing scripts do not require PowerShell" test_linux_macos_scripts_do_not_require_pwsh
 run_test "runtime context generation captures useful files and excludes build output" test_runtime_context_generation

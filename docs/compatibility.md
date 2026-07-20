@@ -115,6 +115,19 @@ When adding commands:
 - Prefer cross-platform commands where practical.
 - Label shell-specific examples.
 - Avoid paths that depend on one user's home directory.
+- Register all user-facing workflows with explicit Windows, Linux, and macOS entry points. Windows entries use `.ps1`; Linux entries use `.linux.sh`; macOS entries use `.macos.sh`.
+- Use `scripts/CommandResolution.psm1` from PowerShell process harnesses instead of passing a bare package-manager command to `ProcessStartInfo`. The resolver selects Windows `.cmd` shims, native executables, or an explicit PowerShell host for standalone `.ps1` commands.
+- Keep shared command templates free of Windows-only path separators. Forward slashes are accepted by the supported Windows CLI tools and remain native on Linux and macOS.
+- Shell wrappers must delegate to a shared Bash implementation, preserve arguments with `"$@"`, and expose a successful `--help` path.
+
+### Child Process Resolution
+
+PowerShell's interactive command resolution is broader than native child-process resolution. A command can work with `& tool` but fail through `ProcessStartInfo` when `tool` resolves to an npm-generated `.ps1` shim. Process harnesses must therefore resolve the command before launch:
+
+1. On Windows, use an adjacent `.cmd` shim when a resolved `.ps1` package-manager shim has one.
+2. For a standalone `.ps1` script, launch `pwsh -NoProfile -File <script>`; use Windows PowerShell only as the Windows fallback.
+3. For native applications and Unix launchers, execute the resolved source path directly.
+4. Preserve the selected working directory and keep user arguments separate from the executable path.
 
 ### Linux Distribution Assumptions
 

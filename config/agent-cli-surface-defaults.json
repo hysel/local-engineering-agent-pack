@@ -6,8 +6,8 @@
       "surfaceKey": "aider-cli",
       "surfaceName": "Aider CLI",
       "agentCommand": "aider",
-      "agentArgumentsTemplate": "--set-env OLLAMA_API_BASE={OllamaBaseUrl} --read README.md --read pyproject.toml --read app/main.py --read app/settings.py --read tests/test_main.py --message \"{Prompt}\" --yes-always --no-auto-commits --no-gitignore --map-tokens 0 --input-history-file \"{TempDir}\\aider-input-history.txt\" --chat-history-file \"{TempDir}\\aider-chat-history.md\" --no-check-update --analytics-disable --no-auto-lint --no-auto-test --line-endings lf",
-      "writeAgentArgumentsTemplate": "--set-env OLLAMA_API_BASE={OllamaBaseUrl} README.md --read pyproject.toml --read app/main.py --read app/settings.py --read tests/test_main.py --message \"{Prompt}\" --yes-always --no-auto-commits --no-gitignore --map-tokens 0 --input-history-file \"{TempDir}\\aider-input-history.txt\" --chat-history-file \"{TempDir}\\aider-chat-history.md\" --no-check-update --analytics-disable --no-auto-lint --no-auto-test --line-endings lf",
+      "agentArgumentsTemplate": "--set-env OLLAMA_API_BASE={OllamaBaseUrl} --read README.md --read pyproject.toml --read app/main.py --read app/settings.py --read tests/test_main.py --message \"{Prompt}\" --yes-always --no-auto-commits --no-gitignore --map-tokens 0 --input-history-file \"{TempDir}/aider-input-history.txt\" --chat-history-file \"{TempDir}/aider-chat-history.md\" --no-check-update --analytics-disable --no-auto-lint --no-auto-test --line-endings lf",
+      "writeAgentArgumentsTemplate": "--set-env OLLAMA_API_BASE={OllamaBaseUrl} README.md --read pyproject.toml --read app/main.py --read app/settings.py --read tests/test_main.py --message \"{Prompt}\" --yes-always --no-auto-commits --no-gitignore --map-tokens 0 --input-history-file \"{TempDir}/aider-input-history.txt\" --chat-history-file \"{TempDir}/aider-chat-history.md\" --no-check-update --analytics-disable --no-auto-lint --no-auto-test --line-endings lf",
       "modelArgumentTemplate": "--model \"ollama_chat/{Model}\"",
       "installHint": "Install with pipx install aider-chat or pass the command override."
     },

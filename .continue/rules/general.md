@@ -16,6 +16,9 @@ Apply these standards to all engineering, review, documentation, and planning wo
 - Preserve existing style, naming, organization, and framework choices unless there is a clear reason to change them.
 - Keep changes small, cohesive, and tied to the stated objective.
 - Match commands to the user's active operating system and shell.
+- Select repository entry points from the active operating system: `.ps1` for Windows, `.linux.sh` for Linux, and `.macos.sh` for macOS. Do not substitute a different platform's wrapper when a native entry point exists.
+- Resolve package-manager launchers through the active platform before starting child processes. On Windows, prefer an adjacent `.cmd` shim over an npm-generated `.ps1` shim for native process APIs; on Linux and macOS, execute the resolved native or shell launcher. Invoke standalone `.ps1` commands through PowerShell only when no native shim exists.
+- Keep shared argument templates platform-neutral: use repository-relative paths or forward slashes, and do not embed Windows-only separators in templates consumed by Linux or macOS.
 - On Windows, prefer PowerShell-native commands such as `Get-ChildItem`, `Select-String`, `Get-Content`, `Set-Location`, and normal `git` commands. Do not use Linux commands such as `grep`, `sed`, `awk`, `find`, or Bash syntax unless the user is explicitly running Git Bash, WSL, or another Unix-like shell.
 - On Linux and macOS, prefer shell commands and the repository's native `.sh` scripts. Do not ask Linux or macOS users to run PowerShell scripts unless they explicitly choose that path.
 - Treat the opened repository, current workspace root, or current folder as the default working directory. Resolve unqualified file names such as `README.md`, `App.config`, or `.sln` files from that current folder first.

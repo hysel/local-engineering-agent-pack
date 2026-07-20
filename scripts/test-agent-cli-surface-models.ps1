@@ -22,6 +22,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot "CommandResolution.psm1") -Force
 $runtimePolicy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
 if ($runtimePolicy.residencyMode -eq "unload-after-run") { $UnloadAfterEach = $true }
 $surfaceDefaultFound = $false
@@ -166,15 +167,9 @@ function Invoke-AgentCommand {
     }
 
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-    $resolvedCommand = Get-Command $AgentCommand -ErrorAction Stop
-    $startInfo.FileName = $AgentCommand
-    $startInfo.Arguments = $arguments
-    if ($resolvedCommand.CommandType -eq "ExternalScript" -and $resolvedCommand.Source -match '\.ps1$') {
-        $powerShell = Get-Command pwsh -ErrorAction SilentlyContinue
-        if (-not $powerShell) { $powerShell = Get-Command powershell -ErrorAction Stop }
-        $startInfo.FileName = $powerShell.Source
-        $startInfo.Arguments = "-NoProfile -File `"$($resolvedCommand.Source)`" $arguments"
-    }
+    $resolvedCommand = Resolve-ExternalCommand -Command $AgentCommand
+    $startInfo.FileName = $resolvedCommand.FilePath
+    $startInfo.Arguments = Join-ResolvedCommandArguments -Resolution $resolvedCommand -Arguments $arguments
     $startInfo.WorkingDirectory = $RunDirectory
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardOutput = $true

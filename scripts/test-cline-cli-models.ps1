@@ -16,6 +16,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot "CommandResolution.psm1") -Force
 $runtimePolicy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
 if ($runtimePolicy.residencyMode -eq "unload-after-run") { $UnloadAfterEach = $true }
 
@@ -119,8 +120,9 @@ function Invoke-ClineCommand {
     }
 
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = $ClineCommand
-    $startInfo.Arguments = $arguments
+    $resolvedCommand = Resolve-ExternalCommand -Command $ClineCommand
+    $startInfo.FileName = $resolvedCommand.FilePath
+    $startInfo.Arguments = Join-ResolvedCommandArguments -Resolution $resolvedCommand -Arguments $arguments
     $startInfo.WorkingDirectory = $RunDirectory
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardOutput = $true

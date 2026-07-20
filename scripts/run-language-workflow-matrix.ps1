@@ -15,6 +15,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot "CommandResolution.psm1") -Force
 $runtimePolicy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
 if ($runtimePolicy.residencyMode -eq "unload-after-run") { $UnloadAfterRun = $true } else { $AllowLoadedModels = $true }
 $sampleRoot = Join-Path $repoRoot "runtime-validation-output/sample-repositories"
@@ -104,7 +105,7 @@ function Invoke-Continue {
         @()
     }
     $arguments += @("--config", $ConfigPath, $(if ($ReadOnly) { "--readonly" } else { "--auto" }), "--format", "json", "--silent", "-p", $Prompt)
-    foreach ($argument in $arguments) {
+    foreach ($argument in $continueCommandPrefixArguments + $arguments) {
         [void]$startInfo.ArgumentList.Add($argument)
     }
 
@@ -197,12 +198,9 @@ if (-not $DryRun -and -not (Get-Command $ContinueCommand -ErrorAction SilentlyCo
     throw "Continue CLI command was not found: $ContinueCommand"
 }
 if (-not $DryRun) {
-    $commandInfo = Get-Command $ContinueCommand -ErrorAction Stop
-    $resolvedContinueCommand = $commandInfo.Source
-    if ($resolvedContinueCommand -match '(?i)\.ps1$') {
-        $cmdShim = [System.IO.Path]::ChangeExtension($resolvedContinueCommand, ".cmd")
-        if (Test-Path -LiteralPath $cmdShim) { $resolvedContinueCommand = $cmdShim }
-    }
+    $continueCommandResolution = Resolve-ExternalCommand -Command $ContinueCommand
+    $resolvedContinueCommand = $continueCommandResolution.FilePath
+    $continueCommandPrefixArguments = @($continueCommandResolution.PrefixArguments)
 }
 
 $surfaceVersion = if ($DryRun) {
@@ -210,10 +208,10 @@ $surfaceVersion = if ($DryRun) {
 }
 else {
     if ($ContinueCommand -eq "npx") {
-        ((& $resolvedContinueCommand -y @continuedev/cli --version 2>$null | Out-String).Trim())
+        ((& $resolvedContinueCommand @continueCommandPrefixArguments -y @continuedev/cli --version 2>$null | Out-String).Trim())
     }
     else {
-        ((& $resolvedContinueCommand --version 2>$null | Out-String).Trim())
+        ((& $resolvedContinueCommand @continueCommandPrefixArguments --version 2>$null | Out-String).Trim())
     }
 }
 if (-not $surfaceVersion) { $surfaceVersion = "unconfirmed" }

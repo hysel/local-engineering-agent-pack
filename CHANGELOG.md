@@ -11,6 +11,9 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Added shared OS-aware PowerShell command resolution for native executables, Windows npm `.cmd` shims, and standalone `.ps1` scripts; applied it across Cline, shared agent, Continue, runtime-policy, and language-matrix process harnesses.
+- Added workflow entry-point and portable-template regression tests covering Windows, Linux, and macOS, plus explicit OS-selection rules and compatibility guidance.
+
 - Added bounded Apple Silicon MLX validation evidence for the smaller Qwen 3.5 4B model, including structured tool, Continue CLI read, and disposable scoped-write checks.
 
 - Added OpenAI-compatible local-endpoint support to the native language workflow matrix runner, including MLX health checks and explicit externally managed server unload behavior.

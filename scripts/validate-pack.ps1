@@ -338,6 +338,7 @@ $requiredFiles = @(
     "scripts/test-agent-cli-surface-models.macos.sh",
     "scripts/test-agent-cli-surface-models.linux.sh",
     "scripts/test-agent-cli-surface-models.ps1",
+    "scripts/CommandResolution.psm1",
     "scripts/test-continue-cli-models.ps1",
     "scripts/test-continue-cli-models.linux.sh",
     "scripts/test-continue-cli-models.macos.sh",

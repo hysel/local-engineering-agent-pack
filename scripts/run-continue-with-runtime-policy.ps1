@@ -15,6 +15,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot "CommandResolution.psm1") -Force
 if (-not $ConfigPath) { $ConfigPath = Join-Path $TargetRepo ".continue/config.local.yaml" }
 if (-not (Test-Path -LiteralPath $TargetRepo)) { throw "TargetRepo does not exist: $TargetRepo" }
 if (-not (Test-Path -LiteralPath $ConfigPath)) { throw "ConfigPath does not exist: $ConfigPath" }
@@ -22,12 +23,8 @@ if ($LoadTimeoutSeconds -lt 1 -or $TimeoutSeconds -lt 1) { throw "Timeout values
 
 $policy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
 $base = $OllamaBaseUrl.TrimEnd('/')
-$commandInfo = Get-Command $ContinueCommand -ErrorAction Stop
-$resolvedCommand = $commandInfo.Source
-if ($resolvedCommand -match '(?i)\.ps1$') {
-    $cmdShim = [System.IO.Path]::ChangeExtension($resolvedCommand, ".cmd")
-    if (Test-Path -LiteralPath $cmdShim) { $resolvedCommand = $cmdShim }
-}
+$commandResolution = Resolve-ExternalCommand -Command $ContinueCommand
+$resolvedCommand = $commandResolution.FilePath
 if ($DryRun) { Write-Host "Would run Continue with model $Model under the $($policy.residencyMode) runtime policy."; exit 0 }
 
 function Invoke-OllamaUnload {
@@ -53,7 +50,7 @@ try {
     $start.UseShellExecute = $false
     $start.RedirectStandardOutput = $true
     $start.RedirectStandardError = $true
-    foreach ($argument in $arguments) { [void]$start.ArgumentList.Add($argument) }
+    foreach ($argument in @($commandResolution.PrefixArguments) + $arguments) { [void]$start.ArgumentList.Add($argument) }
     $process = [System.Diagnostics.Process]::new(); $process.StartInfo = $start; [void]$process.Start()
     $stdoutTask = $process.StandardOutput.ReadToEndAsync(); $stderrTask = $process.StandardError.ReadToEndAsync()
     if (-not $process.WaitForExit($TimeoutSeconds * 1000)) { try { $process.Kill($true) } catch {}; throw "Continue timed out after $TimeoutSeconds seconds." }
