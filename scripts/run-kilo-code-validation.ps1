@@ -29,6 +29,23 @@ $safeBaseUrl = $uri.AbsoluteUri.TrimEnd("/")
 Write-Host "Running only $Model. It will be unloaded when this launcher exits."
 $exitCode = 1
 try {
+    if ($TargetRepo -match 'runtime-validation-output[\\/]sample-repositories') {
+        $legacyConfigPath = Join-Path (Join-Path $TargetRepo ".kilo") "kilo.json"
+        if (Test-Path -LiteralPath $legacyConfigPath) {
+            Remove-Item -LiteralPath $legacyConfigPath -Force
+            Write-Host "Removed legacy generated Kilo config: .kilo/kilo.json"
+        }
+    }
+
+    & (Join-Path $PSScriptRoot "setup-agent-surface.ps1") `
+        -Action Configure `
+        -Surface kilo `
+        -TargetRepo $TargetRepo `
+        -Model $Model `
+        -OllamaBaseUrl $safeBaseUrl `
+        -Force
+    if ($LASTEXITCODE -ne 0) { throw "Kilo configuration generation failed for $Model." }
+
     & (Join-Path $PSScriptRoot "test-kilo-code-cli-models.ps1") `
         -Models $Model `
         -TargetRepo $TargetRepo `

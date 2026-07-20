@@ -77,9 +77,12 @@ For any active surface whose CLI command or flags differ, pass command overrides
 
 For a single-model Kilo run that may need more time than an interactive host
 permits, use `scripts/run-kilo-code-validation.ps1` from a user-managed
-PowerShell session. It accepts one required `-Model` and always sends a final
+PowerShell session. It accepts one required `-Model`, regenerates the generated
+sample's `.kilo/kilo.jsonc` for that exact model, and always sends a final
 Ollama unload request, including after a failed validation. It still targets
-only the generated sample by default:
+only the generated sample by default. For that disposable target only, it also
+removes the obsolete `.kilo/kilo.json` created by earlier adapter versions;
+it never removes a legacy config from a non-generated repository.
 
 ```powershell
 .\scripts\run-kilo-code-validation.ps1 `
