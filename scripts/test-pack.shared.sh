@@ -1443,7 +1443,11 @@ test_model_residency_policy_contract() {
     grep -q 'continueKeepAliveSeconds' "$REPO_ROOT/scripts/apply-recommended-agent-config.ps1" &&
     grep -q 'CONTINUE_KEEP_ALIVE_SECONDS' "$REPO_ROOT/scripts/apply-recommended-agent-config.shared.sh" &&
     grep -q 'continueKeepAliveSeconds' "$REPO_ROOT/scripts/install-continue-pack.ps1" &&
-    grep -q 'CONTINUE_KEEP_ALIVE_SECONDS' "$REPO_ROOT/scripts/install-continue-pack.shared.sh"
+    grep -q 'CONTINUE_KEEP_ALIVE_SECONDS' "$REPO_ROOT/scripts/install-continue-pack.shared.sh" &&
+    [ -f "$REPO_ROOT/scripts/run-continue-with-runtime-policy.ps1" ] &&
+    [ -f "$REPO_ROOT/scripts/run-continue-with-runtime-policy.shared.sh" ] &&
+    grep -q 'Invoke-OllamaUnload' "$REPO_ROOT/scripts/run-continue-with-runtime-policy.ps1" &&
+    grep -q 'trap' "$REPO_ROOT/scripts/run-continue-with-runtime-policy.shared.sh"
 }
 
 run_test "validate-pack succeeds for repository" test_validate_succeeds
