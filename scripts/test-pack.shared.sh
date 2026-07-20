@@ -156,6 +156,19 @@ test_shell_scripts_executable() {
   done < <(git -C "$REPO_ROOT" ls-files -s 'scripts/*.sh' '.githooks/pre-push')
 }
 
+test_github_actions_dependencies() {
+  action_sources="$(cat \
+    "$REPO_ROOT/.github/workflows/validate-pack.yml" \
+    "$REPO_ROOT/scripts/generate-sample-repositories.ps1" \
+    "$REPO_ROOT/scripts/generate-sample-repositories.shared.sh")"
+  checkout_count="$(printf '%s' "$action_sources" | grep -Ec 'actions/checkout@v6([^0-9]|$)')"
+
+  ! printf '%s' "$action_sources" | grep -Eq 'actions/checkout@v[1-5]([^0-9]|$)' &&
+    [ "$checkout_count" -eq 5 ] &&
+    grep -Eq 'package-ecosystem:[[:space:]]*github-actions' "$REPO_ROOT/.github/dependabot.yml" &&
+    grep -Eq 'interval:[[:space:]]*weekly' "$REPO_ROOT/.github/dependabot.yml"
+}
+
 test_macos_wrapper_help_surface() {
   [ -x "$REPO_ROOT/scripts/run-macos-wrapper.sh" ] || return 1
   [ -x "$REPO_ROOT/scripts/test-macos-script-surface.macos.sh" ] || return 1
@@ -1458,6 +1471,7 @@ run_test "model recommendation catalog has valid schema" test_catalog_schema
 run_test "committed config uses starter sample model" test_committed_config_uses_starter_model
 run_test "MLX model recommendation catalog has valid schema" test_mlx_catalog_schema
 run_test "shell wrapper scripts and hooks are executable in git" test_shell_scripts_executable
+run_test "GitHub Actions dependencies are current and monitored" test_github_actions_dependencies
 run_test "native macOS wrappers have a validated help surface and MLX bootstrap contract" test_macos_wrapper_help_surface
 run_test "Linux/macOS user-facing scripts do not require PowerShell" test_linux_macos_scripts_do_not_require_pwsh
 run_test "runtime context generation captures useful files and excludes build output" test_runtime_context_generation
