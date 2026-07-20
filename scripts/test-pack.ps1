@@ -3967,13 +3967,18 @@ Invoke-PackTest "model residency policy is applied across runtime and config pat
         "scripts/install-continue-pack.ps1",
         "scripts/install-continue-pack.shared.sh",
         "scripts/install-validated-model.ps1",
-        "scripts/install-validated-model.shared.sh"
+        "scripts/install-validated-model.shared.sh",
+        "scripts/run-continue-with-runtime-policy.ps1",
+        "scripts/run-continue-with-runtime-policy.shared.sh"
     ) | ForEach-Object { Join-Path $repoRoot $_ }
     $policy = Get-Content -LiteralPath $samplePolicy -Raw | ConvertFrom-Json
     Assert-Equal -Actual $policy.residencyMode -Expected "unload-after-run" -Message "Default policy should unload models."
     Assert-Equal -Actual $policy.maxResidentModels -Expected 1 -Message "Default policy should allow one resident model."
     foreach ($path in @($policyReader, $shellPolicyReader) + $paths) { Assert-True -Condition (Test-Path -LiteralPath $path) -Message "Residency policy asset should exist: $path" }
     foreach ($path in $paths) { Assert-True -Condition ((Get-Content -LiteralPath $path -Raw) -match "model-runtime-policy|runtimePolicy|RUNTIME_RESIDENCY_MODE") -Message "Runner should consume the residency policy: $path" }
+    $continueLauncher = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/run-continue-with-runtime-policy.ps1") -Raw
+    Assert-True -Condition ($continueLauncher -match "Invoke-OllamaUnload") -Message "Continue launcher should explicitly unload models."
+    Assert-True -Condition ($continueLauncher -match "npx\.cmd|ChangeExtension") -Message "Continue launcher should support the Windows npx command shim."
 }
 
 if ($failed) {
