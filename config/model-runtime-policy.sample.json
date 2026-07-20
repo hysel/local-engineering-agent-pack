@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "residencyMode": "unload-after-run",
+  "maxResidentModels": 1,
+  "preloadKeepAliveMinutes": 15,
+  "warnVramUtilizationPercent": 80,
+  "blockVramUtilizationPercent": 90
+}

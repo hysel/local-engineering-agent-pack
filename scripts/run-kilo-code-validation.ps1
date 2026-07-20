@@ -4,6 +4,7 @@ param(
     [string]$TargetRepo,
     [string]$OutputPath,
     [string]$OllamaBaseUrl = "http://127.0.0.1:11434",
+    [string]$RuntimePolicyPath,
     [int]$LoadTimeoutSeconds = 900,
     [int]$PreloadKeepAliveMinutes = 15,
     [int]$TimeoutSeconds = 600,
@@ -29,6 +30,9 @@ if (-not [uri]::TryCreate($OllamaBaseUrl, [System.UriKind]::Absolute, [ref]$uri)
     throw "OllamaBaseUrl must be an absolute HTTP(S) URL without credentials, query, or fragment."
 }
 $safeBaseUrl = $uri.AbsoluteUri.TrimEnd("/")
+$policyJson = & (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") -PolicyPath $RuntimePolicyPath
+$runtimePolicy = $policyJson | ConvertFrom-Json
+$shouldUnload = $runtimePolicy.residencyMode -eq "unload-after-run"
 
 Write-Host "Running only $Model. It will be unloaded when this launcher exits."
 $exitCode = 1
@@ -54,8 +58,15 @@ try {
     # Keep model load time outside the per-phase Kilo timeout. Ollama's /api/ps
     # response confirms that the named model is resident before validation starts.
     $preloadRequested = $true
+    $beforeLoad = @((Invoke-RestMethod -Uri "$safeBaseUrl/api/ps" -Method Get -TimeoutSec 30).models)
+    $otherResident = @($beforeLoad | Where-Object { $_.name -ne $Model -and $_.model -ne $Model })
+    if ($otherResident.Count -ge [int]$runtimePolicy.maxResidentModels) {
+        throw "Runtime policy blocks loading ${Model}: $($otherResident.Count) other model(s) are resident and maxResidentModels is $($runtimePolicy.maxResidentModels). Unload models first or change the local policy."
+    }
+    if ($otherResident.Count -gt 0) { Write-Warning "Runtime policy warning: another model is already resident before loading $Model." }
     Write-Host "Preloading $Model before starting the Kilo phase timer..."
-    $preloadBody = @{ model = $Model; prompt = ""; keep_alive = "${PreloadKeepAliveMinutes}m"; stream = $false } | ConvertTo-Json
+    $keepAliveMinutes = if ($PSBoundParameters.ContainsKey("PreloadKeepAliveMinutes")) { $PreloadKeepAliveMinutes } else { [int]$runtimePolicy.preloadKeepAliveMinutes }
+    $preloadBody = @{ model = $Model; prompt = ""; keep_alive = "${keepAliveMinutes}m"; stream = $false } | ConvertTo-Json
     $preload = Invoke-RestMethod -Uri "$safeBaseUrl/api/generate" -Method Post -Body $preloadBody -ContentType "application/json" -TimeoutSec $LoadTimeoutSeconds
     $running = Invoke-RestMethod -Uri "$safeBaseUrl/api/ps" -Method Get -TimeoutSec 30
     $isLoaded = @($running.models | Where-Object { $_.name -eq $Model -or $_.model -eq $Model }).Count -gt 0
@@ -71,12 +82,12 @@ try {
         -TimeoutSeconds $TimeoutSeconds `
         -IncludeWriteSmoke:$IncludeWriteSmoke `
         -IncludeScopedEdit:$IncludeScopedEdit `
-        -UnloadAfterEach
+        -UnloadAfterEach:$shouldUnload
     $exitCode = $LASTEXITCODE
 }
 finally {
     try {
-        if ($preloadRequested) {
+        if ($preloadRequested -and $shouldUnload) {
             $body = @{ model = $Model; prompt = ""; keep_alive = 0; stream = $false } | ConvertTo-Json
             Invoke-RestMethod -Uri "$safeBaseUrl/api/generate" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 30 | Out-Null
             Write-Host "Unloaded $Model from Ollama."
