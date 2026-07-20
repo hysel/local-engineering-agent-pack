@@ -177,6 +177,22 @@ Invoke-PackTest "validate-pack fails when required safety doc is missing" {
     }
 }
 
+Invoke-PackTest "GitHub Actions dependencies are current and monitored" {
+    $workflowPath = Join-Path $repoRoot ".github/workflows/validate-pack.yml"
+    $dependabotPath = Join-Path $repoRoot ".github/dependabot.yml"
+    $generatorPaths = @(
+        (Join-Path $repoRoot "scripts/generate-sample-repositories.ps1"),
+        (Join-Path $repoRoot "scripts/generate-sample-repositories.shared.sh")
+    )
+    $actionSources = (Get-Content -LiteralPath $workflowPath -Raw) + "`n" + (($generatorPaths | ForEach-Object { Get-Content -LiteralPath $_ -Raw }) -join "`n")
+    $dependabot = Get-Content -LiteralPath $dependabotPath -Raw
+
+    Assert-True -Condition ($actionSources -notmatch "actions/checkout@v[1-5]\b") -Message "Checkout versions older than v6 must not be used."
+    Assert-Equal -Actual ([regex]::Matches($actionSources, "actions/checkout@v6\b").Count) -Expected 5 -Message "All live and generated workflows should use checkout v6."
+    Assert-True -Condition ($dependabot -match "package-ecosystem:\s*github-actions") -Message "Dependabot should monitor GitHub Actions dependencies."
+    Assert-True -Condition ($dependabot -match "interval:\s*weekly") -Message "GitHub Actions dependency checks should run weekly."
+}
+
 
 Invoke-PackTest "release packaging scripts define archives, checksums, and sanitized dry runs" {
     $psScriptPath = Join-Path $repoRoot "scripts/build-release-package.ps1"
