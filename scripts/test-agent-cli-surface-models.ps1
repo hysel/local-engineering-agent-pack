@@ -11,6 +11,7 @@ param(
     [string]$ModelArgumentTemplate,
     [string]$AgentConfigPath,
     [string]$InstallHint,
+    [int]$PreloadTimeoutSeconds = 900,
     [int]$TimeoutSeconds = 600,
     [switch]$IncludeWriteSmoke,
     [switch]$IncludeScopedEdit,
@@ -77,6 +78,17 @@ function Invoke-OllamaUnload {
     } | ConvertTo-Json -Depth 10
 
     Invoke-RestMethod -Uri "$(ConvertTo-SafeBaseUrl $OllamaBaseUrl)/api/generate" -Method Post -Body $body -ContentType "application/json" -TimeoutSec $TimeoutSeconds | Out-Null
+}
+
+function Invoke-OllamaPreload {
+    param([string]$Model)
+
+    $body = @{ model = $Model; prompt = ""; keep_alive = "15m"; stream = $false } | ConvertTo-Json -Depth 10
+    Invoke-RestMethod -Uri "$(ConvertTo-SafeBaseUrl $OllamaBaseUrl)/api/generate" -Method Post -Body $body -ContentType "application/json" -TimeoutSec $PreloadTimeoutSeconds | Out-Null
+    $running = Invoke-RestMethod -Uri "$(ConvertTo-SafeBaseUrl $OllamaBaseUrl)/api/ps" -Method Get -TimeoutSec 30
+    if (@($running.models | Where-Object { $_.name -eq $Model -or $_.model -eq $Model }).Count -eq 0) {
+        throw "Ollama did not report $Model as loaded after preflight."
+    }
 }
 
 function Get-DefaultModels {
@@ -306,6 +318,8 @@ foreach ($model in $modelsToTest) {
 
     try {
         if (-not $DryRun) {
+            Write-Host "[5/7] Preloading $model before starting the phase timer..."
+            Invoke-OllamaPreload -Model $model
             $cleanBefore = Invoke-GitText -Arguments @("status", "--short")
             if ($cleanBefore) { $failureSignals.Add("TARGET_REPO_NOT_CLEAN") }
         }
