@@ -25,6 +25,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$packRoot = Split-Path -Parent $PSScriptRoot
+$runtimePolicy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
+$continueKeepAliveSeconds = if ($runtimePolicy.residencyMode -eq "unload-after-run") { 0 } else { [int]$runtimePolicy.preloadKeepAliveMinutes * 60 }
 
 if (-not $TargetRepo -and $TargetRepoAlias) { $TargetRepo = $TargetRepoAlias }
 if (-not $RecommendationPath -and $RecommendationPathAlias) { $RecommendationPath = $RecommendationPathAlias }
@@ -71,7 +74,7 @@ function Get-LaneLines {
 
     $contextLength = if ($Profile.ContextLength) { [int]$Profile.ContextLength } else { 16384 }
     $maxTokens = if ($Profile.MaxTokens) { [int]$Profile.MaxTokens } else { 2048 }
-    $keepAlive = if ($Profile.KeepAlive) { [int]$Profile.KeepAlive } else { 1800 }
+    $keepAlive = $continueKeepAliveSeconds
 
     $lines = New-Object System.Collections.Generic.List[string]
     $lines.Add("  - name: $Label - $model")

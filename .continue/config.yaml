@@ -16,7 +16,7 @@ models:
       temperature: 0.2
       contextLength: 16384
       maxTokens: 2048
-      keepAlive: 1800
+      keepAlive: 0
   - name: Ollama Nomic Embed
     provider: ollama
     model: nomic-embed-text

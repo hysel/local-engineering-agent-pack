@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 TARGET_REPO=""
 MODEL=""
 PROFILE="write-safe"
@@ -109,7 +111,11 @@ if [ -z "$PYTHON_COMMAND" ]; then
   exit 1
 fi
 
-"$PYTHON_COMMAND" - "$SOURCE_CONFIG" "$LOCAL_CONFIG" "$PROFILE" "$MODEL" <<'PY'
+IFS=$'\t' read -r RUNTIME_RESIDENCY_MODE MAX_RESIDENT_MODELS PRELOAD_KEEP_ALIVE_MINUTES <<< "$("$SCRIPT_DIR/get-model-runtime-policy.shared.sh")"
+CONTINUE_KEEP_ALIVE_SECONDS=$((PRELOAD_KEEP_ALIVE_MINUTES * 60))
+if [ "$RUNTIME_RESIDENCY_MODE" = "unload-after-run" ]; then CONTINUE_KEEP_ALIVE_SECONDS=0; fi
+
+"$PYTHON_COMMAND" - "$SOURCE_CONFIG" "$LOCAL_CONFIG" "$PROFILE" "$MODEL" "$CONTINUE_KEEP_ALIVE_SECONDS" <<'PY'
 from pathlib import Path
 import sys
 
@@ -117,6 +123,7 @@ source = Path(sys.argv[1])
 target = Path(sys.argv[2])
 profile = sys.argv[3]
 selected_model = sys.argv[4].strip()
+continue_keep_alive_seconds = int(sys.argv[5])
 
 profiles = [
     ("write-safe", "1 - WRITE SAFE", ["chat", "edit", "apply"]),
@@ -141,7 +148,7 @@ for profile_id, label, roles in profiles:
         "      temperature: 0.2",
         "      contextLength: 16384",
         "      maxTokens: 2048",
-        "      keepAlive: 1800",
+        f"      keepAlive: {continue_keep_alive_seconds}",
     ])
 
 replacement.extend([

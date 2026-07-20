@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 TARGET_REPO=""
 RECOMMENDATION_PATH=""
 OLLAMA_BASE_URL=""
@@ -70,6 +72,10 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
+IFS=$'\t' read -r RUNTIME_RESIDENCY_MODE MAX_RESIDENT_MODELS PRELOAD_KEEP_ALIVE_MINUTES <<< "$("$SCRIPT_DIR/get-model-runtime-policy.shared.sh")"
+CONTINUE_KEEP_ALIVE_SECONDS=$((PRELOAD_KEEP_ALIVE_MINUTES * 60))
+if [ "$RUNTIME_RESIDENCY_MODE" = "unload-after-run" ]; then CONTINUE_KEEP_ALIVE_SECONDS=0; fi
+
 if [ "$DRY_RUN" = true ]; then
   python3 - "$RECOMMENDATION_PATH" <<'PY'
 import json
@@ -97,7 +103,7 @@ if [ -f "$LOCAL_CONFIG" ]; then
   SOURCE_CONFIG="$LOCAL_CONFIG"
 fi
 
-python3 - "$SOURCE_CONFIG" "$LOCAL_CONFIG" "$RECOMMENDATION_PATH" "$OLLAMA_BASE_URL" "$GLOBAL_CONFIG" "$GLOBAL_CONFIG_PATH" "$GLOBAL_CONFIG_INCLUDE_RULES" "$TARGET_CONTINUE" <<'PY'
+python3 - "$SOURCE_CONFIG" "$LOCAL_CONFIG" "$RECOMMENDATION_PATH" "$OLLAMA_BASE_URL" "$GLOBAL_CONFIG" "$GLOBAL_CONFIG_PATH" "$GLOBAL_CONFIG_INCLUDE_RULES" "$TARGET_CONTINUE" "$CONTINUE_KEEP_ALIVE_SECONDS" <<'PY'
 import json
 import sys
 from datetime import datetime
@@ -111,6 +117,7 @@ global_config = sys.argv[5].lower() == "true"
 global_config_path = Path(sys.argv[6]).expanduser()
 global_config_include_rules = sys.argv[7].lower() == "true"
 target_continue = Path(sys.argv[8])
+continue_keep_alive_seconds = int(sys.argv[9])
 
 recommendation = json.loads(recommendation_path.read_text(encoding="utf-8"))
 summary = recommendation.get("Recommendation", {})
@@ -133,7 +140,7 @@ for key, label, fallback_roles in lanes:
     roles = [str(role) for role in profile.get("Roles") or fallback_roles]
     context_length = int(profile.get("ContextLength") or 16384)
     max_tokens = int(profile.get("MaxTokens") or 2048)
-    keep_alive = int(profile.get("KeepAlive") or 1800)
+    keep_alive = continue_keep_alive_seconds
     replacement.extend([
         f"  - name: {label} - {model}",
         "    provider: ollama",

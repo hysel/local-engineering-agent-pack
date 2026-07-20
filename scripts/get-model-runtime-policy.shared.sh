@@ -15,7 +15,16 @@ fi
 
 [ -f "$POLICY_PATH" ] || { printf 'Model runtime policy does not exist: %s\n' "$POLICY_PATH" >&2; exit 1; }
 
-python3 - "$POLICY_PATH" <<'PY'
+POLICY_PYTHON=""
+for candidate in python3 python; do
+  if command -v "$candidate" >/dev/null 2>&1; then
+    POLICY_PYTHON="$candidate"
+    break
+  fi
+done
+[ -n "$POLICY_PYTHON" ] || { printf 'python3 or python is required to read the model runtime policy.\n' >&2; exit 1; }
+
+"$POLICY_PYTHON" - "$POLICY_PATH" <<'PY'
 import json
 import sys
 

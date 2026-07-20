@@ -34,7 +34,12 @@ $policyJson = & (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") -Policy
 $runtimePolicy = $policyJson | ConvertFrom-Json
 $shouldUnload = $runtimePolicy.residencyMode -eq "unload-after-run"
 
-Write-Host "Running only $Model. It will be unloaded when this launcher exits."
+if ($shouldUnload) {
+    Write-Host "Running only $Model. It will be unloaded when this launcher exits."
+}
+else {
+    Write-Host "Running only $Model. It will remain loaded after this launcher exits, per the local runtime policy."
+}
 $exitCode = 1
 $preloadRequested = $false
 try {
