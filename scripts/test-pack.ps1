@@ -875,7 +875,7 @@ Invoke-PackTest "agent CLI surface testing docs define shared automation workflo
     Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot "docs/opencode-cli-model-testing.md")) -Message "OpenCode setup and validation documentation should exist."
     Assert-True -Condition ($doc -match "Confirmed Command Boundaries") -Message "Shared CLI doc should record verified command boundaries."
     Assert-True -Condition ($doc -match "opencode run") -Message "Shared CLI doc should record the OpenCode non-interactive command."
-    Assert-True -Condition ($doc -match [regex]::Escape(".kilo/kilo.jsonc") -and $doc -match "do not treat their") -Message "Shared CLI doc should keep Kilo task execution evidence-gated."
+    Assert-True -Condition ($doc -match [regex]::Escape(".kilo/kilo.jsonc") -and $doc -match "passes the generated-sample read-only gate") -Message "Shared CLI doc should keep Kilo task execution evidence-gated."
     Assert-True -Condition ($doc -match "upstream project is archived") -Message "Shared CLI doc should keep Roo Code retired upstream."
     Assert-True -Condition ($todo -match "\[x\] Define a safe OpenHands validation boundary before adding platform-agent validation automation") -Message "TODO should mark the OpenHands validation boundary complete."
 

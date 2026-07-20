@@ -671,7 +671,7 @@ test_agent_surface_options_doc() {
     grep -q "Confirmed Command Boundaries" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "opencode run" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q ".kilo/kilo.jsonc" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
-    grep -q "do not treat their" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
+    grep -q "passes the generated-sample read-only gate" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "upstream project is archived" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "\\[x\\] Define a safe OpenHands validation boundary before adding platform-agent validation automation" "$REPO_ROOT/TODO.md"
 }

@@ -60,9 +60,9 @@ Kilo Code now has an explicit npm install plan and a project-local
 Ollama provider with an Ollama `/v1` endpoint, model tool metadata, token
 limits, and ask-by-default permissions. The harness explicitly selects Kilo's
 `code` agent and uses an isolated user profile so Kilo reads the project-local
-configuration. Earlier diagnostics used the obsolete `.json` filename, so
-generated-sample validation must be rerun with the documented `.jsonc` path
-before any model or surface readiness claim is made. Do not treat generated
-config as real-project approval.
+configuration. With the documented `.jsonc` path and preload-aware timing,
+Devstral Small 2 24B passes generated-sample read-only validation. Write-smoke
+and scoped-edit validation remain required before any readiness claim beyond
+read-only evidence. Do not treat generated config as real-project approval.
 
 Use `docs/script-reference-appendix.md` for direct command details after you choose a workflow.
