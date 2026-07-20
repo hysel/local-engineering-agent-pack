@@ -17,6 +17,7 @@ AGENT_COMMAND_EXPLICIT=false
 AGENT_ARGS_TEMPLATE_EXPLICIT=false
 REQUIRES_EXPLICIT_LIVE_OVERRIDES=false
 TIMEOUT_SECONDS=600
+PRELOAD_TIMEOUT_SECONDS=900
 INCLUDE_WRITE_SMOKE=false
 INCLUDE_SCOPED_EDIT=false
 ALLOW_NON_GENERATED_TARGET=false
@@ -37,6 +38,7 @@ while [ "$#" -gt 0 ]; do
     --agent-config-path|-AgentConfigPath) AGENT_CONFIG_PATH="$2"; shift 2 ;;
     --install-hint|-InstallHint) INSTALL_HINT="$2"; shift 2 ;;
     --timeout-seconds|-TimeoutSeconds) TIMEOUT_SECONDS="$2"; shift 2 ;;
+    --preload-timeout-seconds|-PreloadTimeoutSeconds) PRELOAD_TIMEOUT_SECONDS="$2"; shift 2 ;;
     --include-write-smoke|-IncludeWriteSmoke) INCLUDE_WRITE_SMOKE=true; shift ;;
     --include-scoped-edit|-IncludeScopedEdit) INCLUDE_SCOPED_EDIT=true; shift ;;
     --allow-non-generated-target|-AllowNonGeneratedTarget) ALLOW_NON_GENERATED_TARGET=true; shift ;;
@@ -51,6 +53,14 @@ while [ "$#" -gt 0 ]; do
     *) printf 'Unknown argument: %s\n' "$1" >&2; exit 1 ;;
   esac
 done
+
+preload_ollama_model() {
+  local model="$1"
+  local body
+  body="$(printf '{\"model\":\"%s\",\"prompt\":\"\",\"keep_alive\":\"15m\",\"stream\":false}' "$model")"
+  curl --fail --silent --show-error --max-time "$PRELOAD_TIMEOUT_SECONDS" -X POST "$OLLAMA_BASE_URL/api/generate" -H 'Content-Type: application/json' -d "$body" >/dev/null
+  curl --fail --silent --show-error --max-time 30 "$OLLAMA_BASE_URL/api/ps" | grep -Fq "\"$model\"" || { printf 'Ollama did not report %s as loaded after preflight.\n' "$model" >&2; return 1; }
+}
 
 load_surface_defaults() {
   defaults_path="$REPO_ROOT/config/agent-cli-surface-defaults.json"
@@ -207,6 +217,11 @@ for model in "${MODELS[@]}"; do
   write_status='not-run'
   scoped_edit_status='not-run'
   failures='none'
+
+  if [ "$DRY_RUN" != true ]; then
+    printf '[5/7] Preloading %s before starting the phase timer...\n' "$model" >&2
+    preload_ollama_model "$model"
+  fi
 
   prompt="$read_prompt"
   args="${AGENT_ARGS_TEMPLATE//\{Prompt\}/$prompt}"

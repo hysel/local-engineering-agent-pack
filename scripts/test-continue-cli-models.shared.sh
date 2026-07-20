@@ -11,6 +11,7 @@ CONTINUE_COMMAND="npx"
 CONTINUE_ARGS_TEMPLATE='-y @continuedev/cli --config "{ConfigPath}" --readonly -p "{Prompt}"'
 MODEL_ARGS_TEMPLATE=""
 TIMEOUT_SECONDS=600
+PRELOAD_TIMEOUT_SECONDS=900
 INCLUDE_WRITE_SMOKE=false
 ALLOW_NON_GENERATED_TARGET=false
 DRY_RUN=false
@@ -27,6 +28,7 @@ while [ "$#" -gt 0 ]; do
     --continue-arguments-template|-ContinueArgumentsTemplate) CONTINUE_ARGS_TEMPLATE="$2"; shift 2 ;;
     --model-argument-template|-ModelArgumentTemplate) MODEL_ARGS_TEMPLATE="$2"; shift 2 ;;
     --timeout-seconds|-TimeoutSeconds) TIMEOUT_SECONDS="$2"; shift 2 ;;
+    --preload-timeout-seconds|-PreloadTimeoutSeconds) PRELOAD_TIMEOUT_SECONDS="$2"; shift 2 ;;
     --include-write-smoke|-IncludeWriteSmoke) INCLUDE_WRITE_SMOKE=true; shift ;;
     --allow-non-generated-target|-AllowNonGeneratedTarget) ALLOW_NON_GENERATED_TARGET=true; shift ;;
     --dry-run|-DryRun) DRY_RUN=true; shift ;;
@@ -64,6 +66,11 @@ unload_model() {
     return 1
   fi
 }
+preload_model() {
+  model_name="$1"; base_url="${OLLAMA_BASE_URL%/}"
+  curl -fsS --max-time "$PRELOAD_TIMEOUT_SECONDS" -X POST "$base_url/api/chat" -H 'Content-Type: application/json' -d "{\"model\":\"$model_name\",\"messages\":[],\"keep_alive\":\"15m\",\"stream\":false}" >/dev/null
+  curl -fsS --max-time 30 "$base_url/api/ps" | grep -Fq "\"$model_name\""
+}
 initialize_disposable_git_baseline() {
   run_dir="$1"
   case "$run_dir" in *runtime-validation-output/sample-repositories*) ;; *) return 0 ;; esac
@@ -96,6 +103,7 @@ for model in "${MODELS[@]}"; do
   index=$((index + 1))
   printf '[5/7] Testing model %s/%s: %s\n' "$index" "${#MODELS[@]}" "$model" >&2
   read_status='failed'; write_status='not-run'; failures='none'
+  if [ "$DRY_RUN" != true ]; then printf '[5/7] Preloading %s before starting the phase timer...\n' "$model" >&2; preload_model "$model"; fi
   prompt="$read_prompt"
   args="${CONTINUE_ARGS_TEMPLATE//\{Prompt\}/$prompt}"; args="${args//\{Model\}/$model}"; args="${args//\{TargetRepo\}/$TARGET_REPO}"; args="${args//\{ConfigPath\}/$CONFIG_PATH}"
   model_args="${MODEL_ARGS_TEMPLATE//\{Model\}/$model}"
