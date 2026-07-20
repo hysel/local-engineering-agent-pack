@@ -875,7 +875,7 @@ Invoke-PackTest "agent CLI surface testing docs define shared automation workflo
     Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot "docs/opencode-cli-model-testing.md")) -Message "OpenCode setup and validation documentation should exist."
     Assert-True -Condition ($doc -match "Confirmed Command Boundaries") -Message "Shared CLI doc should record verified command boundaries."
     Assert-True -Condition ($doc -match "opencode run") -Message "Shared CLI doc should record the OpenCode non-interactive command."
-    Assert-True -Condition ($doc -match "instead of executing the supplied repository task") -Message "Shared CLI doc should keep Kilo task execution evidence-gated."
+    Assert-True -Condition ($doc -match [regex]::Escape(".kilo/kilo.jsonc") -and $doc -match "do not treat their") -Message "Shared CLI doc should keep Kilo task execution evidence-gated."
     Assert-True -Condition ($doc -match "upstream project is archived") -Message "Shared CLI doc should keep Roo Code retired upstream."
     Assert-True -Condition ($todo -match "\[x\] Define a safe OpenHands validation boundary before adding platform-agent validation automation") -Message "TODO should mark the OpenHands validation boundary complete."
 
@@ -3457,14 +3457,14 @@ Invoke-PackTest "agent surface adapters plan installs configure and report healt
 
         $kiloConfigure = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Configure", "-Surface", "kilo", "-TargetRepo", $tempRoot, "-RecommendationPath", $recommendationPath, "-Lane", "WriteSafe", "-OllamaBaseUrl", "http://example.invalid:11434")
         Assert-Equal -Actual $kiloConfigure.ExitCode -Expected 0 -Message "Kilo Code config generation should succeed."
-        $kiloConfigPath = Join-Path $tempRoot ".kilo.local.json"
+        $kiloConfigPath = Join-Path (Join-Path $tempRoot ".kilo") "kilo.jsonc"
         $kiloConfig = Get-Content -LiteralPath $kiloConfigPath -Raw | ConvertFrom-Json
         Assert-Equal -Actual $kiloConfig.model -Expected "ollama/qwen3.5:9b" -Message "Kilo Code config should use the requested recommendation lane."
         Assert-True -Condition ($null -ne $kiloConfig.provider.ollama) -Message "Kilo Code config should define the native Ollama provider."
         Assert-Equal -Actual $kiloConfig.provider.ollama.options.baseURL -Expected "http://example.invalid:11434/v1" -Message "Kilo Code config should use an OpenAI-compatible Ollama endpoint."
         Assert-True -Condition ($kiloConfig.provider.ollama.models.'qwen3.5:9b'.tool_call) -Message "Kilo Code config should declare tool-call capability."
         Assert-True -Condition ($kiloConfig.permission.'*' -eq "ask" -and $kiloConfig.permission.edit -eq "ask") -Message "Kilo Code config should require approval for writes."
-        Assert-True -Condition (@(Get-Content -LiteralPath (Join-Path $tempRoot ".git/info/exclude")) -contains ".kilo.local.json") -Message "Generated Kilo Code config should be locally excluded from Git."
+        Assert-True -Condition (@(Get-Content -LiteralPath (Join-Path $tempRoot ".git/info/exclude")) -contains ".kilo/") -Message "Generated Kilo Code config directory should be locally excluded from Git."
 
         $kiloInstall = Invoke-CommandCapture -FilePath $adapterPath -Arguments @("-Action", "Install", "-Surface", "kilo", "-DryRun")
         Assert-Equal -Actual $kiloInstall.ExitCode -Expected 0 -Message "Kilo Code install dry run should succeed."

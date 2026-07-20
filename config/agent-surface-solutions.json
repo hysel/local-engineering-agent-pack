@@ -194,8 +194,8 @@
       "currentValidationLevel": "candidate",
       "configBundle": {
         "status": "scaffolded",
-        "strategy": "Generate a local-only .kilo.local.json with an Ollama provider, explicit tool metadata, and ask-by-default permissions. Do not treat config generation as live surface validation.",
-        "outputKind": "local-only .kilo.local.json",
+        "strategy": "Generate a project-local .kilo/kilo.jsonc with an Ollama provider, explicit tool metadata, and ask-by-default permissions. Do not treat config generation as live surface validation.",
+        "outputKind": "project-local .kilo/kilo.jsonc",
         "evidence": ["docs/agent-cli-surface-model-testing.md", "docs/surface-specific-config-bundles.md"]
       },
       "install": {
@@ -210,11 +210,11 @@
         "solution": "Generate a local-only Kilo config with the native Ollama provider, an Ollama /v1 endpoint, a selected model, declared tool support, context and output limits, and ask-by-default permissions.",
         "workflowIds": ["setup-agent-surface"],
         "evidence": ["docs/agent-cli-surface-model-testing.md"],
-        "blockedReason": "Generation is statically tested and the harness injects KILO_CONFIG for every live command; the configured provider reached tested models, but live task execution remains blocked."
+        "blockedReason": "Generation is statically tested. Renewed generated-sample diagnostics use an isolated user profile and project-local configuration, but models still do not complete the repository task through Kilo's tool protocol."
       },
       "test": {
         "status": "scaffolded",
-        "solution": "Use the shared agent CLI surface harness with kilo run --auto --agent code, JSON output, injected KILO_CONFIG, and ollama/model selection after local config and CLI installation are verified.",
+        "solution": "Use the shared agent CLI surface harness with kilo run --auto --agent code, JSON output, project-local configuration, and Ollama/model selection after local config and CLI installation are verified.",
         "workflowIds": ["test-agent-cli-surface"],
         "evidence": ["docs/agent-cli-surface-model-testing.md"],
         "blockedReason": "Live generated-sample validation with qwen3.5:9b and devstral:24b returned generic acknowledgements without repository work; qwen3.5:35b emitted raw tool-like XML that Kilo did not execute."

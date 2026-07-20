@@ -57,7 +57,7 @@ tracked work and is not represented as complete cross-platform parity.
 ## Do Not Consolidate Yet
 
 - Surface-specific config generators for planned or blocked agent surfaces.
-- Kilo Code live task and tool behavior beyond its documented command, install plan, and local-only configuration. Current remote-Ollama model tests reached the provider but did not execute repository tasks. OpenCode remains subject to non-generated-repository validation. Evaluate a maintained Roo Code successor separately.
+- Kilo Code live task and tool behavior beyond its documented command, install plan, project-local configuration, and isolated CLI profile. The current adapter needs fresh generated-sample evidence before model behavior is diagnosed. OpenCode remains subject to non-generated-repository validation. Evaluate a maintained Roo Code successor separately.
 - Local model pull, unload, or deletion behavior without explicit user intent.
 - Cleanup operations that are not covered by dry-run output and tests.
 - Any behavior that would require storing private hostnames, IP addresses, usernames, tokens, local paths, or raw hardware reports.

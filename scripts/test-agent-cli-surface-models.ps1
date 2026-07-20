@@ -161,8 +161,22 @@ function Invoke-AgentCommand {
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
-    if ($SurfaceKey -eq "kilo-code-cli" -and -not [string]::IsNullOrWhiteSpace($AgentConfigPath)) {
-        $startInfo.Environment["KILO_CONFIG"] = $AgentConfigPath
+    $kiloHome = $null
+    if ($SurfaceKey -eq "kilo-code-cli") {
+        # Kilo 7.x reads project config from .kilo/kilo.jsonc. An isolated profile
+        # avoids a broken or stateful user-level Kilo directory affecting validation.
+        $kiloHome = Join-Path ([System.IO.Path]::GetTempPath()) "local-engineering-agent-pack-kilo-$([guid]::NewGuid())"
+        $kiloConfigHome = Join-Path $kiloHome ".config"
+        $kiloDataHome = Join-Path $kiloHome ".data"
+        $kiloAppDataHome = Join-Path $kiloHome ".appdata"
+        $kiloLocalAppDataHome = Join-Path $kiloHome ".localappdata"
+        New-Item -ItemType Directory -Force -Path $kiloConfigHome,$kiloDataHome,$kiloAppDataHome,$kiloLocalAppDataHome | Out-Null
+        $startInfo.Environment["HOME"] = $kiloHome
+        $startInfo.Environment["USERPROFILE"] = $kiloHome
+        $startInfo.Environment["XDG_CONFIG_HOME"] = $kiloConfigHome
+        $startInfo.Environment["XDG_DATA_HOME"] = $kiloDataHome
+        $startInfo.Environment["APPDATA"] = $kiloAppDataHome
+        $startInfo.Environment["LOCALAPPDATA"] = $kiloLocalAppDataHome
     }
 
     $process = [System.Diagnostics.Process]::new()
@@ -177,13 +191,15 @@ function Invoke-AgentCommand {
         try { $process.Kill($true) } catch { }
     }
 
-    return [pscustomobject]@{
+    $result = [pscustomobject]@{
         ExitCode = if ($completed) { $process.ExitCode } else { -1 }
         TimedOut = -not $completed
         Stdout = $stdoutTask.GetAwaiter().GetResult()
         Stderr = $stderrTask.GetAwaiter().GetResult()
         Command = "$AgentCommand $arguments"
     }
+    if ($kiloHome) { Remove-Item -LiteralPath $kiloHome -Recurse -Force -ErrorAction SilentlyContinue }
+    return $result
 }
 
 function Invoke-GitText {
@@ -241,7 +257,7 @@ if (($IncludeWriteSmoke -or $IncludeScopedEdit) -and -not $AllowNonGeneratedTarg
 $resolvedTarget = (Resolve-Path -LiteralPath $TargetRepo).Path
 Initialize-DisposableGitBaseline -RunDirectory $resolvedTarget
 if ($SurfaceKey -eq "kilo-code-cli" -and -not $DryRun) {
-    if ([string]::IsNullOrWhiteSpace($AgentConfigPath)) { $AgentConfigPath = Join-Path $resolvedTarget ".kilo.local.json" }
+    if ([string]::IsNullOrWhiteSpace($AgentConfigPath)) { $AgentConfigPath = Join-Path (Join-Path $resolvedTarget ".kilo") "kilo.jsonc" }
     if (-not (Test-Path -LiteralPath $AgentConfigPath)) {
         throw "Kilo Code requires a generated local config for live tests: $AgentConfigPath. Run setup-agent-surface with -Surface kilo -Action Configure against this generated sample first."
     }

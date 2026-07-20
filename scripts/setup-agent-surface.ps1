@@ -57,7 +57,7 @@ function Get-InstallPlan([string]$SurfaceName, [string]$Method) {
     }
 }
 
-$configName = switch ($Surface) { "aider" { ".aider.conf.local.yml" } "kilo" { ".kilo.local.json" } default { ".opencode.local.json" } }
+$configName = switch ($Surface) { "aider" { ".aider.conf.local.yml" } "kilo" { ".kilo/kilo.jsonc" } default { ".opencode.local.json" } }
 $commandName = switch ($Surface) { "aider" { $AiderCommand } "kilo" { $KiloCommand } default { $OpenCodeCommand } }
 $displayName = switch ($Surface) { "aider" { "Aider" } "kilo" { "Kilo Code" } default { "OpenCode" } }
 if ($Surface -in @("kilo", "opencode") -and $InstallMethod -eq "aider-install") { $InstallMethod = "npm" }
@@ -68,7 +68,7 @@ if ($Action -eq "Plan") {
         InstallMethod = $InstallMethod
         InstallCommands = Get-InstallPlan -SurfaceName $Surface -Method $InstallMethod
         ConfigFile = $configName
-        LaunchCommand = switch ($Surface) { "aider" { "$commandName --config $configName" } "kilo" { "`$env:KILO_CONFIG='$configName'; $commandName" } default { "`$env:OPENCODE_CONFIG='$configName'; $commandName" } }
+        LaunchCommand = switch ($Surface) { "aider" { "$commandName --config $configName" } "kilo" { "$commandName" } default { "`$env:OPENCODE_CONFIG='$configName'; $commandName" } }
         TestCommand = if ($Surface -eq "aider") { ".\scripts\test-aider-cli-models.ps1 -Models <model>" } elseif ($Surface -eq "kilo") { ".\scripts\test-kilo-code-cli-models.ps1 -Models <model>" } else { ".\scripts\test-opencode-cli-models.ps1 -Models <model>" }
         Safety = "Generated config is local-only and must not be committed."
     } | ConvertTo-Json -Depth 5
@@ -159,16 +159,19 @@ if ($Action -eq "Configure") {
     Write-Host "$displayName config target: $configPath"
     Write-Host "Selected lane/model: $Lane / $selectedModel"
     if ($DryRun) { Write-Host "Dry run complete; no config was written."; exit 0 }
+    $configParent = Split-Path -Parent $configPath
+    if ($configParent) { New-Item -ItemType Directory -Force -Path $configParent | Out-Null }
     Set-Content -LiteralPath $configPath -Value $content -NoNewline
     if (Test-Path -LiteralPath (Join-Path $resolvedTarget ".git")) {
         $excludePath = Join-Path $resolvedTarget ".git/info/exclude"
         $exclude = if (Test-Path -LiteralPath $excludePath) { @(Get-Content -LiteralPath $excludePath) } else { @() }
-        if ($configName -notin $exclude) { Add-Content -LiteralPath $excludePath -Value $configName }
+        $excludeEntry = if ($Surface -eq "kilo") { ".kilo/" } else { $configName }
+        if ($excludeEntry -notin $exclude) { Add-Content -LiteralPath $excludePath -Value $excludeEntry }
     }
     if ($Surface -eq "aider") {
         Write-Host "Aider config written. Launch with: $AiderCommand --config $configName"
     } elseif ($Surface -eq "kilo") {
-        Write-Host "Kilo Code config written. Launch with: `$env:KILO_CONFIG='$configName'; $KiloCommand"
+        Write-Host "Kilo Code config written. Launch from the repository root with: $KiloCommand"
     } else {
         Write-Host "OpenCode config written. Launch with: `$env:OPENCODE_CONFIG='$configName'; $OpenCodeCommand"
     }
@@ -205,5 +208,5 @@ if (Test-Path -LiteralPath $configPath) {
     }
 }
 $status = if (@($checks | Where-Object Status -eq "fail").Count -eq 0) { "healthy" } else { "attention-required" }
-[pscustomobject]@{ Surface = $displayName; Status = $status; Checks = @($checks); NextCommand = switch ($Surface) { "aider" { "$AiderCommand --config $configName --version" } "kilo" { "`$env:KILO_CONFIG='$configName'; $KiloCommand --version" } default { "`$env:OPENCODE_CONFIG='$configName'; $OpenCodeCommand --version" } } } | ConvertTo-Json -Depth 5
+[pscustomobject]@{ Surface = $displayName; Status = $status; Checks = @($checks); NextCommand = switch ($Surface) { "aider" { "$AiderCommand --config $configName --version" } "kilo" { "$KiloCommand --version" } default { "`$env:OPENCODE_CONFIG='$configName'; $OpenCodeCommand --version" } } } | ConvertTo-Json -Depth 5
 if ($status -ne "healthy") { exit 1 }

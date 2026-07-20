@@ -118,7 +118,7 @@ if [ ! -d "$TARGET_REPO" ]; then
 fi
 
 if [ "$SURFACE_KEY" = "kilo-code-cli" ] && [ "$DRY_RUN" != true ]; then
-  [ -n "$AGENT_CONFIG_PATH" ] || AGENT_CONFIG_PATH="$TARGET_REPO/.kilo.local.json"
+  [ -n "$AGENT_CONFIG_PATH" ] || AGENT_CONFIG_PATH="$TARGET_REPO/.kilo/kilo.jsonc"
   if [ ! -f "$AGENT_CONFIG_PATH" ]; then
     printf 'Kilo Code requires a generated local config for live tests: %s. Run setup-agent-surface with --surface kilo --action Configure against this generated sample first.\n' "$AGENT_CONFIG_PATH" >&2
     exit 1
@@ -219,7 +219,14 @@ for model in "${MODELS[@]}"; do
     exit_code=0
   else
     set +e
-    output=$(cd "$TARGET_REPO" && KILO_CONFIG="$AGENT_CONFIG_PATH" timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" 2>&1)
+    if [ "$SURFACE_KEY" = "kilo-code-cli" ]; then
+      kilo_home="$(mktemp -d "${TMPDIR:-/tmp}/local-engineering-agent-pack-kilo.XXXXXX")"
+      mkdir -p "$kilo_home/.config" "$kilo_home/.data"
+      output=$(cd "$TARGET_REPO" && HOME="$kilo_home" USERPROFILE="$kilo_home" XDG_CONFIG_HOME="$kilo_home/.config" XDG_DATA_HOME="$kilo_home/.data" timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" 2>&1)
+      rm -rf "$kilo_home"
+    else
+      output=$(cd "$TARGET_REPO" && timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" 2>&1)
+    fi
     exit_code=$?
     set -e
   fi
@@ -240,7 +247,13 @@ for model in "${MODELS[@]}"; do
       write_status='write-smoke-validated'
     else
       set +e
-      (cd "$TARGET_REPO" && KILO_CONFIG="$AGENT_CONFIG_PATH" timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" >/tmp/agent-cli-write.out 2>&1)
+      if [ "$SURFACE_KEY" = "kilo-code-cli" ]; then
+        kilo_home="$(mktemp -d "${TMPDIR:-/tmp}/local-engineering-agent-pack-kilo.XXXXXX")"; mkdir -p "$kilo_home/.config" "$kilo_home/.data"
+        (cd "$TARGET_REPO" && HOME="$kilo_home" USERPROFILE="$kilo_home" XDG_CONFIG_HOME="$kilo_home/.config" XDG_DATA_HOME="$kilo_home/.data" timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" >/tmp/agent-cli-write.out 2>&1)
+        rm -rf "$kilo_home"
+      else
+        (cd "$TARGET_REPO" && timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" >/tmp/agent-cli-write.out 2>&1)
+      fi
       write_exit=$?
       set -e
       changed_files="$(cd "$TARGET_REPO" && git diff --name-only)"
@@ -267,7 +280,13 @@ for model in "${MODELS[@]}"; do
         scoped_edit_status='scoped-edit-validated'
       else
         set +e
-        (cd "$TARGET_REPO" && KILO_CONFIG="$AGENT_CONFIG_PATH" timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" >/tmp/agent-cli-scoped-edit.out 2>&1)
+        if [ "$SURFACE_KEY" = "kilo-code-cli" ]; then
+          kilo_home="$(mktemp -d "${TMPDIR:-/tmp}/local-engineering-agent-pack-kilo.XXXXXX")"; mkdir -p "$kilo_home/.config" "$kilo_home/.data"
+          (cd "$TARGET_REPO" && HOME="$kilo_home" USERPROFILE="$kilo_home" XDG_CONFIG_HOME="$kilo_home/.config" XDG_DATA_HOME="$kilo_home/.data" timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" >/tmp/agent-cli-scoped-edit.out 2>&1)
+          rm -rf "$kilo_home"
+        else
+          (cd "$TARGET_REPO" && timeout "$TIMEOUT_SECONDS" sh -c "$AGENT_COMMAND $model_args $args" >/tmp/agent-cli-scoped-edit.out 2>&1)
+        fi
         scoped_exit=$?
         set -e
         changed_files="$(cd "$TARGET_REPO" && git diff --name-only | sort)"

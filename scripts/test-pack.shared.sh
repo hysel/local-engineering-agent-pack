@@ -670,7 +670,8 @@ test_agent_surface_options_doc() {
     [ -f "$REPO_ROOT/docs/opencode-cli-model-testing.md" ] &&
     grep -q "Confirmed Command Boundaries" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "opencode run" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
-    grep -q "instead of executing the supplied repository task" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
+    grep -q ".kilo/kilo.jsonc" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
+    grep -q "do not treat their" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "upstream project is archived" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "\\[x\\] Define a safe OpenHands validation boundary before adding platform-agent validation automation" "$REPO_ROOT/TODO.md"
 }
@@ -1313,14 +1314,14 @@ JSON
   grep -q '@kilocode/cli' /tmp/kilo-adapter-install.out || return 1
   grep -q 'no network install' /tmp/kilo-adapter-install.out || return 1
   "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Configure --target-repo "$temp_root" --recommendation-path "$recommendation_path" --lane WriteSafe --ollama-base-url 'http://example.invalid:11434' >/tmp/kilo-adapter-configure.out 2>&1 || return 1
-  python3 - "$temp_root/.kilo.local.json" <<'PY' || return 1
+  python3 - "$temp_root/.kilo/kilo.jsonc" <<'PY' || return 1
 import json, sys
 with open(sys.argv[1], encoding="utf-8") as handle: config = json.load(handle)
 assert config["model"] == "ollama/qwen3.5:9b"
 assert config["provider"]["ollama"]["options"]["baseURL"] == "http://example.invalid:11434/v1"
 assert config["permission"]["*"] == "ask"
 PY
-  grep -Fxq '.kilo.local.json' "$temp_root/.git/info/exclude" || return 1
+  grep -Fxq '.kilo/' "$temp_root/.git/info/exclude" || return 1
   "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Health --target-repo "$temp_root" --kilo-command sh >/tmp/kilo-adapter-health.out 2>&1 || return 1
   grep -q 'Kilo Code adapter health: healthy' /tmp/kilo-adapter-health.out || return 1
 
