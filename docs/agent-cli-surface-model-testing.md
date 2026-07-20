@@ -19,7 +19,7 @@ These scripts are automation scaffolding. A dry run proves the harness wiring, n
 
 For Milestone 17, Kilo Code's documented command shape and local-only config are scaffolded, but live validation is blocked by task execution rather than command discovery. Roo Code is historical only: its upstream project is archived and the extension is shut down, so do not use its wrapper for new validation. OpenCode's documented `run`, provider/model, and local config contracts are reflected in the scaffold, and Devstral Small 2 24B has passed generated-sample read, write-smoke, and constrained scoped-edit checks. OpenCode still needs explicitly approved non-generated repository validation. Use command overrides for experiments, but do not promote wrappers to real-project approved-write readiness from disposable evidence alone.
 
-Kilo Code's documented project-local configuration filename is `.kilo/kilo.jsonc`. With that path and a separate preload stage, `devstral-small-2:24b` passed the generated-sample read-only gate but exited the write-smoke invocation without making the required `README.md` change. `qwen3.5:9b` still did not complete the bounded read-only task. Kilo remains blocked for approved writes and scoped-edit evidence. Run one model at a time and unload it after each attempt.
+Kilo Code's documented project-local configuration filename is `.kilo/kilo.jsonc`. With that path and a separate preload stage, `devstral-small-2:24b` passes the generated-sample read-only gate but exited the write-smoke invocation without making the required `README.md` change. `qwen3.5:9b` still did not complete the bounded read-only task. Kilo remains blocked for approved writes and scoped-edit evidence. Run one model at a time and unload it after each attempt.
 
 A surface is not approved-write ready until it passes:
 
@@ -92,7 +92,7 @@ clock. Use `-LoadTimeoutSeconds` for the separate cold-load allowance and
 ```powershell
 .\scripts\run-kilo-code-validation.ps1 `
   -Model "devstral-small-2:24b" `
-  -OllamaBaseUrl "http://192.0.2.42:11434" `
+  -OllamaBaseUrl "http://ollama-host.example:11434" `
   -IncludeWriteSmoke `
   -IncludeScopedEdit
 ```
