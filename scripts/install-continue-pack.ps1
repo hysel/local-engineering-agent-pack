@@ -37,6 +37,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
+$runtimePolicy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
+$continueKeepAliveSeconds = if ($runtimePolicy.residencyMode -eq "unload-after-run") { 0 } else { [int]$runtimePolicy.preloadKeepAliveMinutes * 60 }
 $sourceContinue = Join-Path $repoRoot ".continue"
 
 if (-not $TargetRepo -and $TargetRepoAlias) {
@@ -335,7 +337,7 @@ function Get-ModelLaneLines {
         "      temperature: 0.1",
         "      contextLength: 16384",
         "      maxTokens: 2048",
-        "      keepAlive: 1800",
+        "      keepAlive: $continueKeepAliveSeconds",
         "  - name: 2 - PLAN ONLY - qwen3.5:9b",
         "    provider: ollama",
         "    model: qwen3.5:9b",
@@ -347,7 +349,7 @@ function Get-ModelLaneLines {
         "      temperature: 0.2",
         "      contextLength: 16384",
         "      maxTokens: 2048",
-        "      keepAlive: 1800",
+        "      keepAlive: $continueKeepAliveSeconds",
         "  - name: 3 - DEEP REVIEW - qwen3.5:9b",
         "    provider: ollama",
         "    model: qwen3.5:9b",
@@ -359,7 +361,7 @@ function Get-ModelLaneLines {
         "      temperature: 0.2",
         "      contextLength: 16384",
         "      maxTokens: 2048",
-        "      keepAlive: 1800",
+        "      keepAlive: $continueKeepAliveSeconds",
         "  - name: Ollama Nomic Embed",
         "    provider: ollama",
         "    model: nomic-embed-text",
@@ -420,7 +422,7 @@ function Get-ReadOnlyModelLines {
         "      temperature: 0.2",
         "      contextLength: 16384",
         "      maxTokens: 2048",
-        "      keepAlive: 1800",
+        "      keepAlive: $continueKeepAliveSeconds",
         "  - name: Ollama Nomic Embed",
         "    provider: ollama",
         "    model: nomic-embed-text",

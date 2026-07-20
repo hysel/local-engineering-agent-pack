@@ -357,7 +357,7 @@ def tool_test(model):
             "model": model,
             "stream": False,
             "think": False,
-            "keep_alive": "10m",
+            "keep_alive": f"{preload_keep_alive_minutes}m",
             "options": {"temperature": 0, "num_predict": 256},
             "tools": tools,
             "messages": [{"role": "user", "content": "Use the read_file tool to read README.md. Return a tool call only."}],
@@ -389,7 +389,7 @@ def content_test(model):
             "model": model,
             "stream": False,
             "think": False,
-            "keep_alive": "10m",
+            "keep_alive": f"{preload_keep_alive_minutes}m",
             "options": {"temperature": 0, "num_predict": 128},
             "messages": [
                 {"role": "system", "content": "Return only the exact requested file content. Do not include reasoning, tags, markdown, quotes, or explanations."},

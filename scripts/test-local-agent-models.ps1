@@ -360,7 +360,7 @@ function Invoke-ToolCallTest {
             model = $Model
             stream = $false
             think = $false
-            keep_alive = "10m"
+            keep_alive = "$($runtimePolicy.preloadKeepAliveMinutes)m"
             options = @{
                 temperature = 0
                 num_predict = 256
@@ -422,7 +422,7 @@ function Invoke-ExactContentTest {
             model = $Model
             stream = $false
             think = $false
-            keep_alive = "10m"
+            keep_alive = "$($runtimePolicy.preloadKeepAliveMinutes)m"
             options = @{
                 temperature = 0
                 num_predict = 128

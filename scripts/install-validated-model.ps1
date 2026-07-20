@@ -19,6 +19,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$packRoot = Split-Path -Parent $PSScriptRoot
+$runtimePolicy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
+$continueKeepAliveSeconds = if ($runtimePolicy.residencyMode -eq "unload-after-run") { 0 } else { [int]$runtimePolicy.preloadKeepAliveMinutes * 60 }
 
 if (-not $TargetRepo -and $TargetRepoAlias) {
     $TargetRepo = $TargetRepoAlias
@@ -112,7 +115,7 @@ function Get-DefaultModelProfileLines {
         $lines.Add("      temperature: 0.2")
         $lines.Add("      contextLength: 16384")
         $lines.Add("      maxTokens: 2048")
-        $lines.Add("      keepAlive: 1800")
+        $lines.Add("      keepAlive: $continueKeepAliveSeconds")
     }
 
     $lines.Add("  - name: Ollama Nomic Embed")

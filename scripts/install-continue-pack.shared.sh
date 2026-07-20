@@ -19,6 +19,11 @@ GLOBAL_CONFIG_INCLUDE_RULES=false
 SHARED_ASSETS=false
 SHARED_ASSETS_PATH=""
 
+IFS=$'\t' read -r RUNTIME_RESIDENCY_MODE MAX_RESIDENT_MODELS PRELOAD_KEEP_ALIVE_MINUTES <<< "$("$SCRIPT_DIR/get-model-runtime-policy.shared.sh")"
+CONTINUE_KEEP_ALIVE_SECONDS=$((PRELOAD_KEEP_ALIVE_MINUTES * 60))
+if [ "$RUNTIME_RESIDENCY_MODE" = "unload-after-run" ]; then CONTINUE_KEEP_ALIVE_SECONDS=0; fi
+export CONTINUE_KEEP_ALIVE_SECONDS
+
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --target-repo|-TargetRepo)
@@ -340,7 +345,7 @@ if [ "$READ_ONLY_PROFILE" = true ]; then
         print "      temperature: 0.2"
         print "      contextLength: 16384"
         print "      maxTokens: 2048"
-        print "      keepAlive: 1800"
+        print "      keepAlive: " ENVIRON["CONTINUE_KEEP_ALIVE_SECONDS"]
         print "  - name: Ollama Nomic Embed"
         print "    provider: ollama"
         print "    model: nomic-embed-text"
@@ -478,7 +483,7 @@ if [ "$MODEL_LANES" = true ]; then
         print "      temperature: 0.1"
         print "      contextLength: 16384"
         print "      maxTokens: 2048"
-        print "      keepAlive: 1800"
+        print "      keepAlive: " ENVIRON["CONTINUE_KEEP_ALIVE_SECONDS"]
         print "  - name: 2 - PLAN ONLY - qwen3.5:9b"
         print "    provider: ollama"
         print "    model: qwen3.5:9b"
@@ -490,7 +495,7 @@ if [ "$MODEL_LANES" = true ]; then
         print "      temperature: 0.2"
         print "      contextLength: 16384"
         print "      maxTokens: 2048"
-        print "      keepAlive: 1800"
+        print "      keepAlive: " ENVIRON["CONTINUE_KEEP_ALIVE_SECONDS"]
         print "  - name: 3 - DEEP REVIEW - qwen3.5:9b"
         print "    provider: ollama"
         print "    model: qwen3.5:9b"
@@ -502,7 +507,7 @@ if [ "$MODEL_LANES" = true ]; then
         print "      temperature: 0.2"
         print "      contextLength: 16384"
         print "      maxTokens: 2048"
-        print "      keepAlive: 1800"
+        print "      keepAlive: " ENVIRON["CONTINUE_KEEP_ALIVE_SECONDS"]
         print "  - name: Ollama Nomic Embed"
         print "    provider: ollama"
         print "    model: nomic-embed-text"

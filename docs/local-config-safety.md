@@ -95,6 +95,11 @@ and direct model-check runners read Ollama's live resident-model list before
 loading; they warn about an existing model and block a second model at the
 configured limit.
 
+The same policy is applied when this pack creates a Continue configuration:
+`unload-after-run` writes `keepAlive: 0`; `keep-loaded` writes the configured
+`preloadKeepAliveMinutes` value in seconds. This keeps generated end-user
+configuration aligned with the validation runners.
+
 ## Before You Commit
 
 Run:
