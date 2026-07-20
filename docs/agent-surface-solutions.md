@@ -55,14 +55,14 @@ with the installed CLI. See [OpenCode CLI model testing](opencode-cli-model-test
 It remains partial for real-project approved-write readiness until explicitly
 approved non-generated repository validation passes.
 
-Kilo Code now has an explicit npm install plan and a local-only
-`.kilo.local.json` generator through the same adapter. It uses Kilo's native
+Kilo Code now has an explicit npm install plan and a project-local
+`.kilo/kilo.jsonc` generator through the same adapter. It uses Kilo's native
 Ollama provider with an Ollama `/v1` endpoint, model tool metadata, token
-limits, and ask-by-default permissions. The harness injects that exact config
-through `KILO_CONFIG` and explicitly selects Kilo's `code` agent. Live
-generated-sample validation remains blocked: tested local models either return
-generic acknowledgements without repository work or emit raw tool syntax that
-Kilo does not execute.
-do not treat generated config as real-project approval.
+limits, and ask-by-default permissions. The harness explicitly selects Kilo's
+`code` agent and uses an isolated user profile so Kilo reads the project-local
+configuration. Earlier diagnostics used the obsolete `.json` filename, so
+generated-sample validation must be rerun with the documented `.jsonc` path
+before any model or surface readiness claim is made. Do not treat generated
+config as real-project approval.
 
 Use `docs/script-reference-appendix.md` for direct command details after you choose a workflow.

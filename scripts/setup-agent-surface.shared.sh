@@ -46,7 +46,7 @@ if [ "$SURFACE" = "aider" ]; then
   command_name="$AIDER_COMMAND"
   display_name="Aider"
 elif [ "$SURFACE" = "kilo" ]; then
-  config_name=".kilo.local.json"
+  config_name=".kilo/kilo.jsonc"
   command_name="$KILO_COMMAND"
   display_name="Kilo Code"
 else
@@ -75,7 +75,7 @@ if [ "$ACTION" = "Plan" ]; then
     launch_command="$command_name --config $config_name"
     test_command="./scripts/test-aider-cli-models.linux.sh --model <model>"
   elif [ "$SURFACE" = "kilo" ]; then
-    launch_command="KILO_CONFIG=$config_name $command_name"
+    launch_command="$command_name"
     test_command="./scripts/test-kilo-code-cli-models.linux.sh --model <model>"
   else
     launch_command="OPENCODE_CONFIG=$config_name $command_name"
@@ -126,6 +126,7 @@ PY
   if [ -e "$config_path" ] && [ "$FORCE" -eq 0 ]; then printf '%s already exists. Use --force to replace it.\n' "$config_name" >&2; exit 1; fi
   printf '%s config target: %s\nSelected lane/model: %s / %s\n' "$display_name" "$config_path" "$LANE" "$MODEL"
   [ "$DRY_RUN" -eq 0 ] || { printf 'Dry run complete; no config was written.\n'; exit 0; }
+  mkdir -p "$(dirname "$config_path")"
   python3 - "$config_path" "$MODEL" "$OLLAMA_BASE_URL" "$SURFACE" <<'PY'
 import json
 import pathlib, sys
@@ -174,12 +175,14 @@ PY
   if [ -d "$target_repo/.git" ]; then
     mkdir -p "$target_repo/.git/info"
     touch "$target_repo/.git/info/exclude"
-    grep -Fxq "$config_name" "$target_repo/.git/info/exclude" || printf '%s\n' "$config_name" >> "$target_repo/.git/info/exclude"
+    exclude_entry="$config_name"
+    [ "$SURFACE" != "kilo" ] || exclude_entry=".kilo/"
+    grep -Fxq "$exclude_entry" "$target_repo/.git/info/exclude" || printf '%s\n' "$exclude_entry" >> "$target_repo/.git/info/exclude"
   fi
   if [ "$SURFACE" = "aider" ]; then
     printf 'Aider config written. Launch with: %s --config %s\n' "$AIDER_COMMAND" "$config_name"
   elif [ "$SURFACE" = "kilo" ]; then
-    printf 'Kilo Code config written. Launch with: KILO_CONFIG=%s %s\n' "$config_name" "$KILO_COMMAND"
+    printf 'Kilo Code config written. Launch from the repository root with: %s\n' "$KILO_COMMAND"
   else
     printf 'OpenCode config written. Launch with: OPENCODE_CONFIG=%s %s\n' "$config_name" "$OPENCODE_COMMAND"
   fi

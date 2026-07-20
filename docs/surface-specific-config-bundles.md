@@ -39,7 +39,7 @@ Generated config files should stay surface-specific. Continue config does not co
 | Cline | planned | Wait for tested install and local model config boundaries. |
 | Aider | supported | Generate explicit local-only `.aider.conf.local.yml` through `setup-agent-surface.*`; launch with `aider --config` and keep real-project approved write blocked. |
 | Roo Code | retired | Do not generate new bundles; evaluate a maintained successor separately. |
-| Kilo Code | scaffolded | Generate a local-only `.kilo.local.json` through the unified adapter. Keep real-project writes blocked: current remote-Ollama live runs reached models but did not execute repository tasks or tools. |
+| Kilo Code | scaffolded | Generate project-local `.kilo/kilo.jsonc` through the unified adapter and keep the `.kilo/` directory locally excluded from Git. Keep real-project writes blocked until the current adapter passes generated-sample read, write-smoke, and scoped-edit validation. |
 | OpenCode | supported | Generate a local-only `.opencode.local.json` through the unified adapter with dry-run-safe install planning, repository-local exclusion, and health checks. Devstral Small 2 24B passed generated-sample read/write-smoke and constrained scoped-edit validation; non-generated-repository validation remains pending for real-project approved-write claims. |
 | OpenHands | blocked | Do not generate platform-agent config while workspace, sandbox, and credential boundaries remain outside this pack. |
 
