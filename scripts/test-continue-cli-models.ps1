@@ -17,6 +17,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
+$resolvedContinueCommand = $ContinueCommand
 $runtimePolicy = (& (Join-Path $PSScriptRoot "get-model-runtime-policy.ps1") | ConvertFrom-Json)
 if ($runtimePolicy.residencyMode -eq "unload-after-run") { $UnloadAfterEach = $true }
 
@@ -125,7 +126,7 @@ function Invoke-ContinueCommand {
     }
 
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = $ContinueCommand
+    $startInfo.FileName = $resolvedContinueCommand
     $startInfo.Arguments = $arguments
     $startInfo.WorkingDirectory = $RunDirectory
     $startInfo.UseShellExecute = $false
@@ -211,6 +212,14 @@ if ($modelsToTest.Count -eq 0) { $modelsToTest = @(Get-DefaultModels) }
 
 if (-not $DryRun -and -not (Get-Command $ContinueCommand -ErrorAction SilentlyContinue)) {
     throw "Continue CLI command was not found: $ContinueCommand. Install Node.js/npx or pass -ContinueCommand."
+}
+if (-not $DryRun) {
+    $commandInfo = Get-Command $ContinueCommand -ErrorAction Stop
+    $resolvedContinueCommand = $commandInfo.Source
+    if ($resolvedContinueCommand -match '(?i)\.ps1$') {
+        $cmdShim = [System.IO.Path]::ChangeExtension($resolvedContinueCommand, ".cmd")
+        if (Test-Path -LiteralPath $cmdShim) { $resolvedContinueCommand = $cmdShim }
+    }
 }
 
 Write-Host "[2/7] Target repository: generated sample $((Split-Path -Leaf $resolvedTarget))"
