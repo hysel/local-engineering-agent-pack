@@ -3822,6 +3822,15 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($roadmap -match "voice cloning" -and $roadmap -match "silent CPU fallback") -Message "Music roadmap should retain consent and accelerator-verification gates."
     Assert-True -Condition ($todo -match "## Milestone 23: Local Music And Audio Generation") -Message "TODO should track music provider evaluation."
     Assert-True -Condition ($todo -match "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries") -Message "TODO should preserve the failed-candidate exclusion rule."
+    Assert-True -Condition ($roadmap -match "cross-platform core-engine updater") -Message "Roadmap should include automatic core-engine updates."
+    Assert-True -Condition ($roadmap -match "stable releases published by the official GitHub repository") -Message "Core updates should use official GitHub releases."
+    Assert-True -Condition ($roadmap.Contains('Never update a production installation with an unattended `git pull` or from a moving branch')) -Message "Core updater should reject moving source branches."
+    foreach ($marker in @("checksum", "signature or attestation", "compatibility", "atomically", "previous known-good engine", "explicit user choice")) {
+        Assert-True -Condition ($roadmap -match [regex]::Escape($marker)) -Message "Core update roadmap should retain safety marker: $marker"
+    }
+    Assert-True -Condition ($roadmap -match "local configuration, models, provider data, generated artifacts, and evidence") -Message "Core updates should preserve user-owned state."
+    Assert-True -Condition ($todo -match "\[ \] Add opt-in automatic stable-release checks, downloads, and installation") -Message "TODO should track opt-in automatic engine updates."
+    Assert-True -Condition ($todo -match "\[ \] Add compatibility preflight, atomic activation, post-update health checks, automatic rollback") -Message "TODO should track safe update activation and recovery."
 }
 Invoke-PackTest "sample scenario packs reference existing assets" {
     $scenarioPath = Join-Path $repoRoot "config/sample-scenario-packs.json"

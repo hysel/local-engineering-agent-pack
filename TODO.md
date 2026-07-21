@@ -393,6 +393,11 @@
 ## Milestone 22: Unified Product UI And Task Composition
 
 - [ ] Select and document the local-first UI runtime and packaging boundary.
+- [ ] Define a versioned core-engine update manifest for immutable Windows, macOS, and Linux assets published through GitHub Releases.
+- [ ] Add opt-in automatic stable-release checks, downloads, and installation without using unattended `git pull` or a moving branch.
+- [ ] Verify downloaded engine assets with checksums and a release signature or attestation before staging or activation.
+- [ ] Keep engine binaries separate from user configuration, workspaces, models, provider data, generated artifacts, and evidence during updates.
+- [ ] Add compatibility preflight, atomic activation, post-update health checks, automatic rollback, retained-version cleanup, offline behavior, and a disabled-update mode.
 - [ ] Define hardware discovery and consent-driven local image-provider onboarding that does not require an external server.
 - [ ] Validate a pinned Windows NVIDIA CUDA image-provider profile before shipping its local installer or runtime files.
 - [ ] Validate a pinned Windows Intel GPU/XPU image-provider profile, including XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter evidence, before shipping its local installer or runtime files.

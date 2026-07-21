@@ -1598,7 +1598,15 @@ test_solution_architecture_review_doc() {
     grep -q "Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "silent CPU fallback" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "## Milestone 23: Local Music And Audio Generation" "$REPO_ROOT/TODO.md" &&
-    grep -q "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries" "$REPO_ROOT/TODO.md"
+    grep -q "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries" "$REPO_ROOT/TODO.md" &&
+    grep -q "cross-platform core-engine updater" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "stable releases published by the official GitHub repository" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q 'Never update a production installation with an unattended `git pull` or from a moving branch' "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "signature or attestation" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "previous known-good engine" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "local configuration, models, provider data, generated artifacts, and evidence" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "\[ \] Add opt-in automatic stable-release checks, downloads, and installation" "$REPO_ROOT/TODO.md" &&
+    grep -q "\[ \] Add compatibility preflight, atomic activation, post-update health checks, automatic rollback" "$REPO_ROOT/TODO.md"
 }
 test_hosted_ci_verifier_contract() {
   windows="$REPO_ROOT/scripts/verify-hosted-ci.ps1"

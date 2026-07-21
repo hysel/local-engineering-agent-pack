@@ -643,6 +643,8 @@ Scope:
 - Show capability availability, evidence status, local versus external execution, network effects, repository access, and approval requirements before execution.
 - Reuse the Milestone 20 evidence dashboard, health, cleanup, recommendation, installation, validation, and release-readiness workflows.
 - Reuse Milestone 21 routing and provider contracts; keep LLM routing advisory and policy enforcement deterministic.
+- Add a cross-platform core-engine updater that can check for, stage, and optionally install stable releases published by the official GitHub repository. Never update a production installation with an unattended `git pull` or from a moving branch.
+- Separate immutable engine files from user workspaces, local configuration, models, provider data, generated artifacts, and evidence so an engine update cannot overwrite user-owned state.
 - Add accessible progress, warning, failure, retry, and recovery experiences over the versioned workflow envelope.
 - Add tested multi-step task composition only after individual capabilities and artifact contracts have passed their own gates.
 - Keep future surface-specific profiles outside the UI until their exact integrations pass the agent admission policy.
@@ -654,6 +656,8 @@ Exit criteria:
 - A software user can enter the existing engineering workflow system without the UI bypassing evidence or approved-write gates.
 - Unavailable, blocked, failed, and recommendation-only capabilities are visibly distinct and cannot be presented as validated.
 - Every material read, write, network call, model download, and external-provider action is disclosed before execution.
+- Core updates resolve an immutable GitHub release and platform asset, verify its checksum and release signature or attestation, validate schema and provider compatibility, stage beside the active version, and switch atomically only after a health check passes.
+- A failed update automatically restores the previous known-good engine. Offline use remains available, update checks can be disabled, stable is the default channel, and automatic installation is an explicit user choice.
 - Windows, Linux, and macOS contract tests cover routing, workflow dispatch, artifacts, failures, recovery, and safe composition.
 
 ### Recommended Implementation Order
@@ -664,8 +668,9 @@ Exit criteria:
 4. Connect setup, health, model choice, engineering workflows, and evidence views from Milestone 20.
 5. Validate and promote native desktop image-provider profiles independently, beginning with Windows NVIDIA and Windows Intel GPU/XPU, then Windows AMD and Apple Silicon MPS; ship no profile automation until its exact hardware path passes.
 6. Add repository-free text and image flows only for providers promoted in Milestone 21 or through the native desktop provider gates above.
-7. Add cross-platform UI contract and packaging tests.
-8. Add bounded multi-step composition with explicit intermediate artifacts and approvals.
+7. Implement the GitHub release updater with explicit channels, network disclosure, immutable asset selection, checksum and signature or attestation verification, compatibility preflight, atomic activation, post-update health checks, rollback, and retained-version cleanup.
+8. Add cross-platform UI contract, updater, rollback, and packaging tests.
+9. Add bounded multi-step composition with explicit intermediate artifacts and approvals.
 
 ## Milestone 23: Local Music And Audio Generation
 
