@@ -741,7 +741,8 @@ test_cline_cli_model_testing_doc() {
     grep -q "UNLOAD_AFTER_EACH" "$REPO_ROOT/scripts/test-cline-cli-models.shared.sh" &&
     grep -q "Cline CLI model test harness" "$REPO_ROOT/config/evidence-catalog.tsv" &&
     grep -q "Cline CLI Devstral Small 2 realistic scoped-edit attempt" "$REPO_ROOT/config/evidence-catalog.tsv" &&
-    grep -q "docs/cline-cli-model-testing.md" "$REPO_ROOT/README.md"
+    grep -q "Review quarantined Cline and Kilo evidence" "$REPO_ROOT/README.md" &&
+    grep -q "docs/agent-surface-options.md" "$REPO_ROOT/README.md"
 }
 test_continue_cli_model_testing_doc() {
   [ -f "$REPO_ROOT/docs/continue-cli-model-testing.md" ] &&
@@ -1355,22 +1356,14 @@ JSON
   "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --action Health --target-repo "$temp_root" --aider-command sh >/tmp/aider-adapter-health.out 2>&1 || return 1
   grep -q 'Aider adapter health: healthy' /tmp/aider-adapter-health.out || return 1
 
-  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Plan >/tmp/kilo-adapter-plan.out 2>&1 || return 1
-  grep -q '@kilocode/cli' /tmp/kilo-adapter-plan.out || return 1
-  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Install --dry-run >/tmp/kilo-adapter-install.out 2>&1 || return 1
-  grep -q '@kilocode/cli' /tmp/kilo-adapter-install.out || return 1
-  grep -q 'no network install' /tmp/kilo-adapter-install.out || return 1
-  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Configure --target-repo "$temp_root" --recommendation-path "$recommendation_path" --lane WriteSafe --ollama-base-url 'http://example.invalid:11434' >/tmp/kilo-adapter-configure.out 2>&1 || return 1
-  python3 - "$temp_root/.kilo/kilo.jsonc" <<'PY' || return 1
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as handle: config = json.load(handle)
-assert config["model"] == "ollama/qwen3.5:9b"
-assert config["provider"]["ollama"]["options"]["baseURL"] == "http://example.invalid:11434/v1"
-assert config["permission"]["*"] == "ask"
-PY
-  grep -Fxq '.kilo/' "$temp_root/.git/info/exclude" || return 1
-  "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action Health --target-repo "$temp_root" --kilo-command sh >/tmp/kilo-adapter-health.out 2>&1 || return 1
-  grep -q 'Kilo Code adapter health: healthy' /tmp/kilo-adapter-health.out || return 1
+  for kilo_action in Plan Install Configure Health; do
+    if "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface kilo --action "$kilo_action" --target-repo "$temp_root" --recommendation-path "$recommendation_path" --lane WriteSafe --ollama-base-url 'http://example.invalid:11434' --dry-run >/tmp/kilo-adapter-blocked.out 2>&1; then
+      return 1
+    fi
+    grep -q 'Kilo Code support is quarantined' /tmp/kilo-adapter-blocked.out || return 1
+  done
+  [ ! -e "$temp_root/.kilo/kilo.jsonc" ] || return 1
+  grep -q '@kilocode/cli' "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" || return 1
 
   "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" --surface opencode --action Plan >/tmp/opencode-adapter-plan.out 2>&1 || return 1
   grep -q 'opencode-ai' /tmp/opencode-adapter-plan.out || return 1
@@ -1424,7 +1417,7 @@ test_solution_architecture_review_doc() {
     grep -q "19: Installer Profiles" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "20: Hardware-Aware Model" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "Input-Dependent Decisions" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "Kilo Code" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "qualifying upstream Cline or Kilo change" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "Complete for positioning and support-tier governance" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "Complete for the promoted supported-surface set" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "OpenHands is a candidate with a defined isolation boundary" "$REPO_ROOT/docs/solution-architecture-review.md" &&
