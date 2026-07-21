@@ -3,7 +3,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-EXPECTED_VERSION="0.2.0"
+EXPECTED_VERSION="0.3.0"
 OUTPUT_PATH=""
 AS_JSON=0
 ALLOW_DIRTY=0

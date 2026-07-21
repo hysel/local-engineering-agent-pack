@@ -26,7 +26,7 @@ $request = @{
   workflowId = "validate-pack"
   platform = "windows"
   dryRun = $true
-  arguments = @("-ExpectedVersion", "0.2.0")
+  arguments = @("-ExpectedVersion", "0.3.0")
 } | ConvertTo-Json -Compress
 
 .\scripts\invoke-workflow.ps1 -RequestJson $request
@@ -36,7 +36,7 @@ Linux example:
 
 ```bash
 ./scripts/invoke-workflow.linux.sh --request-json \
-  '{"schemaVersion":1,"requestId":"setup-preview","workflowId":"validate-pack","platform":"linux","dryRun":true,"arguments":["--expected-version","0.2.0"]}'
+  '{"schemaVersion":1,"requestId":"setup-preview","workflowId":"validate-pack","platform":"linux","dryRun":true,"arguments":["--expected-version","0.3.0"]}'
 ```
 
 ## Response

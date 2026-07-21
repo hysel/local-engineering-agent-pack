@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-EXPECTED_VERSION="0.2.0"
+EXPECTED_VERSION="0.3.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 FAILED=0

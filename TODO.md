@@ -396,13 +396,12 @@
 - [ ] Add an optional LLM intent router that can clarify and suggest capability IDs but cannot bypass availability, privacy, policy, or approval checks.
 - [ ] Add cross-platform contract tests for deterministic routing, unavailable capabilities, typed artifacts, repository-free operation, and safety enforcement.
 - [ ] Add multi-step task composition only after the individual capability and artifact contracts are stable.
-- [ ] Prepare the next minor release as `0.3.0` by curating `Unreleased`, updating version-bearing files, running the release gate, and tagging only after exact-SHA hosted CI passes.
 
 ## Solution Architecture Review Backlog
 
 - [x] Add a milestone solution completeness audit covering completed and active roadmap stages.
 - [ ] Provide or approve suitable non-generated repositories for future real-repository validation.
-- [ ] Validate Kilo Code with the documented command, project-local `.kilo/kilo.jsonc`, isolated user profile, and explicit `code` agent, then repeat generated-sample validation; unload each model after testing and evaluate a maintained Roo Code successor before adding another editor-agent adapter.
+- [x] Validate Kilo Code with the documented command, project-local `.kilo/kilo.jsonc`, isolated user profile, and explicit `code` agent. Devstral read-only passed, Devstral write/scoped and all Qwen 35B gates failed, models were unloaded, and further retries remain blocked pending a relevant Kilo version or task-execution/tool-protocol change.
 - [ ] Confirm whether surface-specific install/configure profiles should be prioritized before more non-Continue evidence exists.
 - [ ] Add future surface-specific profile generation after non-Continue validation.
 - [ ] Confirm scope and priority for the unified starter-toolkit web UI.

@@ -1,5 +1,5 @@
 param(
-    [string]$ExpectedVersion = "0.2.0"
+    [string]$ExpectedVersion = "0.3.0"
 )
 
 $ErrorActionPreference = "Stop"
@@ -260,10 +260,10 @@ Invoke-PackTest "release packaging scripts define archives, checksums, and sanit
     Assert-True -Condition (Test-Path -LiteralPath $macScriptPath) -Message "macOS release packager wrapper should exist."
     Assert-True -Condition (Test-Path -LiteralPath $sharedScriptPath) -Message "Shared release packager should exist."
 
-    $result = Invoke-CommandCapture -FilePath $psScriptPath -Arguments @("-Version", "0.2.0", "-DryRun", "-AllowDirty")
+    $result = Invoke-CommandCapture -FilePath $psScriptPath -Arguments @("-Version", "0.3.0", "-DryRun", "-AllowDirty")
     Assert-Equal -Actual $result.ExitCode -Expected 0 -Message "PowerShell release packager dry run should succeed."
     Assert-True -Condition ($result.Output -match "Release package plan") -Message "Dry run should print a release package plan."
-    Assert-True -Condition ($result.Output -match "local-engineering-agent-pack-0\.2\.0\.zip") -Message "Dry run should name the Windows archive."
+    Assert-True -Condition ($result.Output -match "local-engineering-agent-pack-0\.3\.0\.zip") -Message "Dry run should name the Windows archive."
     Assert-True -Condition ($result.Output -match "\.sha256") -Message "Dry run should name a checksum file."
     Assert-True -Condition ($result.Output -match "Excluded: \.git, \.vscode, runtime-validation-output, dist, local configs") -Message "Dry run should explain excluded local files."
 
@@ -1311,7 +1311,7 @@ Invoke-PackTest "agent prompt rule and template contracts are enforced" {
     Assert-True -Condition ($promptQuality -match "Execution And Evidence Contract") -Message "Prompt quality docs should define the execution contract."
     Assert-True -Condition ($bannedPatterns -match "pseudo function calls") -Message "Banned patterns should reject printed tool syntax."
     Assert-True -Condition ($languageRules -match "evidence-gated \.NET, ASP.NET Core, and API rules") -Message "Language rule docs should describe default rule loading accurately."
-    Assert-True -Condition ($readme -match 'Version `0\.2\.0`') -Message "README should report the current pack version."
+    Assert-True -Condition ($readme -match 'Version `0\.3\.0`') -Message "README should report the current pack version."
 }
 Invoke-PackTest "sample repository factory creates expected fixtures" {
     $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "sample-factory-test-$([guid]::NewGuid())"
@@ -3144,13 +3144,13 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
     Assert-Equal -Actual $listResult.ExitCode -Expected 0 -Message "Workflow dispatcher list mode should succeed."
     Assert-True -Condition ($listResult.Output -match '"Id":\s*"validate-pack"') -Message "Workflow dispatcher list output should include validate-pack."
 
-    $dryRunResult = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "validate-pack", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-ExpectedVersion","0.2.0"]')
+    $dryRunResult = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-WorkflowId", "validate-pack", "-DryRun", "-Json", "-WorkflowArgumentsJson", '["-ExpectedVersion","0.3.0"]')
     Assert-Equal -Actual $dryRunResult.ExitCode -Expected 0 -Message "Workflow dispatcher dry run should succeed."
     Assert-True -Condition ($dryRunResult.Output -match "scripts/validate-pack\.ps1") -Message "Workflow dispatcher dry run should resolve validate-pack script."
     Assert-True -Condition ($dryRunResult.Output -match "read-only") -Message "Workflow dispatcher dry run should include safety level."
     Assert-True -Condition ($dryRunResult.Output -match "ExpectedVersion") -Message "Workflow dispatcher dry run should preserve passthrough arguments."
 
-    $requestJson = @{ schemaVersion = 1; requestId = "pack-test"; workflowId = "validate-pack"; platform = "windows"; dryRun = $true; arguments = @("-ExpectedVersion", "0.2.0") } | ConvertTo-Json -Compress
+    $requestJson = @{ schemaVersion = 1; requestId = "pack-test"; workflowId = "validate-pack"; platform = "windows"; dryRun = $true; arguments = @("-ExpectedVersion", "0.3.0") } | ConvertTo-Json -Compress
     $envelopeResult = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-RequestJson", $requestJson)
     Assert-Equal -Actual $envelopeResult.ExitCode -Expected 0 -Message "PowerShell workflow request envelope should succeed."
     $envelope = $envelopeResult.Output | ConvertFrom-Json
@@ -3168,7 +3168,7 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
     Assert-True -Condition ($errorEnvelopeResult.Output -match '"requestId":\s*"pack-error"') -Message "PowerShell workflow failure should preserve the request id."
     Assert-True -Condition ($envelopeResult.Output -cmatch '"schemaVersion"' -and $envelopeResult.Output -cnotmatch '"SchemaVersion"') -Message "PowerShell envelope keys should match the lower-camel-case cross-platform wire format."
 
-    $executionRequestJson = @{ schemaVersion = 1; requestId = "pack-execution"; workflowId = "validate-pack"; platform = "windows"; dryRun = $false; arguments = @("-ExpectedVersion", "0.2.0") } | ConvertTo-Json -Compress
+    $executionRequestJson = @{ schemaVersion = 1; requestId = "pack-execution"; workflowId = "validate-pack"; platform = "windows"; dryRun = $false; arguments = @("-ExpectedVersion", "0.3.0") } | ConvertTo-Json -Compress
     $executionEnvelopeResult = Invoke-CommandCapture -FilePath $dispatcherPath -Arguments @("-RequestJson", $executionRequestJson)
     Assert-Equal -Actual $executionEnvelopeResult.ExitCode -Expected 0 -Message "PowerShell workflow envelope should preserve named arguments during execution."
     $executionEnvelope = $executionEnvelopeResult.Output | ConvertFrom-Json
@@ -3198,14 +3198,14 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
         Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Linux workflow dispatcher list mode should succeed."
         Assert-True -Condition ($linuxListText -match '"Id":\s*"validate-pack"|\"Id\":\"validate-pack\"') -Message "Linux workflow dispatcher list output should include validate-pack."
 
-        $linuxDryRunResult = & $testBash $linuxDispatcherPath --workflow-id validate-pack --dry-run --json --workflow-arguments-json '["--expected-version","0.2.0"]' 2>&1
+        $linuxDryRunResult = & $testBash $linuxDispatcherPath --workflow-id validate-pack --dry-run --json --workflow-arguments-json '["--expected-version","0.3.0"]' 2>&1
         $linuxDryRunText = $linuxDryRunResult | Out-String
         Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Linux workflow dispatcher dry run should succeed."
         Assert-True -Condition ($linuxDryRunText -match "scripts/validate-pack\.linux\.sh") -Message "Linux workflow dispatcher should resolve Linux validate-pack script."
         Assert-True -Condition ($linuxDryRunText -match "read-only") -Message "Linux workflow dispatcher dry run should include safety level."
         Assert-True -Condition ($linuxDryRunText -match "expected-version") -Message "Linux workflow dispatcher dry run should preserve passthrough arguments."
 
-        $linuxRequest = '{"schemaVersion":1,"requestId":"pack-bash","workflowId":"validate-pack","platform":"linux","dryRun":true,"arguments":["--expected-version","0.2.0"]}'
+        $linuxRequest = '{"schemaVersion":1,"requestId":"pack-bash","workflowId":"validate-pack","platform":"linux","dryRun":true,"arguments":["--expected-version","0.3.0"]}'
         $linuxEnvelopeResult = & $testBash $linuxDispatcherPath --request-json $linuxRequest 2>&1
         $linuxEnvelopeText = $linuxEnvelopeResult | Out-String
         Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Linux workflow request envelope should succeed."
