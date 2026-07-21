@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestones 1 through 20 are complete for their defined supported-surface, generated-fixture, and workflow-foundation scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 21 adds general-purpose capabilities and intent routing before Milestone 22 builds the unified product UI and multi-step experience over those contracts.
+The repository is in early implementation stage. Milestones 1 through 21 are complete for their defined supported-surface, generated-fixture, workflow-foundation, and general-capability scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 22 builds the unified product UI and multi-step experience over the completed contracts. Milestone 23 is a documentation-only future expansion for evidence-gated local music and audio generation.
 
 ## Stage Status
 
@@ -31,6 +31,7 @@ The repository is in early implementation stage. Milestones 1 through 20 are com
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Hardware-aware recommendations, local-only config generation, surface-neutral model lanes, workflow dispatch and envelopes, setup health, cleanup, release readiness, evidence views, cross-platform onboarding, and the stable UI-facing foundation are implemented. Future surface profiles remain separately evidence-gated. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, deterministic and optional bounded LLM routing, live-validated local text and ComfyUI image adapters, runtime provider discovery, typed artifacts, and engineering workflow route plans are implemented with cross-platform contracts. |
 | Milestone 22: Unified Product UI And Task Composition | Planned | Build the local-first unified UI over the stable Milestone 20 workflow foundation and Milestone 21 capability contracts, then add tested multi-step composition without bypassing evidence, privacy, or approval policy. |
+| Milestone 23: Local Music And Audio Generation | Planned | Evaluate local music providers and hardware profiles without shipping any adapter, installer, model configuration, or harness until the exact provider, license, operating system, accelerator, and operation pass the promotion gates. |
 
 ## Milestone 1: Minimum Usable Pack
 
@@ -665,3 +666,40 @@ Exit criteria:
 6. Add repository-free text and image flows only for providers promoted in Milestone 21 or through the native desktop provider gates above.
 7. Add cross-platform UI contract and packaging tests.
 8. Add bounded multi-step composition with explicit intermediate artifacts and approvals.
+
+## Milestone 23: Local Music And Audio Generation
+
+Goal: Let an end user create music or sound effects on their own computer through the provider-neutral capability and typed-artifact boundaries, without requiring an external server or exposing provider-specific installation and API complexity.
+
+Candidate scope:
+
+- Evaluate ACE-Step 1.5 as the first full-song candidate because it offers lyrics, vocals, instrumental generation, remixing, a localhost REST API, and documented Windows CUDA, Windows AMD ROCm, Windows Intel XPU, Apple Silicon MLX, Linux CUDA, and reduced CPU paths.
+- Evaluate Stable Audio 3.0 Small and Medium as licensing-conscious candidates for local sound effects, instrumental music, editing, continuation, and longer composition. Treat the Stability AI Community and Enterprise license thresholds as product policy inputs, not model-quality evidence.
+- Keep YuE as an advanced full-song research candidate only after the consumer-oriented profiles pass.
+- Exclude MusicGen from a promoted commercial product profile while its official model weights remain CC-BY-NC 4.0; documentation may retain it as a research comparison.
+- Define a provider-neutral `audio.music.create` capability and typed audio artifact only after at least one provider candidate passes its external evaluation. Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration.
+- Keep the music runtime loopback-only, start it on demand, stop it after an idle period, and disclose model downloads, disk use, generation time, output retention, reference-audio use, and any license or attribution requirements before execution.
+- Treat Windows NVIDIA CUDA, Windows Intel XPU, Windows AMD ROCm, Apple Silicon MLX, and Linux CUDA as independent evidence profiles. An upstream compatibility claim does not promote another operating system, accelerator, or discrete/integrated GPU class.
+- Require explicit consent and policy controls for uploaded reference audio, voice cloning, identifiable voices, lyrics, artist-style requests, and commercial-use expectations.
+
+Exit criteria:
+
+- At least one exact provider release, model, license, operating system, accelerator, and hardware tier passes an external install, health, generation, cancellation, recovery, cleanup, sanitization, and uninstall evaluation before any executable integration enters the pack.
+- Instrumental and vocal operations are reported separately; success in one does not imply the other is supported.
+- Validation checks requested and actual duration, sample rate, channel count, decodability, non-silent signal, clipping, bounded runtime, and output-path fidelity without requiring byte-identical audio across accelerators.
+- Promoted adapters produce typed WAV or FLAC artifacts plus sanitized metadata and do not persist prompts, lyrics, reference-audio paths, endpoints, or authentication values unless the user explicitly approves that artifact content.
+- Runtime probing confirms the intended accelerator and rejects silent CPU fallback unless the user deliberately selected a tested CPU profile.
+- Model and runtime downloads require prior size, source, checksum, license, and storage-location disclosure.
+- Failed candidates leave only a concise sanitized decision record; no scripts, adapters, harnesses, templates, workflows, configuration, or registry entries ship.
+- The unified UI exposes music creation only after a provider is promoted and preserves evidence, privacy, retention, approval, progress, cancellation, and cleanup states.
+
+### Recommended Implementation Order
+
+1. Record candidate versions, model cards, licenses, distribution terms, download sizes, supported operations, and claimed hardware backends without adding executable integration files.
+2. Evaluate ACE-Step 1.5 first on an available Linux CUDA machine to prove the REST, audio-artifact, privacy, cancellation, recovery, and cleanup boundaries; this evidence must not promote Windows or macOS.
+3. Evaluate Stable Audio 3.0 Small and Medium independently for sound effects, instrumental music, editing, duration, licensing, and consumer hardware fit.
+4. Run separate native profiles for Windows NVIDIA CUDA, Windows Intel XPU, Windows AMD ROCm, and Apple Silicon MLX as hardware becomes available; keep the physical Mac gate last to control cost.
+5. After one exact profile passes, define the provider-neutral capability, typed audio artifact, availability discovery, and dry-run-first adapter contracts.
+6. Add the promoted provider to the UI only after cross-platform offline fixtures, native live evidence, cleanup, packaging, and exact-SHA hosted checks pass.
+
+Official candidate references: [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5), [ACE-Step installation and hardware guide](https://github.com/ace-step/ACE-Step-1.5/blob/main/docs/en/INSTALL.md), [Stable Audio 3.0](https://stability.ai/news-updates/meet-stable-audio-3-the-model-family-built-for-artistic-experimentation-with-open-weight-models), [Stability AI licensing](https://stability.ai/license), [YuE](https://github.com/multimodal-art-projection/YuE), and [AudioCraft/MusicGen](https://github.com/facebookresearch/audiocraft).

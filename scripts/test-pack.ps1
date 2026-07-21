@@ -3811,6 +3811,17 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($roadmap -match "Intel GPU support must pass installation, XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter gates") -Message "Intel GPU candidate should retain independent pass-before-ship gates."
     Assert-True -Condition ($roadmap -match "shared Linux provider as an optional advanced deployment") -Message "Roadmap should not require an external server for consumer image generation."
     Assert-True -Condition ($todo -match "\[ \] Validate a pinned Windows Intel GPU/XPU image-provider profile") -Message "TODO should track live Intel GPU provider validation."
+    Assert-True -Condition ($roadmap -match "## Milestone 23: Local Music And Audio Generation") -Message "Roadmap should include local music and audio generation."
+    foreach ($candidate in @("ACE-Step 1.5", "Stable Audio 3.0", "YuE", "MusicGen")) {
+        Assert-True -Condition ($roadmap -match [regex]::Escape($candidate)) -Message "Music roadmap should retain candidate: $candidate"
+    }
+    foreach ($profile in @("Windows NVIDIA CUDA", "Windows Intel XPU", "Windows AMD ROCm", "Apple Silicon MLX", "Linux CUDA")) {
+        Assert-True -Condition ($roadmap -match [regex]::Escape($profile)) -Message "Music roadmap should retain independent profile: $profile"
+    }
+    Assert-True -Condition ($roadmap -match "Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration") -Message "Music candidates should remain documentation-only until promotion."
+    Assert-True -Condition ($roadmap -match "voice cloning" -and $roadmap -match "silent CPU fallback") -Message "Music roadmap should retain consent and accelerator-verification gates."
+    Assert-True -Condition ($todo -match "## Milestone 23: Local Music And Audio Generation") -Message "TODO should track music provider evaluation."
+    Assert-True -Condition ($todo -match "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries") -Message "TODO should preserve the failed-candidate exclusion rule."
 }
 Invoke-PackTest "sample scenario packs reference existing assets" {
     $scenarioPath = Join-Path $repoRoot "config/sample-scenario-packs.json"
