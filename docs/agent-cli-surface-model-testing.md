@@ -7,7 +7,6 @@ Use this workflow to screen CLI-capable coding agent surfaces with the same disp
 The shared harness supports:
 
 - Aider CLI
-- Roo Code CLI historical compatibility only
 - OpenCode CLI
 
 OpenHands is platform-style rather than a simple local CLI harness target, so it needs separate validation later.
@@ -16,7 +15,7 @@ OpenHands is platform-style rather than a simple local CLI harness target, so it
 
 These scripts are automation scaffolding. A dry run proves the harness wiring, not that a surface or model works.
 
-Roo Code is historical only: its upstream project is archived and the extension is shut down, so do not use its wrapper for new validation. OpenCode's documented `run`, provider/model, and local config contracts are reflected in the scaffold, and Devstral Small 2 24B has passed generated-sample read, write-smoke, and constrained scoped-edit checks. OpenCode still needs explicitly approved non-generated repository validation. Use command overrides for experiments, but do not promote wrappers to real-project approved-write readiness from disposable evidence alone.
+OpenCode's documented `run`, provider/model, and local config contracts are reflected in the scaffold, and Devstral Small 2 24B has passed generated-sample read, write-smoke, and constrained scoped-edit checks. OpenCode still needs explicitly approved non-generated repository validation. Use command overrides for experiments, but do not promote wrappers to real-project approved-write readiness from disposable evidence alone.
 
 A surface is not approved-write ready until it passes:
 
@@ -66,7 +65,6 @@ Use the `.macos.sh` wrapper on macOS.
 | Surface | Windows | Linux/macOS wrappers | Default command assumption |
 | --- | --- | --- | --- |
 | Aider CLI | `scripts/test-aider-cli-models.ps1` | `scripts/test-aider-cli-models.linux.sh`, `scripts/test-aider-cli-models.macos.sh` | `aider` |
-| Roo Code | Historical wrapper only | Historical wrapper only | Upstream retired; do not install or validate for new setups. |
 | OpenCode | `scripts/test-opencode-cli-models.ps1` | `scripts/test-opencode-cli-models.linux.sh`, `scripts/test-opencode-cli-models.macos.sh` | `opencode run --auto --model "ollama/{Model}" "{Prompt}"` for generated-sample validation only; generate `.opencode.local.json` with the unified adapter and use `OPENCODE_CONFIG`. |
 
 For any active surface whose CLI command or flags differ, pass command overrides rather than editing the harness.
@@ -132,4 +130,3 @@ The planned starter-toolkit web UI should call stable script entry points for ha
 ## Confirmed Command Boundaries
 
 - **OpenCode:** The official CLI documents `opencode run "{Prompt}"` for non-interactive use. Its model identifier is `provider_id/model_id`; a local Ollama setup needs a local-only `opencode.json` custom provider using the Ollama `/v1` endpoint. Do not commit that endpoint or any credentials.
-- **Roo Code:** The upstream project is archived and the extension is shut down. Do not add new integration, configuration, or live-validation work; retain historical metadata only.

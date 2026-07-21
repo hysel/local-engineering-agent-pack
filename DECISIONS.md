@@ -21,6 +21,19 @@ Consequences:
 Expected benefits, tradeoffs, and follow-up work.
 ```
 
+## 2026-07-21: Require Agent Software To Pass Before Repository Admission
+
+Status: Accepted
+
+Context:
+Candidate agent integrations can leave dormant scripts, harnesses, configuration, and maintenance obligations even when the tested software fails required safety or correctness gates.
+
+Decision:
+Evaluate any agent software only in an external or ignored disposable workspace. Admit agent-specific executable or operational assets to the repository only after the exact version and operating mode pass the complete promotion and cross-platform validation gates. When an evaluation fails, commit only a concise sanitized decision record and ship no scripts, harnesses, wrappers, configuration, detailed evidence, active catalog entries, or package assets for that software.
+
+Consequences:
+The shipped repository stays narrower and fully vetted. A failed or removed agent has no dormant implementation path; a future version requires a fresh evaluation. Architecture-only candidate documentation is allowed when needed to define a safe evaluation boundary, but it cannot expose runnable code or claim support.
+
 ## 2026-07-01: Use Continue YAML Configuration
 
 Status: Accepted

@@ -62,6 +62,7 @@ the first or most optimistic row.
 
 - Keep entries sanitized: no private endpoints, private paths, usernames, hostnames, customer names, or raw transcripts.
 - Link to committed evidence only.
+- Do not add failed agent candidates to this active catalog. Record only a concise sanitized decision in the removed-integrations documentation and keep detailed evaluation artifacts outside the shipped repository.
 - Do not mark a model or surface approved-write ready unless external file or git verification passed.
 - Use `not-recorded` instead of inventing a historical surface version.
 - Do not use `Cross-platform` for a model run that occurred on only one operating system.

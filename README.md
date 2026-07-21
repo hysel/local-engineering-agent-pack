@@ -45,6 +45,7 @@ It is designed for people who want AI support to follow consistent engineering s
 | Validate this pack across repository types | `docs/multi-repository-validation.md` |
 | Verify runtime model output | `docs/runtime-output-verification.md` |
 | Compare other open-source agent surfaces | `docs/agent-surface-options.md` |
+| Review the pass-to-ship policy for new agents | `docs/agent-integration-admission-policy.md` |
 | Compare install/configure/test by agent | `docs/agent-surface-solutions.md` |
 | Check non-Continue promotion gates | `docs/agent-surface-promotion-gates.md` |
 | Understand future surface-specific config bundles | `docs/surface-specific-config-bundles.md` |

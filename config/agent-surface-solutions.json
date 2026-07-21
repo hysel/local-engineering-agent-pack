@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "description": "Surface-neutral install, configure, test, and shared workflow solutions for supported, candidate, and historical agent surfaces. Status values are evidence-gated and do not promote blocked surfaces to supported.",
-  "supportTiers": ["supported", "candidate", "historical"],
+  "description": "Surface-neutral install, configure, test, and shared workflow solutions for supported and documentation-only candidate agent surfaces. Status values are evidence-gated and do not promote blocked surfaces to supported.",
+  "supportTiers": ["supported", "candidate"],
   "requiredActivities": [
     "install",
     "configure",
@@ -124,41 +124,6 @@
         "workflowIds": ["test-agent-cli-surface"],
         "evidence": ["docs/aider-cli-model-testing.md", "examples/aider-validation.md"],
         "blockedReason": ""
-      }
-    },
-    {
-      "id": "roo-code",
-      "name": "Roo Code",
-      "type": "editor-agent",
-      "supportTier": "historical",
-      "showInDefaultMenu": false,
-      "currentValidationLevel": "retired-upstream",
-      "configBundle": {
-        "status": "retired",
-        "strategy": "Do not generate Roo Code config bundles because the upstream project is archived and the extension is shut down.",
-        "outputKind": "none",
-        "evidence": ["docs/agent-cli-surface-model-testing.md", "docs/surface-specific-config-bundles.md"]
-      },
-      "install": {
-        "status": "retired",
-        "solution": "Do not add Roo Code installation automation for new users.",
-        "workflowIds": [],
-        "evidence": ["docs/agent-surface-options.md"],
-        "blockedReason": "Upstream project is archived and the extension is shut down."
-      },
-      "configure": {
-        "status": "retired",
-        "solution": "Do not generate new Roo Code configuration.",
-        "workflowIds": [],
-        "evidence": ["docs/agent-surface-options.md"],
-        "blockedReason": "Upstream project is archived and the extension is shut down."
-      },
-      "test": {
-        "status": "retired",
-        "solution": "Do not schedule new Roo Code validation; retain only historical references.",
-        "workflowIds": [],
-        "evidence": ["docs/agent-cli-surface-model-testing.md"],
-        "blockedReason": "Upstream project is archived and the extension is shut down."
       }
     },
     {

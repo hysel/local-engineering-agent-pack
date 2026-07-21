@@ -12,15 +12,6 @@
       "installHint": "Install with pipx install aider-chat or pass the command override."
     },
     {
-      "surfaceKey": "roo-code-cli",
-      "surfaceName": "Roo Code",
-      "agentCommand": "roo",
-      "agentArgumentsTemplate": "{Prompt}",
-      "writeAgentArgumentsTemplate": "",
-      "modelArgumentTemplate": "--model \"{Model}\"",
-      "installHint": "Retired upstream: do not install Roo Code for new setups. Retain this metadata only for explicit historical experiments with command/template overrides."
-    },
-    {
       "surfaceKey": "opencode-cli",
       "surfaceName": "OpenCode",
       "agentCommand": "opencode",

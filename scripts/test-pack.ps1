@@ -771,7 +771,7 @@ Invoke-PackTest "agent surface docs define portability boundary" {
     Assert-True -Condition ($doc -match "Read-only validated") -Message "Agent surface doc should define read-only validation."
     Assert-True -Condition ($doc -match "Plan validated") -Message "Agent surface doc should define plan validation."
     Assert-True -Condition ($doc -match "Approved-write ready") -Message "Agent surface doc should define approved-write readiness."
-    foreach ($surface in @("Continue", "Aider", "OpenCode", "OpenHands", "Roo Code")) {
+    foreach ($surface in @("Continue", "Aider", "OpenCode", "OpenHands")) {
         Assert-True -Condition ($doc -match [regex]::Escape($surface)) -Message "Agent surface doc should include $surface."
     }
     Assert-True -Condition ($doc -match "External verification commands") -Message "Agent surface doc should require external verification evidence."
@@ -794,7 +794,9 @@ Invoke-PackTest "failed agent integrations have no executable surface" {
         "scripts/test-cline-cli-models.ps1",
         "scripts/test-cline-cli-models.shared.sh",
         "scripts/test-kilo-code-cli-models.ps1",
-        "scripts/test-kilo-code-cli-models.shared.sh"
+        "scripts/test-kilo-code-cli-models.shared.sh",
+        "scripts/test-roo-code-cli-models.ps1",
+        "scripts/test-roo-code-cli-models.shared.sh"
     )
     foreach ($path in $removedPaths) {
         Assert-True -Condition (-not (Test-Path -LiteralPath (Join-Path $repoRoot $path))) -Message "Removed integration asset should stay absent: $path"
@@ -805,10 +807,13 @@ Invoke-PackTest "failed agent integrations have no executable surface" {
     $adapter = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/setup-agent-surface.ps1") -Raw
     $sharedAdapter = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/setup-agent-surface.shared.sh") -Raw
     foreach ($activeContract in @($solutions, $capabilities, $defaults, $adapter, $sharedAdapter)) {
-        Assert-True -Condition ($activeContract -notmatch '(?i)cline|kilo') -Message "Active surface contracts should not retain removed integration code."
+        Assert-True -Condition ($activeContract -notmatch '(?i)\bcline\b|\bkilo(?: code)?\b|\broo(?: code|-code)?\b') -Message "Active surface contracts should not retain failed or retired integration code."
     }
     $surfaceDoc = Get-Content -LiteralPath (Join-Path $repoRoot "docs/agent-surface-options.md") -Raw
-    Assert-True -Condition ($surfaceDoc -match "Removed Integrations" -and $surfaceDoc -match "fresh integration proposal") -Message "Surface docs should explain the narrow removal policy."
+    Assert-True -Condition ($surfaceDoc -match "Removed Integrations" -and $surfaceDoc -match "fresh external evaluation") -Message "Surface docs should explain the narrow removal policy."
+    $admissionPolicy = Get-Content -LiteralPath (Join-Path $repoRoot "docs/agent-integration-admission-policy.md") -Raw
+    Assert-True -Condition ($admissionPolicy -match "Pass-To-Ship Gate" -and $admissionPolicy -match "Do not commit the evaluation harness") -Message "Admission policy should require passing before agent assets enter the repository."
+    Assert-True -Condition ($admissionPolicy -match "If an evaluation fails, commit only a concise sanitized decision record") -Message "Admission policy should make failed evaluations documentation-only."
 }
 Invoke-PackTest "agent CLI surface testing docs define shared automation workflow" {
     $docPath = Join-Path $repoRoot "docs/agent-cli-surface-model-testing.md"
@@ -846,7 +851,7 @@ Invoke-PackTest "agent CLI surface testing docs define shared automation workflo
     $todo = Get-Content -LiteralPath $todoPath -Raw
 
     Assert-True -Condition ($doc -match "Agent CLI Surface Model Testing") -Message "Shared CLI testing doc should have a clear title."
-    foreach ($surface in @("Aider", "Roo Code", "OpenCode")) {
+    foreach ($surface in @("Aider", "OpenCode")) {
         Assert-True -Condition ($doc -match [regex]::Escape($surface)) -Message "Shared CLI testing doc should mention $surface."
         Assert-True -Condition ($catalog -match [regex]::Escape($surface)) -Message "Evidence catalog should mention $surface."
         Assert-True -Condition ($surfaceDoc -match [regex]::Escape($surface)) -Message "Agent surface docs should mention $surface."
@@ -874,13 +879,12 @@ Invoke-PackTest "agent CLI surface testing docs define shared automation workflo
     Assert-True -Condition ($readme -match "docs/agent-cli-surface-model-testing.md") -Message "README should link shared agent CLI model testing doc."
     Assert-True -Condition ($readme -match "docs/agent-surface-promotion-gates.md") -Message "README should link agent surface promotion gates."
     Assert-True -Condition ($surfaceDoc -match "docs/agent-surface-promotion-gates.md") -Message "Agent surface options should link promotion gates."
-    foreach ($surface in @("Aider", "Roo Code", "OpenCode", "OpenHands")) {
+    foreach ($surface in @("Aider", "OpenCode", "OpenHands")) {
         Assert-True -Condition ($promotionGates -match [regex]::Escape($surface)) -Message "Promotion gates should cover $surface."
     }
     Assert-True -Condition ($promotionGates -match "Milestone 17 Supported-Surface Completion Basis") -Message "Promotion gates should record supported-surface Milestone 17 completion basis."
     Assert-True -Condition ($promotionGates -match "Approved-write ready") -Message "Promotion gates should define approved-write readiness."
     Assert-True -Condition ($promotionGates -match "real-project approved-write") -Message "Promotion gates should block real-project promotion from generated evidence alone."
-    Assert-True -Condition ($promotionGates -match "Roo Code is historical") -Message "Promotion gates should keep Roo Code retired upstream."
     $openHandsBoundary = Get-Content -Raw (Join-Path $repoRoot "docs/openhands-validation-boundary.md")
     Assert-True -Condition ($openHandsBoundary -match "OpenHands Validation Boundary") -Message "OpenHands boundary doc should have a clear title."
     Assert-True -Condition ($openHandsBoundary -match "disposable generated repository") -Message "OpenHands boundary should require a generated sample."
@@ -893,17 +897,15 @@ Invoke-PackTest "agent CLI surface testing docs define shared automation workflo
     Assert-True -Condition ($roadmap -match "\| Milestone 17: Agent Surface Compatibility Validation \| Complete \|") -Message "Roadmap should mark Milestone 17 complete for the supported-surface scope."
     Assert-True -Condition ($todo -match "\[x\] Complete Milestone 17 for the promoted supported-surface set") -Message "TODO should record supported-surface Milestone 17 completion."
     Assert-True -Condition ($todo -match "Future Agent Surface Evidence Expansion") -Message "TODO should track future agent surface evidence expansion."
-    Assert-True -Condition ($todo -match "\[x\] Retire Roo Code from future validation") -Message "TODO should keep Roo Code retired upstream."
     Assert-True -Condition ($todo -match "\[x\] Add a local-only OpenCode Ollama config generator") -Message "TODO should record the scaffolded OpenCode config generator."
     Assert-True -Condition ($todo -match "\[x\] Validate OpenCode's installed CLI") -Message "TODO should record generated-sample OpenCode CLI validation."
     Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot "docs/opencode-cli-model-testing.md")) -Message "OpenCode setup and validation documentation should exist."
     Assert-True -Condition ($doc -match "Confirmed Command Boundaries") -Message "Shared CLI doc should record verified command boundaries."
     Assert-True -Condition ($doc -match "opencode run") -Message "Shared CLI doc should record the OpenCode non-interactive command."
-    Assert-True -Condition ($doc -match "upstream project is archived") -Message "Shared CLI doc should keep Roo Code retired upstream."
     Assert-True -Condition ($todo -match "\[x\] Define a safe OpenHands validation boundary before adding platform-agent validation automation") -Message "TODO should mark the OpenHands validation boundary complete."
 
-    $wrapperBases = @("aider", "roo-code", "opencode")
-    $expectedSurfaceKeys = @("aider-cli", "roo-code-cli", "opencode-cli")
+    $wrapperBases = @("aider", "opencode")
+    $expectedSurfaceKeys = @("aider-cli", "opencode-cli")
     foreach ($key in $expectedSurfaceKeys) {
         $default = @($surfaceDefaults.surfaces | Where-Object { $_.surfaceKey -eq $key })
         Assert-True -Condition ($default.Count -eq 1) -Message "Agent CLI defaults catalog should define $key exactly once."
@@ -922,6 +924,18 @@ Invoke-PackTest "agent CLI surface testing docs define shared automation workflo
         Assert-True -Condition ($wrapperPs -match "SurfaceKey" -and $wrapperPs -notmatch "InstallHint") -Message "$base PowerShell wrapper should rely on shared surface defaults."
         Assert-True -Condition ($wrapperSh -match "test-agent-cli-surface-models.shared.sh") -Message "$base Bash wrapper should delegate to the shared harness."
         Assert-True -Condition ($wrapperSh -match "--surface-key" -and $wrapperSh -notmatch "--install-hint" -and $wrapperSh -notmatch "--agent-command") -Message "$base Bash wrapper should rely on shared surface defaults."
+    }
+
+    $solutions = Get-Content -LiteralPath (Join-Path $repoRoot "config/agent-surface-solutions.json") -Raw | ConvertFrom-Json
+    $supportedIds = @($solutions.surfaces | Where-Object supportTier -eq "supported" | ForEach-Object id)
+    foreach ($default in $surfaceDefaults.surfaces) {
+        $surfaceId = $default.surfaceKey -replace '-cli$', ''
+        Assert-True -Condition ($supportedIds -contains $surfaceId) -Message "CLI defaults may ship only for supported surfaces: $surfaceId"
+    }
+    foreach ($wrapper in Get-ChildItem -LiteralPath (Join-Path $repoRoot "scripts") -Filter "test-*-cli-models.ps1") {
+        if ($wrapper.Name -match '^test-(.+)-cli-models\.ps1$') {
+            Assert-True -Condition ($supportedIds -contains $Matches[1]) -Message "Agent-specific wrappers may ship only for supported surfaces: $($wrapper.Name)"
+        }
     }
 }
 Invoke-PackTest "Continue CLI model testing docs define automation workflow" {
@@ -3061,7 +3075,7 @@ Invoke-PackTest "workflow registry defines stable UI entry points" {
     Assert-True -Condition ($consolidation -match "scripts/invoke-workflow\.\*\.sh") -Message "Script consolidation plan should reference cross-platform workflow dispatchers."
     Assert-True -Condition ($consolidation -match "Do Not Consolidate Yet") -Message "Script consolidation plan should define no-consolidate-yet cases."
     Assert-True -Condition ($consolidation -match "test-agent-cli-surface-models") -Message "Script consolidation plan should cover shared agent CLI testing."
-    Assert-True -Condition ($consolidation -match "Roo Code" -and $consolidation -match "Aider" -and $consolidation -match "OpenCode") -Message "Script consolidation plan should cover maintained and historical agent wrappers."
+    Assert-True -Condition ($consolidation -match "Aider" -and $consolidation -match "OpenCode") -Message "Script consolidation plan should cover maintained agent wrappers."
     Assert-True -Condition ($consolidation -match "scripts/test-pack\.ps1") -Message "Script consolidation plan should require pack tests."
     Assert-True -Condition ($roadmap -match "workflow registry") -Message "Roadmap should track workflow registry work."
     Assert-True -Condition ($roadmap -match "PowerShell/Linux/macOS dispatchers are done") -Message "Roadmap should track cross-platform dispatcher work."
@@ -3181,10 +3195,11 @@ Invoke-PackTest "agent surface capability matrix preserves parity" {
 
     Assert-Equal -Actual $matrix.schemaVersion -Expected 1 -Message "Agent surface capability schema version changed."
     Assert-True -Condition ($matrix.activities.Count -ge 8) -Message "Capability matrix should track core activities."
-    Assert-True -Condition ($matrix.surfaces.Count -ge 5) -Message "Capability matrix should track maintained, candidate, and historical agent surfaces."
+    Assert-True -Condition ($matrix.surfaces.Count -ge 4) -Message "Capability matrix should track maintained and documentation-only candidate agent surfaces."
     Assert-True -Condition (@($matrix.supportTiers) -notcontains "quarantined") -Message "Capability matrix should not retain a quarantine tier after failed integrations are removed."
+    Assert-True -Condition (@($matrix.supportTiers) -notcontains "historical") -Message "Capability matrix should not retain retired integrations as active metadata."
 
-    foreach ($requiredSurface in @("continue", "aider", "roo-code", "opencode", "openhands")) {
+    foreach ($requiredSurface in @("continue", "aider", "opencode", "openhands")) {
         Assert-True -Condition (@($matrix.surfaces | Where-Object { $_.id -eq $requiredSurface }).Count -eq 1) -Message "Capability matrix should include $requiredSurface."
     }
 
@@ -3354,6 +3369,7 @@ Invoke-PackTest "agent surface solutions define install configure and test" {
     Assert-True -Condition (@($solutions.requiredActivities) -contains "configure") -Message "Solution catalog should require configure."
     Assert-True -Condition (@($solutions.requiredActivities) -contains "test") -Message "Solution catalog should require test."
     Assert-True -Condition (@($solutions.supportTiers) -notcontains "quarantined") -Message "Solution catalog should not retain a quarantine tier after failed integrations are removed."
+    Assert-True -Condition (@($solutions.supportTiers) -notcontains "historical") -Message "Solution catalog should not retain retired integrations as active metadata."
     Assert-True -Condition ($null -ne $solutions.configBundlePolicy) -Message "Solution catalog should define config bundle policy."
     Assert-Equal -Actual $solutions.configBundlePolicy.defaultSurface -Expected "continue" -Message "Continue should remain the default generated bundle surface."
     Assert-True -Condition ($solutions.configBundlePolicy.decision -match "only after compatibility evidence") -Message "Config bundle policy should be evidence-gated."
@@ -3706,7 +3722,7 @@ Invoke-PackTest "evidence dashboard summarizes catalog and surface status" {
 
         Assert-Equal -Actual $report.SchemaVersion -Expected 2 -Message "Evidence dashboard should emit capability contract v2."
         Assert-True -Condition ($report.EvidenceCount -ge 20) -Message "Evidence dashboard should include catalog rows."
-        Assert-True -Condition ($report.SurfaceCount -ge 5) -Message "Evidence dashboard should include maintained, candidate, and historical surfaces."
+        Assert-True -Condition ($report.SurfaceCount -ge 4) -Message "Evidence dashboard should include maintained and documentation-only candidate surfaces."
         Assert-True -Condition ($report.ModelCount -ge 3) -Message "Evidence dashboard should include validated models."
         Assert-True -Condition (@($report.StatusCounts | Where-Object { $_.Status -eq "approved-write-ready" }).Count -eq 1) -Message "Evidence dashboard should include approved-write-ready counts."
         Assert-True -Condition (@($report.StatusCounts | Where-Object { $_.Status -eq "validated-by-tests" }).Count -eq 1) -Message "Evidence dashboard should include validated-by-tests counts."
@@ -3714,7 +3730,7 @@ Invoke-PackTest "evidence dashboard summarizes catalog and surface status" {
         Assert-True -Condition (@($report.ValidationModeCounts | Where-Object { $_.ValidationMode -eq "editor-agent" }).Count -eq 1) -Message "Evidence dashboard should summarize validation modes."
         Assert-True -Condition (@($report.SurfaceReadiness | Where-Object { $_.Id -eq "continue" -and $_.SupportedActivities -ge 5 }).Count -eq 1) -Message "Evidence dashboard should summarize Continue readiness."
         Assert-Equal -Actual $report.SourceSurfaceSolutions -Expected "config/agent-surface-solutions.json" -Message "Evidence dashboard should identify the surface solution catalog."
-        Assert-True -Condition ($report.SurfaceSolutionCount -ge 5) -Message "Evidence dashboard should include active surface solution statuses."
+        Assert-True -Condition ($report.SurfaceSolutionCount -ge 4) -Message "Evidence dashboard should include active surface solution statuses."
         Assert-True -Condition (@($report.SurfaceSolutionReadiness | Where-Object { $_.Id -eq "continue" -and $_.InstallStatus -eq "supported" -and $_.ConfigureStatus -eq "supported" -and $_.TestStatus -eq "validated" }).Count -eq 1) -Message "Evidence dashboard should summarize Continue install/configure/test status."
         Assert-True -Condition (@($report.SurfaceSolutionReadiness | Where-Object { $_.Id -eq "openhands" -and $_.InstallStatus -eq "blocked" -and $_.ConfigureStatus -eq "blocked" }).Count -eq 1) -Message "Evidence dashboard should preserve blocked surface status."
         Assert-True -Condition ($markdown -match "Evidence Dashboard") -Message "Markdown dashboard should include title."
@@ -3814,7 +3830,7 @@ Invoke-PackTest "agent pack menu groups workflows by user intent" {
         Assert-Equal -Actual $report.SurfaceCount -Expected 3 -Message "Agent pack menu should include only promoted supported surfaces."
         Assert-Equal -Actual $report.SourceSolutionCatalog -Expected "config/agent-surface-solutions.json" -Message "Agent pack menu should identify the solution catalog."
         Assert-True -Condition (@($report.AgentSurfaces | Where-Object { $_.Id -eq "continue" -and $_.InstallStatus -eq "supported" -and $_.ConfigureStatus -eq "supported" -and $_.TestStatus -eq "validated" -and $_.InstallSolution }).Count -eq 1) -Message "Agent pack menu should use solution catalog status for Continue."
-        foreach ($hiddenSurface in @("roo-code", "openhands")) {
+        foreach ($hiddenSurface in @("openhands")) {
             Assert-Equal -Actual @($report.AgentSurfaces | Where-Object { $_.Id -eq $hiddenSurface }).Count -Expected 0 -Message "$hiddenSurface should be excluded from the default agent menu."
         }
         Assert-True -Condition (@($report.AgentSurfaces | Where-Object { $_.Id -eq "opencode" -and $_.InstallStatus -eq "supported" -and $_.ConfigureStatus -eq "supported" -and $_.TestStatus -eq "validated" }).Count -eq 1) -Message "Agent pack menu should include supported OpenCode status."
