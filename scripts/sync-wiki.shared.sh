@@ -6,10 +6,24 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 WIKI_PATH="${REPO_ROOT}.wiki"
 CHECK=0
 
+print_usage() {
+  cat <<'EOF'
+Usage: sync-wiki.shared.sh [--wiki-path PATH] [--check]
+
+Synchronize mapped repository documentation to the separate GitHub wiki clone.
+
+Options:
+  --wiki-path PATH  Wiki clone path; defaults to the sibling repository.
+  --check           Report drift without modifying the wiki.
+  -h, --help        Show this help text.
+EOF
+}
+
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --wiki-path) WIKI_PATH="$2"; shift 2 ;;
     --check) CHECK=1; shift ;;
+    -h|--help) print_usage; exit 0 ;;
     *) printf 'Unknown argument: %s\n' "$1" >&2; exit 2 ;;
   esac
 done
