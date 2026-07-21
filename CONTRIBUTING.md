@@ -12,6 +12,7 @@ This repository is primarily documentation, Continue configuration, rules, promp
 - Keep examples realistic but sanitized.
 - Update documentation when behavior, setup, or workflow expectations change.
 - Treat AI output as review assistance, not as an authority.
+- Evaluate new agent software outside the tracked repository and admit agent-specific assets only after every promotion gate passes.
 
 ## Before Changing Files
 
@@ -68,6 +69,13 @@ For Continue-specific changes, also inspect:
 - Keep DECISIONS focused on durable decisions and tradeoffs.
 - Keep CHANGELOG updated for user-visible changes.
 
+### Agent Integrations
+
+- Follow `docs/agent-integration-admission-policy.md` before testing or proposing another agent surface.
+- Keep candidate harnesses, wrappers, configuration, logs, fixtures, and transcripts untracked and disposable.
+- If any required gate fails, commit only a concise sanitized decision record; do not commit or retain partial integration artifacts.
+- Add scripts, workflows, active catalog entries, examples, or package assets only after the exact agent version passes the full pass-to-ship gate.
+
 ## Validation
 
 Run the validation script before release-oriented changes:
@@ -97,5 +105,6 @@ required hosted jobs report success. See `docs/hosted-ci-verification.md`.
 - [ ] New examples are sanitized.
 - [ ] No secrets, private endpoints, or machine-specific paths are committed.
 - [ ] `.continue/config.yaml` remains portable.
+- [ ] New agent-specific assets have complete pass-to-ship evidence, or the change contains documentation only for a failed evaluation.
 - [ ] `CHANGELOG.md` records user-visible changes.
 - [ ] Validation has been run or skipped with a clear reason.

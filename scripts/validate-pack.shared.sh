@@ -176,6 +176,7 @@ REQUIRED_FILES=(
   "docs/runtime-output-verification.md"
   "docs/agent-surface-options.md"
   "docs/agent-surface-promotion-gates.md"
+  "docs/agent-integration-admission-policy.md"
   "docs/agent-surface-capability-parity.md"
   "docs/continue-cli-model-testing.md"
   "docs/language-support.md"

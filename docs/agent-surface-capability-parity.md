@@ -29,7 +29,7 @@ Every agent surface should be tracked against the same activities:
 
 ## Current Shape
 
-Continue remains the supported first editor path. Aider and OpenCode are supported non-Continue adapters within their generated-sample evidence limits. Failed integrations are absent from the active capability catalog; OpenHands remains a candidate with a defined but unimplemented isolation boundary. Roo Code is historical only because its upstream project is retired.
+Continue remains the supported first editor path. Aider and OpenCode are supported non-Continue adapters within their generated-sample evidence limits. Failed and retired integrations are absent from the active capability catalog; OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary.
 
 Shared workflows such as health checks, cleanup, model selection, release readiness, and evidence verification apply across surfaces because they operate on the local repository, local model server, generated outputs, or shared validation artifacts rather than a surface-specific configuration format.
 

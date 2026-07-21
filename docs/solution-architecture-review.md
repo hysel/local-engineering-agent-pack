@@ -1,6 +1,6 @@
 # Solution Architecture Review
 
-This review checks whether each milestone has a complete solution set: user entry point, configuration or workflow path, validation evidence, safety boundary, and remaining enhancement path. Supported-surface completion requires comparable install, configure, and test coverage; candidate and historical surfaces remain visible without being represented as supported, while failed integrations are removed.
+This review checks whether each milestone has a complete solution set: user entry point, configuration or workflow path, validation evidence, safety boundary, and remaining enhancement path. Supported-surface completion requires comparable install, configure, and test coverage; documentation-only candidates remain visible without being represented as supported, while failed and retired integrations are removed.
 
 ## Review Standard
 
@@ -18,7 +18,7 @@ This audit applies the stricter completion standard from the maintainer discussi
 
 - A milestone is not complete just because documentation, scaffolding, or a candidate path exists.
 - When a milestone covers agent surfaces, every promoted supported surface must have comparable `Install`, `Configure`, and `Test` coverage before the milestone can be marked fully complete.
-- Candidate and historical surfaces must expose their exact status and blocker but do not count as supported-surface parity; failed integrations must not retain executable paths.
+- Documentation-only candidates must expose their exact status and blocker but do not count as supported-surface parity; failed and retired integrations must not retain executable paths.
 - Generated sample repositories can satisfy validation coverage when real repositories are not available, but real-repository runs remain future evidence expansion unless the milestone explicitly requires them.
 - Hosted GitHub Actions status must be checked after pushed commits before treating the work as closed.
 
@@ -39,10 +39,10 @@ This audit applies the stricter completion standard from the maintainer discussi
 | 11: Editor Surface Compatibility | Complete | Complete | VS Code-compatible and VSCodium validation, duplicate-rule handling, and CLI fallback are documented. |
 | 12: Model Tool-Use Validation Evidence | Complete | Complete | Model lanes, preflight tooling, evidence templates, approved-write boundaries, and installer support are covered. |
 | 13: Broader Multi-Repository Validation | Complete | Complete with future expansion | Real legacy .NET plus generated category evidence satisfy completion; more real repos remain future evidence expansion. |
-| 14: Agent Surface Portability And Broader Audience | Complete | Complete for positioning and support-tier governance | Surface matrix, promotion gates, setup paths, config-bundle policy, and non-Continue evidence are documented; candidate and historical surfaces cannot be mistaken for supported options, and failed integrations are removed. |
+| 14: Agent Surface Portability And Broader Audience | Complete | Complete for positioning and support-tier governance | Surface matrix, promotion gates, setup paths, config-bundle policy, and non-Continue evidence are documented; documentation-only candidates cannot be mistaken for supported options, and failed or retired integrations are removed. |
 | 15: Multi-Language Engineering Support | Complete | Complete with staged maturity | Python and TypeScript workflow evidence is complete for current scope; broader ecosystem promotion remains evidence-gated. |
 | 16: Sample Repository Factory | Complete | Complete | Cross-platform sample generation, fixture coverage, runtime context, and sanitized evidence are covered. |
-| 17: Agent Surface Compatibility Validation | Complete | Complete for the promoted supported-surface set | Continue, Aider, and OpenCode have explicit evidence-backed validation positions. Failed integrations were removed, OpenHands is a candidate with a defined isolation boundary, and Roo Code is historical. |
+| 17: Agent Surface Compatibility Validation | Complete | Complete for the promoted supported-surface set | Continue, Aider, and OpenCode have explicit evidence-backed validation positions. Failed and retired integrations were removed. OpenHands is a candidate with a defined isolation boundary and remains documentation-only. |
 | 18: Language Rule Packs | Complete | Complete for the generated-fixture scope | Optional rule packs, project activation, cross-platform matrix evidence, and language-aware selection are complete; real-project/editor expansion remains separately evidence-gated. |
 | 19: Installer Profiles, Evidence Catalog, And Release Packaging | Complete | Complete for the promoted supported-surface set | Capability Evidence Contract v2, Continue profiles, supported Aider and OpenCode install/configure/health/test paths, and packaging are complete. Candidate surfaces are excluded from supported parity. |
 | 20: Hardware-Aware Model And Config Automation | In Progress | Partial | Recommendation, lane-specific scoring, curated model-fit metadata, dashboard, menu, dispatcher, versioned workflow envelope, health, cleanup, release readiness, the first non-Continue adapter, and the unified UI design exist; runtime-measured fit metadata, deeper consolidation, and UI implementation remain future work. |

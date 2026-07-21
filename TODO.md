@@ -251,7 +251,7 @@
 ## Milestone 14: Agent Surface Portability And Broader Audience
 
 - [x] Reposition the project name and top-level purpose beyond Continue-only and enterprise-only language.
-- [x] Add an agent-surface compatibility matrix for maintained, candidate, and historical open-source options.
+- [x] Add an agent-surface compatibility matrix for maintained and documentation-only candidate open-source options.
 - [x] Define validation levels for each agent surface: read-only, plan validated, approved-write ready.
 - [x] Evaluate at least one non-Continue open-source agent surface with sanitized evidence.
 - [x] Decide whether install scripts should generate surface-specific config bundles instead of only `.continue` assets.
@@ -293,12 +293,12 @@
 - [x] Validate Aider against a generated sample repository in plan or patch mode.
 - [x] Add Continue CLI automation scripts for future read-only and disposable write-smoke model screening.
 - [x] Keep real-project approved-write status blocked until generated-sample scoped edit validation passes; continue blocking real-project approval until explicitly approved non-generated repository validation passes.
-- [x] Complete Milestone 17 for the promoted supported-surface set: Continue, Aider, and OpenCode have explicit validation positions; candidate and historical surfaces do not count as supported parity.
+- [x] Complete Milestone 17 for the promoted supported-surface set: Continue, Aider, and OpenCode have explicit validation positions; documentation-only candidates do not count as supported parity.
 - [x] Promote Aider as the first end-to-end non-Continue adapter by completing install, local-model configuration, health, and test automation with sanitized deterministic coverage; keep real-project approved write blocked.
 
 ## Future Agent Surface Evidence Expansion
 
-- [x] Retire Roo Code from future validation and configuration work after its upstream project was archived and the extension was shut down; retain historical references only.
+- [x] Remove Roo Code wrappers and active metadata after upstream retirement; retain only a concise decision record under the agent admission policy.
 - [x] Add a local-only OpenCode Ollama config generator and documented npm install plan to the unified setup adapter.
 - [x] Validate OpenCode's installed CLI and `opencode run` wrapper against a generated sample with read-only and disposable write-smoke checks.
 - [x] Add an opt-in generated Python scoped-edit gate to the shared CLI harness; record live evidence separately before any surface promotion.
@@ -336,6 +336,7 @@
 - [x] Complete Milestone 19 install/configure/health parity for evidence-backed CLI adapters: Aider and OpenCode share dry-run-safe setup, local-only config, repository-local exclusion, health checks, and deterministic cross-platform contract tests. OpenHands remains separately evidence-blocked.
 - [x] Add Aider install/configure automation with an explicit local-only config and supported isolated install methods.
 - [x] Remove failed Cline and Kilo integrations from scripts, adapters, active catalogs, detailed evidence, and restoration backlog; require a fresh proposal and complete promotion-gate validation before either can return.
+- [x] Adopt a repository-wide agent admission policy: evaluate candidates outside the tracked pack, ship assets only after all gates pass, and document failed evaluations without retaining implementation artifacts.
 - [x] Keep OpenHands outside supported install/configure/test parity under the defined rootless workspace, sandbox, credential, mount, and deny-by-default network boundary until an implementation is explicitly approved and validated.
 
 ## Milestone 20: Hardware-Aware Model And Config Automation

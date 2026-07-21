@@ -1,5 +1,7 @@
 # Agent Surface Promotion Gates
 
+All new agent evaluations also follow `docs/agent-integration-admission-policy.md`. Evaluation happens in an external or ignored disposable workspace. No agent-specific implementation artifact enters the repository until the exact tested version passes every required gate.
+
 This document defines what a non-Continue agent surface must prove before the pack can promote install, configure, test, or approved-write support.
 
 Continue remains the supported first path. Other surfaces can move forward only with sanitized evidence recorded in `config/evidence-catalog.tsv`, `config/agent-surface-solutions.json`, and a surface-specific evidence document.
@@ -8,7 +10,7 @@ Continue remains the supported first path. Other surfaces can move forward only 
 
 Milestone 17 is complete for the promoted support set because Continue, Aider, and OpenCode have explicit evidence-backed validation positions, at least one non-Continue surface has passed read-only, write-smoke, and scoped-edit gates, and real-project approved-write remains blocked until explicit non-generated repository validation passes.
 
-Candidate and historical surfaces do not count toward supported-surface parity. OpenHands remains a candidate with a defined isolation boundary, and Roo Code is historical. Cline and Kilo Code were removed after failing required gates; neither has scripts, adapters, or active catalog entries in the pack. A future proposal for either must begin as a new integration and pass every shared gate. OpenCode's generated-sample evidence is recorded separately and still requires non-generated-repository validation.
+Documentation-only candidates do not count toward supported-surface parity. OpenHands remains a candidate with a defined isolation boundary. Failed and retired software has no scripts, adapters, wrappers, or active catalog entries in the pack. A future proposal must begin as a new external evaluation and pass every shared gate. OpenCode's generated-sample evidence is recorded separately and still requires non-generated-repository validation.
 
 ## Shared Gates
 
@@ -28,13 +30,14 @@ Candidate and historical surfaces do not count toward supported-surface parity. 
 | Surface | Current position | Next gate |
 | --- | --- | --- |
 | Aider | CLI read-only, disposable write-smoke, and richer generated-sample scoped edits exist. | Explicitly approved non-generated repository validation before real-project approved-write claims. |
-| Roo Code | Upstream retired. | Do not promote or add new validation; evaluate a maintained successor separately. |
 | OpenCode | Installed CLI plus generated-sample read/write-smoke and constrained scoped-edit evidence exists for Devstral Small 2 24B. | Run explicitly approved non-generated repository validation. |
 | OpenHands | Platform-agent candidate is blocked for install/config generation. | Use the isolated generated-sample boundary in `docs/openhands-validation-boundary.md` before any validation automation. |
 
 ## Removed Integration Re-entry Gate
 
 A removed integration has no retained executable path or active catalog entry. Re-entry requires a fresh proposal, new implementation, and successful read-only, write-smoke, scoped-edit, cleanup, and OS-specific validation with external verification before any supported status is added.
+
+If any required gate fails, stop the integration attempt, delete the disposable artifacts, and record only a concise sanitized failure decision. Do not retain scripts, harnesses, wrappers, configuration, examples, detailed evidence, workflows, or active catalog entries for the failed software.
 
 ## Promotion Rules
 
@@ -45,6 +48,7 @@ Aider and OpenCode have passed the install-supported and configure-supported gat
 - Do not promote real-project approved-write support from generated-sample evidence alone.
 - Do not reuse Continue config-generation status for another surface.
 - Keep private endpoints, usernames, local paths, tokens, private repositories, and raw transcripts out of committed evidence.
+- Do not use the committed repository as the candidate test harness; productionize artifacts only after the external evaluation passes.
 
 - For OpenHands, follow `docs/openhands-validation-boundary.md`; generated-sample validation must remain isolated from host credentials, unrelated directories, privileged containers, and unrestricted network access.
 

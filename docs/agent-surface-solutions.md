@@ -8,7 +8,7 @@ It answers the same three questions for every surface:
 - How do I configure it?
 - How do I test it?
 
-The catalog does not make candidate, historical, or blocked surfaces look ready. It records the support tier, default-menu visibility, current solution, status, evidence, and blocked reason for each tracked agent.
+The catalog does not make documentation-only candidate or blocked surfaces look ready. It records the support tier, default-menu visibility, current solution, status, evidence, and blocked reason for each tracked agent.
 
 It also records the config-bundle policy. Continue, Aider, and OpenCode have supported generated local config paths; future surface-specific bundles are gated by `docs/surface-specific-config-bundles.md`. Platform-agent validation must also follow `docs/openhands-validation-boundary.md`.
 
@@ -18,7 +18,6 @@ It also records the config-bundle policy. Continue, Aider, and OpenCode have sup
 | --- | --- | --- | --- |
 | Continue | supported | supported | validated |
 | Aider | supported | supported | validated |
-| Roo Code | retired | retired | retired |
 | OpenCode | supported | supported | validated |
 | OpenHands | blocked | blocked | blocked |
 
@@ -31,7 +30,7 @@ It also records the config-bundle policy. Continue, Aider, and OpenCode have sup
 - Shared workflows can support many surfaces only when they do not assume a surface-specific configuration format.
 - Surface-specific config bundles must follow `docs/surface-specific-config-bundles.md`.
 - Planned and blocked surfaces must not be promoted by docs, menus, dashboards, or recommendation output.
-- Candidate and historical surfaces remain excluded from the default setup menu.
+- Documentation-only candidate surfaces remain excluded from the default setup menu.
 
 ## How To Use It
 

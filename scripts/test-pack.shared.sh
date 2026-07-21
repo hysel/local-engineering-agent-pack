@@ -678,8 +678,7 @@ test_agent_surface_options_doc() {
     grep -q "Aider" "$REPO_ROOT/docs/agent-surface-options.md" &&
     grep -q "Non-Enterprise Use" "$REPO_ROOT/docs/agent-surface-options.md" &&
     grep -q "Milestone 17 Supported-Surface Completion Basis" "$REPO_ROOT/docs/agent-surface-promotion-gates.md" &&
-    grep -q "fresh integration proposal" "$REPO_ROOT/docs/agent-surface-options.md" &&
-    grep -q "Roo Code is historical" "$REPO_ROOT/docs/agent-surface-promotion-gates.md" &&
+    grep -q "fresh external evaluation" "$REPO_ROOT/docs/agent-surface-options.md" &&
     [ -f "$REPO_ROOT/docs/openhands-validation-boundary.md" ] &&
     grep -q "OpenHands Validation Boundary" "$REPO_ROOT/docs/openhands-validation-boundary.md" &&
     grep -q "disposable generated repository" "$REPO_ROOT/docs/openhands-validation-boundary.md" &&
@@ -694,7 +693,6 @@ test_agent_surface_options_doc() {
     grep -q "\[x\] Move full cross-agent validation and install/configure/test parity out of Milestone 14 and keep it tracked in Milestones 17 and 19" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[x\\] Complete Milestone 17 for the promoted supported-surface set" "$REPO_ROOT/TODO.md" &&
     grep -q "Future Agent Surface Evidence Expansion" "$REPO_ROOT/TODO.md" &&
-    grep -q "\[x\] Retire Roo Code from future validation" "$REPO_ROOT/TODO.md" &&
     grep -q "\[x\] Add a local-only OpenCode Ollama config generator" "$REPO_ROOT/TODO.md" &&
     grep -q "\[x\] Validate OpenCode's installed CLI" "$REPO_ROOT/TODO.md" &&
     [ -f "$REPO_ROOT/docs/opencode-cli-model-testing.md" ] &&
@@ -702,7 +700,6 @@ test_agent_surface_options_doc() {
     grep -q "opencode run" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "hasValidationFailure" "$REPO_ROOT/scripts/test-agent-cli-surface-models.ps1" &&
     grep -q 'ScopedEditStatus.*failed' "$REPO_ROOT/scripts/test-agent-cli-surface-models.shared.sh" &&
-    grep -q "upstream project is archived" "$REPO_ROOT/docs/agent-cli-surface-model-testing.md" &&
     grep -q "\\[x\\] Define a safe OpenHands validation boundary before adding platform-agent validation automation" "$REPO_ROOT/TODO.md"
 }
 
@@ -718,14 +715,31 @@ test_removed_agent_integrations() {
     scripts/test-cline-cli-models.ps1 \
     scripts/test-cline-cli-models.shared.sh \
     scripts/test-kilo-code-cli-models.ps1 \
-    scripts/test-kilo-code-cli-models.shared.sh; do
+    scripts/test-kilo-code-cli-models.shared.sh \
+    scripts/test-roo-code-cli-models.ps1 \
+    scripts/test-roo-code-cli-models.shared.sh; do
     [ ! -e "$REPO_ROOT/$path" ] || return 1
   done
-  ! grep -Eqi 'cline|kilo' "$REPO_ROOT/config/agent-surface-solutions.json" &&
-    ! grep -Eqi 'cline|kilo' "$REPO_ROOT/config/agent-surface-capabilities.json" &&
-    ! grep -Eqi 'cline|kilo' "$REPO_ROOT/config/agent-cli-surface-defaults.json" &&
-    ! grep -Eqi 'cline|kilo' "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" &&
-    grep -q "Removed Integrations" "$REPO_ROOT/docs/agent-surface-options.md"
+  ! grep -Eqi 'cline|kilo|roo([ -]?code)' "$REPO_ROOT/config/agent-surface-solutions.json" &&
+    ! grep -Eqi 'cline|kilo|roo([ -]?code)' "$REPO_ROOT/config/agent-surface-capabilities.json" &&
+    ! grep -Eqi 'cline|kilo|roo([ -]?code)' "$REPO_ROOT/config/agent-cli-surface-defaults.json" &&
+    ! grep -Eqi 'cline|kilo|roo([ -]?code)' "$REPO_ROOT/scripts/setup-agent-surface.shared.sh" &&
+    grep -q "Removed Integrations" "$REPO_ROOT/docs/agent-surface-options.md" &&
+    grep -q "Pass-To-Ship Gate" "$REPO_ROOT/docs/agent-integration-admission-policy.md" &&
+    grep -q "If an evaluation fails, commit only a concise sanitized decision record" "$REPO_ROOT/docs/agent-integration-admission-policy.md" &&
+    python3 - "$REPO_ROOT" <<'PY'
+import json, pathlib, re, sys
+root = pathlib.Path(sys.argv[1])
+solutions = json.loads((root / "config/agent-surface-solutions.json").read_text(encoding="utf-8"))
+defaults = json.loads((root / "config/agent-cli-surface-defaults.json").read_text(encoding="utf-8"))
+supported = {surface["id"] for surface in solutions["surfaces"] if surface["supportTier"] == "supported"}
+for default in defaults["surfaces"]:
+    assert re.sub(r"-cli$", "", default["surfaceKey"]) in supported
+for wrapper in (root / "scripts").glob("test-*-cli-models.ps1"):
+    match = re.fullmatch(r"test-(.+)-cli-models\.ps1", wrapper.name)
+    if match:
+        assert match.group(1) in supported, wrapper.name
+PY
 }
 test_continue_cli_model_testing_doc() {
   [ -f "$REPO_ROOT/docs/continue-cli-model-testing.md" ] &&

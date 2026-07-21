@@ -36,7 +36,6 @@ The non-Continue validation requirement is satisfied by Aider and OpenCode gener
 | Aider | Git-aware CLI coding assistant | Generated-sample read-only, plan, write-smoke, and scoped-edit evidence; adapter tests validated | Supported isolated install, local-only Ollama config, health, and CLI test adapter | Blocked for real-project approved write | Use `scripts/setup-agent-surface.*`, `docs/aider-cli-model-testing.md`, and `examples/aider-validation.md`; explicitly approved non-generated-repository validation remains pending. |
 | OpenCode | Terminal or IDE-oriented coding agent | Generated-sample read, write-smoke, and scoped-edit validated | Supported install, local-only configuration, health, and test adapter | Real-project approved write blocked | Requires explicitly approved non-generated-repository validation before real-project promotion. |
 | OpenHands | Self-hosted/platform-style agent runtime | Candidate with a defined isolation boundary | Not packaged and excluded from default setup | Blocked | Requires an explicitly approved rootless isolated runtime implementation before generated-sample validation. |
-| Roo Code | Archived VS Code-compatible editor agent | Retired upstream | Historical wrapper metadata only; no new setup or validation work | Blocked | The official project was archived and the extension shut down in May 2026. Do not use it for new setups; evaluate a maintained successor separately. |
 
 Candidate means "worth testing", not "approved for edits".
 
@@ -81,11 +80,11 @@ Every surface validation record should capture:
 
 ## Recommended Next Evaluation
 
-Start with Aider or OpenCode in a generated repository and read-only mode. OpenHands is a candidate awaiting an approved isolated implementation, and Roo Code is historical. Shared CLI-surface screening remains documented in `docs/agent-cli-surface-model-testing.md` for maintained surfaces.
+Start with Aider or OpenCode in a generated repository and read-only mode. OpenHands is a documentation-only candidate awaiting an approved isolated external evaluation. Shared CLI-surface screening remains documented in `docs/agent-cli-surface-model-testing.md` for maintained surfaces.
 
 ## Removed Integrations
 
-Cline and Kilo Code were evaluated and did not pass the pack's required write and scoped-edit gates. Their scripts, adapters, active catalog entries, and detailed evidence files were removed to keep the maintained solution narrow. Adding either surface later is a fresh integration proposal that must satisfy the same promotion gates as any new surface.
+Cline and Kilo Code were evaluated and did not pass the pack's required write and scoped-edit gates. Roo Code was retired upstream before admission. Their scripts, adapters, wrappers, active catalog entries, and detailed evidence files are absent to keep the maintained solution narrow. Adding any of them later is a fresh external evaluation under `docs/agent-integration-admission-policy.md`.
 
 Use `docs/agent-surface-promotion-gates.md` before changing support status for any non-Continue surface.
 
