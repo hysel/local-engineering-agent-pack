@@ -416,3 +416,14 @@
 - [x] Require external wiki synchronization for mapped documentation and hosted CI.
 - [x] Resolve the native macOS Milestone 18 workflow gap. Devstral Small 2 completed all required generated-fixture CLI cells; language rule packs remain evidence-gated for real repositories and editor surfaces.
 - [x] Refresh `PROJECT.md`, `ARCHITECTURE.md`, README status text, and surface diagrams after the new contracts are implemented so documented maturity matches verified behavior.
+
+## Milestone 23: Local Music And Audio Generation
+
+- [ ] Record exact ACE-Step 1.5 and Stable Audio 3.0 candidate versions, model cards, download sizes, checksums, licenses, supported operations, and claimed hardware paths without adding executable integration assets.
+- [ ] Externally evaluate ACE-Step 1.5 on Linux CUDA for REST health, instrumental and vocal generation, typed WAV/FLAC artifact requirements, privacy, cancellation, recovery, cleanup, and uninstall behavior.
+- [ ] Externally evaluate Stable Audio 3.0 Small and Medium for sound effects, instrumental music, editing, duration, licensing, and consumer hardware fit.
+- [ ] Validate Windows NVIDIA CUDA, Windows Intel XPU, Windows AMD ROCm, Apple Silicon MLX, and Linux CUDA independently; keep the physical Mac run last.
+- [ ] Add reference-audio, voice-cloning, identifiable-voice, lyrics, artist-style, attribution, and commercial-use consent policy before provider promotion.
+- [ ] Define `audio.music.create`, typed audio artifacts, discovery, and a dry-run-first adapter only after an exact provider profile passes every external gate.
+- [ ] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries for a failed or documentation-only candidate.
+- [ ] Expose music creation in the unified UI only after provider promotion, native evidence, cleanup, packaging, and exact-SHA hosted checks pass.

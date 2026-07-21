@@ -1587,7 +1587,18 @@ test_solution_architecture_review_doc() {
     grep -q "Windows Intel GPU/XPU" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "Intel GPU support must pass installation, XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter gates" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "shared Linux provider as an optional advanced deployment" "$REPO_ROOT/ROADMAP.md" &&
-    grep -q "\[ \] Validate a pinned Windows Intel GPU/XPU image-provider profile" "$REPO_ROOT/TODO.md"
+    grep -q "\[ \] Validate a pinned Windows Intel GPU/XPU image-provider profile" "$REPO_ROOT/TODO.md" &&
+    grep -q "## Milestone 23: Local Music And Audio Generation" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "ACE-Step 1.5" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Stable Audio 3.0" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "YuE" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "MusicGen" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Windows Intel XPU" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Apple Silicon MLX" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "silent CPU fallback" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "## Milestone 23: Local Music And Audio Generation" "$REPO_ROOT/TODO.md" &&
+    grep -q "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries" "$REPO_ROOT/TODO.md"
 }
 test_hosted_ci_verifier_contract() {
   windows="$REPO_ROOT/scripts/verify-hosted-ci.ps1"
