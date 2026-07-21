@@ -42,9 +42,9 @@ test_validate_fails_for_wrong_version() {
 
 
 test_release_packaging_scripts() {
-  output="$($REPO_ROOT/scripts/build-release-package.shared.sh --version 0.2.0 --dry-run --allow-dirty 2>&1)" || return 1
+  output="$($REPO_ROOT/scripts/build-release-package.shared.sh --version 0.3.0 --dry-run --allow-dirty 2>&1)" || return 1
   printf '%s\n' "$output" | grep -q "Release package plan" || return 1
-  printf '%s\n' "$output" | grep -q "local-engineering-agent-pack-0.2.0.tar.gz" || return 1
+  printf '%s\n' "$output" | grep -q "local-engineering-agent-pack-0.3.0.tar.gz" || return 1
   printf '%s\n' "$output" | grep -q "\.sha256" || return 1
   printf '%s\n' "$output" | grep -q "Excluded: .git, .vscode, runtime-validation-output, dist, local configs" || return 1
   grep -q "tar -C" "$REPO_ROOT/scripts/build-release-package.shared.sh" &&
@@ -900,7 +900,7 @@ test_agent_prompt_rule_template_contracts() {
     grep -q "Execution And Evidence Contract" "$REPO_ROOT/docs/prompt-quality.md" &&
     grep -q "pseudo function calls" "$REPO_ROOT/docs/banned-output-patterns.md" &&
     grep -q "evidence-gated .NET, ASP.NET Core, and API rules" "$REPO_ROOT/docs/language-rule-packs.md" &&
-    grep -q 'Version `0.2.0`' "$REPO_ROOT/README.md"
+    grep -q 'Version `0.3.0`' "$REPO_ROOT/README.md"
 }
 test_sample_repository_factory() {
   temp_root="$(mktemp -d)"
@@ -1395,7 +1395,7 @@ test_workflow_envelope_contract() {
   command -v python3 >/dev/null 2>&1 || return 1
   [ -f "$REPO_ROOT/config/workflow-envelope-contract.json" ] || return 1
   [ -f "$REPO_ROOT/docs/workflow-envelope-contract.md" ] || return 1
-  request='{"schemaVersion":1,"requestId":"shell-pack-test","workflowId":"validate-pack","platform":"linux","dryRun":true,"arguments":["--expected-version","0.2.0"]}'
+  request='{"schemaVersion":1,"requestId":"shell-pack-test","workflowId":"validate-pack","platform":"linux","dryRun":true,"arguments":["--expected-version","0.3.0"]}'
   output="$("$REPO_ROOT/scripts/invoke-workflow.linux.sh" --request-json "$request")" || return 1
   printf '%s' "$output" | python3 -c 'import json,sys; value=json.load(sys.stdin); assert value["schemaVersion"] == 1; assert value["status"] == "planned"; assert value["workflow"]["argumentCount"] == 2; assert not value["result"]["invoked"]; assert any(event["type"] == "warning" for event in value["events"])' || return 1
   ! printf '%s' "$output" | grep -q 'expected-version'

@@ -11,7 +11,10 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
-- Added roadmap and UI architecture for a repository-optional general-purpose AI assistant, including a provider-neutral capability layer, deterministic and optional LLM intent routing, typed artifacts, chat and image modalities, and policy enforcement outside model prompts; recorded `0.3.0` as the planned next release without changing the current `0.2.0` baseline.
+## 0.3.0 - 2026-07-21
+
+- Added roadmap and UI architecture for a repository-optional general-purpose AI assistant, including a provider-neutral capability layer, deterministic and optional LLM intent routing, typed artifacts, chat and image modalities, and policy enforcement outside model prompts.
+- Advanced the release line to `0.3.0` after the accumulated non-breaking workflow, adapter, cross-platform, validation, and product-scope additions since `v0.2.0`.
 
 - Recorded current Kilo CLI 7.4.11 Windows evidence: Devstral read-only passed while its write/scoped gates failed, and Qwen 3.5 35B failed all gates; strengthened the shared PowerShell and Unix harnesses to return nonzero when any requested validation gate fails despite a surface phase exiting zero.
 

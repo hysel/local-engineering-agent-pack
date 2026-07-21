@@ -472,7 +472,7 @@ Scope:
 - Validate Cline approved-write smoke behavior against a disposable generated sample. Done for a README-only smoke test with `qwen3-coder:30b` at 16k context. A realistic Devstral source-and-test edit passed scope and behavior but failed whitespace validation due to mixed line endings; a full scoped-edit pass remains pending.
 - Add a Cline CLI automation harness for future read-only and disposable write-smoke model screening. Done for script and documentation scaffolding; model-specific Cline CLI evidence remains pending.
 - Add a Continue CLI automation harness for focused read-only and disposable write-smoke model screening. Done for script and documentation scaffolding; model-specific Continue CLI evidence remains separate from editor Apply evidence.
-- Add a shared agent CLI automation harness plus thin wrappers for Aider, Roo Code, Kilo Code, and OpenCode future read-only and disposable write-smoke model screening. Done for shared scripts and documentation; Aider and OpenCode have model-specific generated-sample evidence, Kilo Code live evidence remains pending, and Roo Code is retained only as an upstream-retired historical surface.
+- Add a shared agent CLI automation harness plus thin wrappers for Aider, Roo Code, Kilo Code, and OpenCode future read-only and disposable write-smoke model screening. Done for shared scripts and documentation; Aider and OpenCode have model-specific generated-sample evidence, Kilo Code has current partial-pass live evidence and remains write-blocked pending a surface change, and Roo Code is retained only as an upstream-retired historical surface.
 
 Exit criteria:
 

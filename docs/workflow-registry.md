@@ -72,8 +72,8 @@ Examples:
 ```powershell
 .\scripts\invoke-workflow.ps1 -List
 .\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -DryRun
-.\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -- -ExpectedVersion 0.2.0
-pwsh -NoProfile -File .\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -WorkflowArgumentsJson '["-ExpectedVersion","0.2.0"]'
+.\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -- -ExpectedVersion 0.3.0
+pwsh -NoProfile -File .\scripts\invoke-workflow.ps1 -WorkflowId validate-pack -WorkflowArgumentsJson '["-ExpectedVersion","0.3.0"]'
 ./scripts/invoke-workflow.linux.sh --list
 ./scripts/invoke-workflow.linux.sh --workflow-id validate-pack --dry-run
 ./scripts/invoke-workflow.macos.sh --workflow-id validate-pack --dry-run

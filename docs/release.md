@@ -22,7 +22,7 @@ Use semantic versioning while the pack matures:
 - Minor: new workflows, new rule groups, new optional integrations, or meaningful pack capability additions.
 - Major: breaking config changes, incompatible Continue schema changes, or default integration/model posture changes.
 
-The current released baseline is `0.2.0`. Work after the `v0.2.0` tag remains under `Unreleased` until a release is deliberately prepared. The next planned release is `0.3.0` because the accumulated non-breaking workflow, adapter, cross-platform, and product-scope additions qualify as a minor release; do not change version-bearing files or create the tag until the release readiness gate and exact-SHA hosted CI pass.
+The current release line is `0.3.0`. Changes after its release remain under `Unreleased` until the next version is deliberately prepared. Do not create a release tag until the release readiness gate and exact-SHA hosted CI pass.
 
 ## Files To Update
 
@@ -84,26 +84,26 @@ SHA-256 checksum next to the archive.
 Windows PowerShell creates a `.zip` archive:
 
 ```powershell
-.\scripts\build-release-package.ps1 -Version 0.2.0
+.\scripts\build-release-package.ps1 -Version 0.3.0
 ```
 
 Linux creates a `.tar.gz` archive:
 
 ```bash
-./scripts/build-release-package.linux.sh --version 0.2.0
+./scripts/build-release-package.linux.sh --version 0.3.0
 ```
 
 macOS creates a `.tar.gz` archive and uses `shasum -a 256` when `sha256sum` is
 not installed:
 
 ```bash
-./scripts/build-release-package.macos.sh --version 0.2.0
+./scripts/build-release-package.macos.sh --version 0.3.0
 ```
 
 Preview the package plan without writing files:
 
 ```powershell
-.\scripts\build-release-package.ps1 -Version 0.2.0 -DryRun
+.\scripts\build-release-package.ps1 -Version 0.3.0 -DryRun
 ```
 
 The release readiness gate combines validation, tests, package dry-run, Git state, workflow registry checks, and agent-surface parity checks:
@@ -113,7 +113,7 @@ The release readiness gate combines validation, tests, package dry-run, Git stat
 ```
 
 ```bash
-./scripts/build-release-package.linux.sh --version 0.2.0 --dry-run
+./scripts/build-release-package.linux.sh --version 0.3.0 --dry-run
 ```
 
 ```bash
@@ -143,20 +143,20 @@ exist only for local packaging smoke tests.
 Windows PowerShell:
 
 ```powershell
-Get-FileHash .\dist\local-engineering-agent-pack-0.2.0.zip -Algorithm SHA256
-Get-Content .\dist\local-engineering-agent-pack-0.2.0.sha256
+Get-FileHash .\dist\local-engineering-agent-pack-0.3.0.zip -Algorithm SHA256
+Get-Content .\dist\local-engineering-agent-pack-0.3.0.sha256
 ```
 
 Linux:
 
 ```bash
-sha256sum -c dist/local-engineering-agent-pack-0.2.0.sha256
+sha256sum -c dist/local-engineering-agent-pack-0.3.0.sha256
 ```
 
 macOS:
 
 ```bash
-shasum -a 256 -c dist/local-engineering-agent-pack-0.2.0.sha256
+shasum -a 256 -c dist/local-engineering-agent-pack-0.3.0.sha256
 ```
 
 The checksum file uses the standard format:

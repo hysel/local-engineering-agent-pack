@@ -25,7 +25,7 @@ Conditional Go for internal early adoption. No-Go for broad public release until
 
 ## Recommended Version Number
 
-Use `0.1.x` while the pack is still early implementation and validation is ongoing.
+Use semantic versioning while the pack is pre-1.0: patches for compatible corrections, minors for meaningful non-breaking capabilities, and a major version for breaking contracts or default-posture changes.
 
 ## Follow-up Recommendations
 
