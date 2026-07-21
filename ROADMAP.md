@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestones 1 through 21 are complete for their defined supported-surface, generated-fixture, workflow-foundation, and general-capability scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 22 builds the unified product UI and multi-step experience over the completed contracts. Milestone 23 is a documentation-only future expansion for evidence-gated local music and audio generation.
+The repository is in early implementation stage. Milestones 1 through 21 are complete for their defined supported-surface, generated-fixture, workflow-foundation, and general-capability scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 22 builds the unified product UI and multi-step experience. Milestone 23 makes the existing Linux image capability visible while evidence-gating native desktop profiles. Milestones 24 and 25 are documentation-only future expansions for local music/audio and video generation.
 
 ## Stage Status
 
@@ -31,7 +31,9 @@ The repository is in early implementation stage. Milestones 1 through 21 are com
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Hardware-aware recommendations, local-only config generation, surface-neutral model lanes, workflow dispatch and envelopes, setup health, cleanup, release readiness, evidence views, cross-platform onboarding, and the stable UI-facing foundation are implemented. Future surface profiles remain separately evidence-gated. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, deterministic and optional bounded LLM routing, live-validated local text and ComfyUI image adapters, runtime provider discovery, typed artifacts, and engineering workflow route plans are implemented with cross-platform contracts. |
 | Milestone 22: Unified Product UI And Task Composition | Planned | Build the local-first unified UI over the stable Milestone 20 workflow foundation and Milestone 21 capability contracts, then add tested multi-step composition without bypassing evidence, privacy, or approval policy. |
-| Milestone 23: Local Music And Audio Generation | Planned | Evaluate local music providers and hardware profiles without shipping any adapter, installer, model configuration, or harness until the exact provider, license, operating system, accelerator, and operation pass the promotion gates. |
+| Milestone 23: Native Local Image Generation | In progress | The pinned Linux ComfyUI/SDXL provider and typed adapter are live-validated; consumer-local Windows NVIDIA, Intel XPU, AMD, and Apple Silicon profiles remain independently evidence-gated. |
+| Milestone 24: Local Music And Audio Generation | Planned | Evaluate local music providers and hardware profiles without shipping any adapter, installer, model configuration, or harness until the exact provider, license, operating system, accelerator, and operation pass the promotion gates. |
+| Milestone 25: Local Video Generation | Planned | Evaluate consumer-local text-to-video and image-to-video providers, licensing, identity consent, artifacts, and native hardware profiles without shipping executable integration before promotion. |
 
 ## Milestone 1: Minimum Usable Pack
 
@@ -637,8 +639,6 @@ Scope:
 
 - Implement the unified web UI over stable workflow IDs, capability IDs, typed artifacts, and versioned request/result envelopes.
 - Present deterministic first-run choices for chat, writing, summarization, image creation, software work, and local-AI setup.
-- Make native local image generation the default consumer path instead of requiring an external server. Detect hardware and select only an independently promoted provider profile: Windows NVIDIA CUDA, Windows Intel GPU/XPU, Windows AMD GPU, or Apple Silicon MPS. Keep a shared Linux provider as an optional advanced deployment.
-- Treat every operating-system and accelerator combination as separate evidence. In particular, Intel GPU support must pass installation, XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter gates before any Intel runtime files or installer automation ship.
 - Support repository-optional sessions and clearly identify every artifact location before a write.
 - Show capability availability, evidence status, local versus external execution, network effects, repository access, and approval requirements before execution.
 - Reuse the Milestone 20 evidence dashboard, health, cleanup, recommendation, installation, validation, and release-readiness workflows.
@@ -666,13 +666,48 @@ Exit criteria:
 2. Implement first-run navigation and capability availability views over the Milestone 21 registry.
 3. Render typed artifacts and workflow progress/error envelopes.
 4. Connect setup, health, model choice, engineering workflows, and evidence views from Milestone 20.
-5. Validate and promote native desktop image-provider profiles independently, beginning with Windows NVIDIA and Windows Intel GPU/XPU, then Windows AMD and Apple Silicon MPS; ship no profile automation until its exact hardware path passes.
-6. Add repository-free text and image flows only for providers promoted in Milestone 21 or through the native desktop provider gates above.
-7. Implement the GitHub release updater with explicit channels, network disclosure, immutable asset selection, checksum and signature or attestation verification, compatibility preflight, atomic activation, post-update health checks, rollback, and retained-version cleanup.
-8. Add cross-platform UI contract, updater, rollback, and packaging tests.
-9. Add bounded multi-step composition with explicit intermediate artifacts and approvals.
+5. Add repository-free text and image flows only for providers promoted in Milestone 21 or Milestone 23.
+6. Implement the GitHub release updater with explicit channels, network disclosure, immutable asset selection, checksum and signature or attestation verification, compatibility preflight, atomic activation, post-update health checks, rollback, and retained-version cleanup.
+7. Add cross-platform UI contract, updater, rollback, and packaging tests.
+8. Add bounded multi-step composition with explicit intermediate artifacts and approvals.
 
-## Milestone 23: Local Music And Audio Generation
+## Milestone 23: Native Local Image Generation
+
+Goal: Let ordinary Windows, macOS, and Linux users generate images on their own computer without requiring an external server, while preserving the exact evidence boundary already proven by the Linux ComfyUI/SDXL provider.
+
+Current validated baseline:
+
+- ComfyUI `v0.28.2` at the pinned validated commit, PyTorch `2.11.0+cu126`, SDXL Base 1.0 with its verified checksum, a localhost-only hardened Linux service, typed PNG artifacts, metadata exclusion, history cleanup, forced recovery, SSH tunneling, and visual validation passed on Linux with an NVIDIA V100.
+- The provider-neutral `media.image.create` capability and `comfyui.local-image` adapter are live-validated for that exact Linux scope. Cross-platform fixture contracts do not promote native Windows or macOS execution.
+
+Remaining scope:
+
+- Make native local image generation the default consumer path instead of requiring an external server; keep a shared Linux provider as an optional advanced deployment.
+- Detect hardware and select only an independently promoted profile: Windows NVIDIA CUDA, Windows Intel GPU/XPU, Windows AMD GPU, Apple Silicon MPS, or the validated Linux CUDA profile.
+- Treat every operating-system and accelerator combination as separate evidence. Intel GPU support must pass installation, XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter gates before any Intel runtime files or installer automation ship.
+- Install the runtime and checkpoint only after disclosing source, license, size, checksum, storage location, network use, and expected hardware fit.
+- Start the image provider on demand, bind it to loopback only, stop it after an idle period, and keep provider state separate from the replaceable core engine.
+- Keep custom nodes and external API nodes disabled unless an exact extension independently passes security, compatibility, privacy, cleanup, and promotion gates.
+
+Exit criteria:
+
+- Windows NVIDIA, Windows Intel XPU, Windows AMD, and Apple Silicon MPS are each represented as unavailable or candidate-only until their exact native profile passes; no platform inherits Linux evidence.
+- A promoted profile passes install, health, accelerator confirmation, checkpoint verification, text-to-image generation, metadata inspection, typed-artifact validation, cancellation, recovery, retention, cleanup, update, rollback, and uninstall gates.
+- Runtime probing rejects silent CPU fallback unless the user explicitly selected a separately tested CPU profile.
+- Generated images and provider-retained copies have explicit storage, retention, and cleanup behavior; prompts, endpoints, authentication values, and machine-specific paths are not persisted unintentionally.
+- Failed profiles leave only a concise sanitized decision record and ship no scripts, adapters, harnesses, templates, workflows, configuration, runtime files, or installer automation.
+- The unified UI exposes only promoted native profiles and clearly distinguishes the validated shared Linux provider from a consumer-local installation.
+
+### Recommended Implementation Order
+
+1. Preserve the current Linux ComfyUI/SDXL profile as the reference contract and do not broaden its evidence.
+2. Define hardware discovery and consent-driven local provider onboarding without requiring an external server.
+3. Validate Windows NVIDIA CUDA, followed by Windows Intel XPU and Windows AMD, using separate pinned environments and evidence.
+4. Validate Apple Silicon MPS on a physical Mac as the last native hardware gate to control cost.
+5. Add installer and lifecycle automation only for each exact passing profile.
+6. Connect promoted local profiles to the Milestone 22 UI with progress, cancellation, cleanup, and provider-update boundaries.
+
+## Milestone 24: Local Music And Audio Generation
 
 Goal: Let an end user create music or sound effects on their own computer through the provider-neutral capability and typed-artifact boundaries, without requiring an external server or exposing provider-specific installation and API complexity.
 
@@ -708,3 +743,37 @@ Exit criteria:
 6. Add the promoted provider to the UI only after cross-platform offline fixtures, native live evidence, cleanup, packaging, and exact-SHA hosted checks pass.
 
 Official candidate references: [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5), [ACE-Step installation and hardware guide](https://github.com/ace-step/ACE-Step-1.5/blob/main/docs/en/INSTALL.md), [Stable Audio 3.0](https://stability.ai/news-updates/meet-stable-audio-3-the-model-family-built-for-artistic-experimentation-with-open-weight-models), [Stability AI licensing](https://stability.ai/license), [YuE](https://github.com/multimodal-art-projection/YuE), and [AudioCraft/MusicGen](https://github.com/facebookresearch/audiocraft).
+
+## Milestone 25: Local Video Generation
+
+Goal: Let an end user generate short videos locally through provider-neutral capability and typed-artifact boundaries, without presenting high-cost, unsupported, cloud-only, or unvalidated hardware paths as consumer-ready.
+
+Candidate scope:
+
+- Evaluate HunyuanVideo 1.5 first as a consumer-oriented NVIDIA candidate for separate text-to-video and image-to-video operations. Its official implementation requires Linux, CUDA, and at least 14 GB VRAM with offloading; those claims do not promote Windows or other accelerators.
+- Evaluate Wan2.2 TI2V-5B as a unified text-to-video and image-to-video candidate with official 720p/24 FPS support and a native ComfyUI workflow. Keep the 14B variants outside consumer profiles unless their much larger memory requirements pass a separate tier.
+- Evaluate LTX-2.3 as an advanced candidate for text, image, video, audio, interpolation, and retake workflows. Treat its 32 GB VRAM, 100 GB storage, CUDA requirements, model license, and current lack of native local macOS inference as explicit product constraints.
+- Keep Windows Intel, Windows AMD, and Apple Silicon local video generation unavailable until an exact provider and native acceleration path passes; generic ComfyUI or PyTorch compatibility is not evidence.
+- Define `media.video.create` and typed MP4 or WebM artifacts only after one exact provider profile passes external evaluation. Candidate status must not add registry entries, scripts, adapters, harnesses, templates, workflows, configuration, runtime files, or installer automation.
+- Require consent and policy controls for reference images or video, identifiable people, face animation, voice or likeness use, deepfake risk, artist-style requests, generated-content disclosure, and commercial-use expectations.
+
+Exit criteria:
+
+- Text-to-video and image-to-video are tested and reported independently for an exact provider release, model, license, operating system, accelerator, hardware tier, resolution, duration, and frame rate.
+- Validation confirms accelerator use, requested and actual duration, resolution, frame rate, frame count, codec, container decodability, non-empty frames, bounded corruption checks, output-path fidelity, and bounded runtime without requiring byte-identical video across hardware.
+- The provider passes installation, health, cancellation, timeout, restart, recovery, retention, cleanup, update, rollback, and uninstall gates.
+- Promoted adapters produce sanitized typed artifacts and do not persist prompts, source paths, endpoints, credentials, or identity-bearing inputs without explicit approval.
+- Model downloads disclose source, license, size, checksum, storage location, estimated hardware fit, and expected generation time before network or disk writes.
+- Failed candidates leave only a concise sanitized decision record and ship no executable integration assets.
+- The unified UI exposes video generation only after promotion and preserves evidence, consent, progress, cancellation, retention, cleanup, and generated-content disclosure states.
+
+### Recommended Implementation Order
+
+1. Record exact HunyuanVideo 1.5, Wan2.2 TI2V-5B, and LTX-2.3 versions, model cards, licenses, sizes, operations, and claimed hardware without adding executable integration files.
+2. Evaluate HunyuanVideo 1.5 and Wan2.2 independently on available Linux NVIDIA hardware; confirm architecture and CUDA compatibility before downloading large model assets.
+3. Evaluate LTX-2.3 only on hardware meeting its documented memory, storage, and CUDA requirements.
+4. Define provider-neutral capability and typed video artifacts only after one exact profile passes.
+5. Run separate native Windows and macOS profiles only when credible provider-specific paths and suitable hardware are available; keep physical Mac validation last.
+6. Add the promoted provider to the UI only after offline fixtures, native live evidence, consent, cleanup, packaging, and exact-SHA hosted checks pass.
+
+Official candidate references: [HunyuanVideo 1.5](https://github.com/Tencent-Hunyuan/HunyuanVideo-1.5), [Wan2.2](https://github.com/Wan-Video/Wan2.2), [ComfyUI Wan2.2 workflow](https://docs.comfy.org/tutorials/video/wan/wan2_2), [LTX-2.3 system requirements](https://docs.ltx.io/open-source-model/getting-started/system-requirements), [LTX pipelines](https://github.com/Lightricks/LTX-2/blob/main/packages/ltx-pipelines/README.md), and [LTX license](https://github.com/Lightricks/LTX-2/blob/main/LICENSE).

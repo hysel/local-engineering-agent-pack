@@ -398,11 +398,6 @@
 - [ ] Verify downloaded engine assets with checksums and a release signature or attestation before staging or activation.
 - [ ] Keep engine binaries separate from user configuration, workspaces, models, provider data, generated artifacts, and evidence during updates.
 - [ ] Add compatibility preflight, atomic activation, post-update health checks, automatic rollback, retained-version cleanup, offline behavior, and a disabled-update mode.
-- [ ] Define hardware discovery and consent-driven local image-provider onboarding that does not require an external server.
-- [ ] Validate a pinned Windows NVIDIA CUDA image-provider profile before shipping its local installer or runtime files.
-- [ ] Validate a pinned Windows Intel GPU/XPU image-provider profile, including XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter evidence, before shipping its local installer or runtime files.
-- [ ] Validate a pinned Windows AMD GPU image-provider profile before shipping its local installer or runtime files.
-- [ ] Validate a pinned Apple Silicon MPS image-provider profile on a physical Mac as the last native hardware gate before shipping its local installer or runtime files.
 - [ ] Implement the unified UI over the Milestone 20 workflow foundation and Milestone 21 capability registry.
 - [ ] Add first-run intent navigation, capability availability, evidence states, and policy disclosures.
 - [ ] Render typed artifacts plus versioned progress, warning, result, and error envelopes.
@@ -422,7 +417,18 @@
 - [x] Resolve the native macOS Milestone 18 workflow gap. Devstral Small 2 completed all required generated-fixture CLI cells; language rule packs remain evidence-gated for real repositories and editor surfaces.
 - [x] Refresh `PROJECT.md`, `ARCHITECTURE.md`, README status text, and surface diagrams after the new contracts are implemented so documented maturity matches verified behavior.
 
-## Milestone 23: Local Music And Audio Generation
+## Milestone 23: Native Local Image Generation
+
+- [x] Validate the pinned Linux ComfyUI/SDXL provider, typed PNG artifact, metadata exclusion, history cleanup, recovery, SSH tunnel, and visual result for its exact NVIDIA V100 scope.
+- [ ] Define hardware discovery and consent-driven local image-provider onboarding that does not require an external server.
+- [ ] Validate a pinned Windows NVIDIA CUDA image-provider profile before shipping its local installer or runtime files.
+- [ ] Validate a pinned Windows Intel GPU/XPU image-provider profile, including XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter evidence, before shipping its local installer or runtime files.
+- [ ] Validate a pinned Windows AMD GPU image-provider profile before shipping its local installer or runtime files.
+- [ ] Validate a pinned Apple Silicon MPS image-provider profile on a physical Mac as the last native hardware gate before shipping its local installer or runtime files.
+- [ ] Keep custom nodes and external API nodes disabled unless each exact extension independently passes promotion.
+- [ ] Add native installer and provider lifecycle files only after the exact profile passes; failed profiles leave documentation only.
+
+## Milestone 24: Local Music And Audio Generation
 
 - [ ] Record exact ACE-Step 1.5 and Stable Audio 3.0 candidate versions, model cards, download sizes, checksums, licenses, supported operations, and claimed hardware paths without adding executable integration assets.
 - [ ] Externally evaluate ACE-Step 1.5 on Linux CUDA for REST health, instrumental and vocal generation, typed WAV/FLAC artifact requirements, privacy, cancellation, recovery, cleanup, and uninstall behavior.
@@ -432,3 +438,14 @@
 - [ ] Define `audio.music.create`, typed audio artifacts, discovery, and a dry-run-first adapter only after an exact provider profile passes every external gate.
 - [ ] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries for a failed or documentation-only candidate.
 - [ ] Expose music creation in the unified UI only after provider promotion, native evidence, cleanup, packaging, and exact-SHA hosted checks pass.
+
+## Milestone 25: Local Video Generation
+
+- [ ] Record exact HunyuanVideo 1.5, Wan2.2 TI2V-5B, and LTX-2.3 candidate versions, model cards, licenses, sizes, supported operations, and claimed hardware without adding executable integration assets.
+- [ ] Externally evaluate HunyuanVideo 1.5 and Wan2.2 separately on compatible Linux NVIDIA hardware for text-to-video, image-to-video, typed video artifacts, privacy, consent, cancellation, recovery, cleanup, and uninstall behavior.
+- [ ] Evaluate LTX-2.3 only on hardware meeting its documented 32 GB VRAM, storage, CUDA, and license constraints.
+- [ ] Keep Windows Intel, Windows AMD, and Apple Silicon video profiles unavailable until an exact native provider path passes; test any Windows NVIDIA path independently from Linux.
+- [ ] Add reference-media, identity, face-animation, likeness, voice, deepfake, artist-style, disclosure, and commercial-use consent policy before promotion.
+- [ ] Define `media.video.create`, typed MP4/WebM artifacts, discovery, and a dry-run-first adapter only after an exact provider profile passes every external gate.
+- [ ] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation for a failed or documentation-only candidate.
+- [ ] Expose video generation in the unified UI only after provider promotion, native evidence, consent, cleanup, packaging, and exact-SHA hosted checks pass.

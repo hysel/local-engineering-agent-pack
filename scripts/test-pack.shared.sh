@@ -1588,7 +1588,11 @@ test_solution_architecture_review_doc() {
     grep -q "Intel GPU support must pass installation, XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter gates" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "shared Linux provider as an optional advanced deployment" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "\[ \] Validate a pinned Windows Intel GPU/XPU image-provider profile" "$REPO_ROOT/TODO.md" &&
-    grep -q "## Milestone 23: Local Music And Audio Generation" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "## Milestone 23: Native Local Image Generation" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Linux ComfyUI/SDXL provider and typed adapter are live-validated" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Cross-platform fixture contracts do not promote native Windows or macOS execution" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "## Milestone 23: Native Local Image Generation" "$REPO_ROOT/TODO.md" &&
+    grep -q "## Milestone 24: Local Music And Audio Generation" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "ACE-Step 1.5" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "Stable Audio 3.0" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "YuE" "$REPO_ROOT/ROADMAP.md" &&
@@ -1597,8 +1601,17 @@ test_solution_architecture_review_doc() {
     grep -q "Apple Silicon MLX" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "silent CPU fallback" "$REPO_ROOT/ROADMAP.md" &&
-    grep -q "## Milestone 23: Local Music And Audio Generation" "$REPO_ROOT/TODO.md" &&
+    grep -q "## Milestone 24: Local Music And Audio Generation" "$REPO_ROOT/TODO.md" &&
     grep -q "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries" "$REPO_ROOT/TODO.md" &&
+    grep -q "## Milestone 25: Local Video Generation" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "HunyuanVideo 1.5" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Wan2.2 TI2V-5B" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "LTX-2.3" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Windows Intel, Windows AMD, and Apple Silicon local video generation unavailable" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Candidate status must not add registry entries, scripts, adapters, harnesses, templates, workflows, configuration, runtime files, or installer automation" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "generated-content disclosure" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "## Milestone 25: Local Video Generation" "$REPO_ROOT/TODO.md" &&
+    grep -q "\[ \] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation" "$REPO_ROOT/TODO.md" &&
     grep -q "cross-platform core-engine updater" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "stable releases published by the official GitHub repository" "$REPO_ROOT/ROADMAP.md" &&
     grep -q 'Never update a production installation with an unattended `git pull` or from a moving branch' "$REPO_ROOT/ROADMAP.md" &&
