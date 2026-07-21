@@ -9,7 +9,7 @@ The initial registry contains:
 | `general.chat` | none | `configuration-required` | Live-validated local text adapter; runtime model discovery required |
 | `content.write` | none | `configuration-required` | Live-validated local text adapter and approved artifact path; runtime model discovery required |
 | `content.summarize` | none | `configuration-required` | Live-validated local text adapter and approved artifact path; runtime model discovery required |
-| `media.image.create` | none | `configuration-required` | Future evidence-gated image provider and approved artifact path |
+| `media.image.create` | none | `configuration-required` | Live-validated local ComfyUI provider, runtime checkpoint discovery, and approved artifact path |
 | `engineering.software-work` | optional | `available` | Existing workflow registry and dispatcher |
 | `setup.local-ai` | optional | `available` | Existing setup, health, model, and configuration workflows |
 

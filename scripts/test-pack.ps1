@@ -3721,6 +3721,43 @@ Invoke-PackTest "optional LLM routing is advisory and registry gated" {
     Assert-Equal -Actual $invalid.InvocationAllowed -Expected $false -Message "Rejected suggestions must not invoke anything."
 }
 
+Invoke-PackTest "local image capability is session bound typed and evidence gated" {
+    $sessionScript = Join-Path $repoRoot "scripts/start-ai-session.ps1"
+    $providerScript = Join-Path $repoRoot "scripts/invoke-local-image-capability.ps1"
+    $fixturePath = Join-Path $repoRoot "examples/fixtures/comfyui-image-response.json"
+    $providerRegistry = Get-Content -LiteralPath (Join-Path $repoRoot "config/providers.json") -Raw | ConvertFrom-Json
+    $tempRoot = Join-Path ([IO.Path]::GetTempPath()) "local-image-capability-test-$([guid]::NewGuid())"
+    try {
+        Assert-True -Condition (@($providerRegistry.providers | Where-Object { $_.id -eq "comfyui.local-image" -and $_.validationStatus -eq "live-validated" -and $_.capabilityIds -contains "media.image.create" }).Count -eq 1) -Message "ComfyUI image adapter should retain bounded live validation status."
+        $session = Invoke-CommandCapture -FilePath $sessionScript -Arguments @("-CapabilityId", "media.image.create", "-WorkspaceRoot", $tempRoot, "-SessionId", "image", "-Apply", "-AsJson")
+        Assert-Equal -Actual $session.ExitCode -Expected 0 -Message "Image session setup should succeed."
+        $sessionPath = Join-Path $tempRoot "image"
+        $plan = (Invoke-CommandCapture -FilePath $providerScript -Arguments @("-Prompt", "private image marker", "-Model", "fixture.safetensors", "-SessionPath", $sessionPath, "-AsJson")).Output | ConvertFrom-Json
+        Assert-Equal -Actual $plan.Status -Expected "planned" -Message "Image adapter should be dry-run first."
+        Assert-Equal -Actual $plan.NetworkUsed -Expected $false -Message "Image dry run should not use a network."
+        Assert-Equal -Actual $plan.ImageWritten -Expected $false -Message "Image dry run should not write files."
+
+        $raw = (Invoke-CommandCapture -FilePath $providerScript -Arguments @("-Prompt", "private image marker", "-Model", "fixture.safetensors", "-SessionPath", $sessionPath, "-ComfyUiBaseUrl", "http://private-runtime.invalid:8188", "-ResponseFixturePath", $fixturePath, "-ImageName", "fixture.png", "-ArtifactName", "fixture.json", "-Execute", "-Apply", "-AsJson")).Output
+        $result = $raw | ConvertFrom-Json
+        Assert-Equal -Actual $result.Status -Expected "succeeded" -Message "Fixture-backed image generation should succeed."
+        Assert-Equal -Actual $result.Artifact.artifactType -Expected "image" -Message "Image adapter should emit an image artifact."
+        Assert-Equal -Actual $result.Artifact.content.width -Expected 1 -Message "Fixture PNG width should be parsed."
+        Assert-Equal -Actual $result.Artifact.content.height -Expected 1 -Message "Fixture PNG height should be parsed."
+        Assert-Equal -Actual $result.Artifact.policy.providerRetainedOutput -Expected $false -Message "Fixture should not claim provider retention."
+        Assert-True -Condition ((Test-Path -LiteralPath $result.ImagePath) -and (Test-Path -LiteralPath $result.ArtifactPath)) -Message "Approved fixture execution should write typed files."
+        $artifactText = Get-Content -LiteralPath $result.ArtifactPath -Raw
+        Assert-True -Condition ($raw -notmatch "private image marker|private-runtime|8188") -Message "Image result should omit prompt and endpoint values."
+        Assert-True -Condition ($artifactText -notmatch "private image marker|private-runtime|8188") -Message "Persisted image artifact should omit prompt and endpoint values."
+
+        $mismatchRoot = Join-Path $tempRoot "chat"
+        Invoke-CommandCapture -FilePath $sessionScript -Arguments @("-CapabilityId", "general.chat", "-WorkspaceRoot", $tempRoot, "-SessionId", "chat", "-Apply", "-AsJson") | Out-Null
+        $mismatch = Invoke-CommandCapture -FilePath $providerScript -Arguments @("-Prompt", "image", "-Model", "fixture.safetensors", "-SessionPath", $mismatchRoot, "-ResponseFixturePath", $fixturePath, "-Execute", "-AsJson")
+        Assert-True -Condition ($mismatch.ExitCode -ne 0) -Message "Image adapter should reject a capability/session mismatch."
+        $overwrite = Invoke-CommandCapture -FilePath $providerScript -Arguments @("-Prompt", "image", "-Model", "fixture.safetensors", "-SessionPath", $sessionPath, "-ResponseFixturePath", $fixturePath, "-ImageName", "fixture.png", "-ArtifactName", "fixture.json", "-Execute", "-Apply", "-AsJson")
+        Assert-True -Condition ($overwrite.ExitCode -ne 0) -Message "Image adapter should refuse to overwrite approved artifacts."
+    } finally { Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue }
+}
+
 Invoke-PackTest "solution architecture review tracks milestone gaps" {
     $docPath = Join-Path $repoRoot "docs/solution-architecture-review.md"
     $uiDocPath = Join-Path $repoRoot "docs/unified-starter-toolkit-ui.md"

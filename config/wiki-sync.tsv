@@ -22,6 +22,8 @@ docs/capability-registry.md	Capability-Registry.md	Capability Registry
 docs/capability-availability-and-engineering-routing.md	Capability-Availability-And-Engineering-Routing.md	Capability Availability And Engineering Routing
 docs/optional-llm-intent-routing.md	Optional-LLM-Intent-Routing.md	Optional LLM Intent Routing
 examples/optional-llm-routing-validation.md	Optional-LLM-Routing-Validation.md	Optional LLM Routing Validation
+docs/local-image-capability.md	Local-Image-Capability.md	Local Image Capability
+examples/local-image-capability-validation.md	Local-Image-Capability-Validation.md	Local Image Capability Validation
 docs/typed-artifact-contract.md	Typed-Artifact-Contract.md	Typed Artifact Contract
 docs/deterministic-intent-routing.md	Deterministic-Intent-Routing.md	Deterministic Intent Routing
 docs/general-ai-session-workspace.md	General-AI-Session-Workspace.md	General AI Session Workspace

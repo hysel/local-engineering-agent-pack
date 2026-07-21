@@ -1520,6 +1520,32 @@ assert invalid["Status"] == "rejected" and invalid["RegistryValidated"] is False
 PY
 }
 
+test_local_image_capability_adapter() {
+  root="$(mktemp -d)"
+  session="$REPO_ROOT/scripts/start-ai-session.shared.sh"
+  provider="$REPO_ROOT/scripts/invoke-local-image-capability.shared.sh"
+  fixture="$REPO_ROOT/examples/fixtures/comfyui-image-response.json"
+  $session --capability-id media.image.create --workspace-root "$root" --session-id image --apply --json >/dev/null || { rm -rf "$root"; return 1; }
+  plan="$($provider --prompt 'private image marker' --model fixture.safetensors --session-path "$root/image" --json)" || { rm -rf "$root"; return 1; }
+  result="$($provider --prompt 'private image marker' --model fixture.safetensors --session-path "$root/image" --comfyui-base-url http://private-runtime.invalid:8188 --response-fixture-path "$fixture" --image-name fixture.png --artifact-name fixture.json --execute --apply --json)" || { rm -rf "$root"; return 1; }
+  python3 - "$REPO_ROOT/config/providers.json" "$plan" "$result" "$root/image/artifacts/fixture.json" <<'PY'
+import json, pathlib, sys
+providers = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))["providers"]
+plan, result = json.loads(sys.argv[2]), json.loads(sys.argv[3])
+artifact_text = pathlib.Path(sys.argv[4]).read_text(encoding="utf-8")
+assert any(p["id"] == "comfyui.local-image" and p["validationStatus"] == "live-validated" for p in providers)
+assert plan["Status"] == "planned" and plan["NetworkUsed"] is False and plan["ImageWritten"] is False
+assert result["Status"] == "succeeded" and result["Artifact"]["artifactType"] == "image"
+assert result["Artifact"]["content"]["width"] == 1 and result["Artifact"]["content"]["height"] == 1
+assert result["PromptPersisted"] is False and result["EndpointPersisted"] is False and result["RepositoryRead"] is False
+assert "private image marker" not in sys.argv[3] and "private-runtime" not in sys.argv[3] and "8188" not in sys.argv[3]
+assert "private image marker" not in artifact_text and "private-runtime" not in artifact_text and "8188" not in artifact_text
+PY
+  result_code=$?
+  rm -rf "$root"
+  return "$result_code"
+}
+
 test_solution_architecture_review_doc() {
   [ -f "$REPO_ROOT/docs/solution-architecture-review.md" ] &&
     [ -f "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" ] &&
@@ -1676,6 +1702,7 @@ run_test "general AI sessions are repository optional and dry-run first" test_ge
 run_test "local text capabilities are session bound and typed" test_local_text_capability_adapter
 run_test "provider discovery and engineering routing preserve policy boundaries" test_provider_discovery_and_engineering_routes
 run_test "optional LLM routing is advisory and registry gated" test_optional_llm_routing_boundary
+run_test "local image capability is session bound typed and evidence gated" test_local_image_capability_adapter
 run_test "recommended agent config generation writes local-only config" test_recommended_agent_config_generation
 run_test "agent surface adapters plan installs configure and report health safely" test_agent_surface_adapters
 run_test "workflow envelope contract is versioned private by default and cross-platform" test_workflow_envelope_contract

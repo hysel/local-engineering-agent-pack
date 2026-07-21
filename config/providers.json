@@ -19,6 +19,23 @@
       },
       "validationStatus": "live-validated",
       "notes": "Fixture and bounded Windows local-endpoint chat, writing, summarization, typed-artifact, sanitization, cleanup, and cross-platform contract validation passed. Runtime endpoint and installed-model availability remain configuration-dependent."
+    },
+    {
+      "id": "comfyui.local-image",
+      "name": "Local ComfyUI Image",
+      "kind": "image-generation",
+      "protocol": "comfyui-api",
+      "execution": "local-or-user-controlled-network",
+      "capabilityIds": ["media.image.create"],
+      "defaultAvailability": "configuration-required",
+      "requirements": ["runtime endpoint", "installed explicit checkpoint", "successful health discovery", "metadata-disabled service", "user-approved execution and artifact write"],
+      "entryPoints": {
+        "windows": "scripts/invoke-local-image-capability.ps1",
+        "linux": "scripts/invoke-local-image-capability.linux.sh",
+        "macos": "scripts/invoke-local-image-capability.macos.sh"
+      },
+      "validationStatus": "live-validated",
+      "notes": "Bounded Linux ComfyUI SDXL API generation, checksum, CUDA, typed-artifact, metadata exclusion, history cleanup, recovery, SSH tunnel, and cross-platform contract validation passed. Runtime endpoint and installed-checkpoint availability remain configuration-dependent."
     }
   ]
 }

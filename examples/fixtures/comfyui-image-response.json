@@ -1,0 +1,8 @@
+{
+  "status": "success",
+  "completed": true,
+  "providerFilename": "fixture-image.png",
+  "providerSubfolder": "validation",
+  "providerType": "output",
+  "imageBase64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+Xf2KAAAAAElFTkSuQmCC"
+}

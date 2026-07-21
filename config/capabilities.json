@@ -13,7 +13,7 @@
       "outputArtifactTypes": ["chat-message"],
       "repositoryMode": "none",
       "providerKinds": ["text-generation"],
-      "availability": { "state": "configuration-required", "reason": "No general-purpose text provider adapter has been promoted yet." },
+      "availability": { "state": "configuration-required", "reason": "The live-validated local text adapter still requires runtime endpoint and model discovery." },
       "policy": { "readsRepository": false, "writesFiles": false, "networkAccess": "provider-dependent", "downloadsModels": false, "externalProvider": "provider-dependent", "requiresApproval": false },
       "routing": { "phrases": ["chat with ai", "have a conversation", "ask a question"], "keywords": ["chat", "conversation", "question"] }
     },
@@ -26,7 +26,7 @@
       "outputArtifactTypes": ["markdown-document"],
       "repositoryMode": "none",
       "providerKinds": ["text-generation"],
-      "availability": { "state": "configuration-required", "reason": "No general-purpose writing provider adapter has been promoted yet." },
+      "availability": { "state": "configuration-required", "reason": "The live-validated local text adapter still requires runtime endpoint and model discovery." },
       "policy": { "readsRepository": false, "writesFiles": true, "networkAccess": "provider-dependent", "downloadsModels": false, "externalProvider": "provider-dependent", "requiresApproval": true },
       "routing": { "phrases": ["write a document", "draft an email", "help me write"], "keywords": ["write", "draft", "email", "document"] }
     },
@@ -39,7 +39,7 @@
       "outputArtifactTypes": ["markdown-document"],
       "repositoryMode": "none",
       "providerKinds": ["text-generation"],
-      "availability": { "state": "configuration-required", "reason": "No general-purpose summarization provider adapter has been promoted yet." },
+      "availability": { "state": "configuration-required", "reason": "The live-validated local text adapter still requires runtime endpoint and model discovery." },
       "policy": { "readsRepository": false, "writesFiles": true, "networkAccess": "provider-dependent", "downloadsModels": false, "externalProvider": "provider-dependent", "requiresApproval": true },
       "routing": { "phrases": ["summarize this", "summarize a document", "condense this text"], "keywords": ["summarize", "summary", "condense"] }
     },
@@ -52,7 +52,7 @@
       "outputArtifactTypes": ["image"],
       "repositoryMode": "none",
       "providerKinds": ["image-generation"],
-      "availability": { "state": "configuration-required", "reason": "No image-generation provider adapter has been promoted yet." },
+      "availability": { "state": "configuration-required", "reason": "The live-validated local ComfyUI adapter still requires runtime endpoint, checkpoint, and metadata-policy discovery." },
       "policy": { "readsRepository": false, "writesFiles": true, "networkAccess": "provider-dependent", "downloadsModels": false, "externalProvider": "provider-dependent", "requiresApproval": true },
       "routing": { "phrases": ["generate an image", "create an image", "make a picture"], "keywords": ["image", "picture", "illustration"] }
     },
