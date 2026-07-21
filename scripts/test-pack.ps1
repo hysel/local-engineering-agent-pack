@@ -3811,7 +3811,11 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($roadmap -match "Intel GPU support must pass installation, XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter gates") -Message "Intel GPU candidate should retain independent pass-before-ship gates."
     Assert-True -Condition ($roadmap -match "shared Linux provider as an optional advanced deployment") -Message "Roadmap should not require an external server for consumer image generation."
     Assert-True -Condition ($todo -match "\[ \] Validate a pinned Windows Intel GPU/XPU image-provider profile") -Message "TODO should track live Intel GPU provider validation."
-    Assert-True -Condition ($roadmap -match "## Milestone 23: Local Music And Audio Generation") -Message "Roadmap should include local music and audio generation."
+    Assert-True -Condition ($roadmap -match "## Milestone 23: Native Local Image Generation") -Message "Roadmap should expose native local image generation as its own milestone."
+    Assert-True -Condition ($roadmap -match "Linux ComfyUI/SDXL provider and typed adapter are live-validated") -Message "Image milestone should retain the validated Linux baseline."
+    Assert-True -Condition ($roadmap -match "Cross-platform fixture contracts do not promote native Windows or macOS execution") -Message "Image milestone should not broaden Linux evidence."
+    Assert-True -Condition ($todo -match "## Milestone 23: Native Local Image Generation") -Message "TODO should track native image-provider profiles separately."
+    Assert-True -Condition ($roadmap -match "## Milestone 24: Local Music And Audio Generation") -Message "Roadmap should include local music and audio generation."
     foreach ($candidate in @("ACE-Step 1.5", "Stable Audio 3.0", "YuE", "MusicGen")) {
         Assert-True -Condition ($roadmap -match [regex]::Escape($candidate)) -Message "Music roadmap should retain candidate: $candidate"
     }
@@ -3820,8 +3824,17 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     }
     Assert-True -Condition ($roadmap -match "Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration") -Message "Music candidates should remain documentation-only until promotion."
     Assert-True -Condition ($roadmap -match "voice cloning" -and $roadmap -match "silent CPU fallback") -Message "Music roadmap should retain consent and accelerator-verification gates."
-    Assert-True -Condition ($todo -match "## Milestone 23: Local Music And Audio Generation") -Message "TODO should track music provider evaluation."
+    Assert-True -Condition ($todo -match "## Milestone 24: Local Music And Audio Generation") -Message "TODO should track music provider evaluation."
     Assert-True -Condition ($todo -match "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries") -Message "TODO should preserve the failed-candidate exclusion rule."
+    Assert-True -Condition ($roadmap -match "## Milestone 25: Local Video Generation") -Message "Roadmap should include local video generation."
+    foreach ($candidate in @("HunyuanVideo 1.5", "Wan2.2 TI2V-5B", "LTX-2.3")) {
+        Assert-True -Condition ($roadmap -match [regex]::Escape($candidate)) -Message "Video roadmap should retain candidate: $candidate"
+    }
+    Assert-True -Condition ($roadmap -match "Windows Intel, Windows AMD, and Apple Silicon local video generation unavailable") -Message "Video roadmap should not overstate non-NVIDIA support."
+    Assert-True -Condition ($roadmap -match "Candidate status must not add registry entries, scripts, adapters, harnesses, templates, workflows, configuration, runtime files, or installer automation") -Message "Video candidates should remain documentation-only until promotion."
+    Assert-True -Condition ($roadmap -match "deepfake risk" -and $roadmap -match "generated-content disclosure") -Message "Video roadmap should retain identity and disclosure gates."
+    Assert-True -Condition ($todo -match "## Milestone 25: Local Video Generation") -Message "TODO should track video provider evaluation."
+    Assert-True -Condition ($todo -match "\[ \] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation") -Message "TODO should preserve the failed video-candidate exclusion rule."
     Assert-True -Condition ($roadmap -match "cross-platform core-engine updater") -Message "Roadmap should include automatic core-engine updates."
     Assert-True -Condition ($roadmap -match "stable releases published by the official GitHub repository") -Message "Core updates should use official GitHub releases."
     Assert-True -Condition ($roadmap.Contains('Never update a production installation with an unattended `git pull` or from a moving branch')) -Message "Core updater should reject moving source branches."
