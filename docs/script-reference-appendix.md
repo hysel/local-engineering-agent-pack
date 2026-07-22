@@ -61,6 +61,15 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/invoke-workflow.ps1 -Workf
 
 Use the platform-specific entry points when you need exact script behavior or script-specific arguments. The registry lists Windows, Linux, and macOS entry points for every workflow.
 
+## Candidate-Foundation Utilities
+
+These read-only utilities intentionally remain outside `config/workflows.json` and the future UI until an exact quantization profile passes live promotion gates.
+
+| Utility | Effect boundary | Windows | Linux/macOS | Reference |
+| --- | --- | --- | --- | --- |
+| Quantization hardware profile | Reads local OS, architecture, memory, storage headroom, accelerator, driver/runtime, instruction, context, concurrency, and lane inputs; performs no model endpoint request. | `scripts/get-quantization-profile.ps1` | `scripts/get-quantization-profile.linux.sh`, `scripts/get-quantization-profile.macos.sh` | `docs/hardware-adaptive-quantization.md` |
+| Quantization dry-run planner | Reads a local request and committed support matrix; emits an existing-artifact, local-derivative proposal, or no-safe-recommendation with every effect false. | `scripts/plan-model-quantization.ps1` | `scripts/plan-model-quantization.linux.sh`, `scripts/plan-model-quantization.macos.sh` | `docs/hardware-adaptive-quantization.md` |
+
 ## macOS Host Bootstrap
 
 `scripts/bootstrap-macos-agent-host.sh` is a macOS-only host-preparation

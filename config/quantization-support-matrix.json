@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "description": "Candidate compatibility boundaries for quantization planning. Entries are not promotion evidence.",
+  "formats": [
+    {
+      "format": "gguf",
+      "runtimes": ["ollama", "llama.cpp"],
+      "candidatePlatforms": ["windows-x64", "linux-x64", "linux-arm64", "macos-arm64"],
+      "notes": "CPU/GPU layer offload, model architecture, KV-cache precision, context, and runtime build must be checked independently."
+    },
+    {
+      "format": "mlx",
+      "runtimes": ["mlx-lm"],
+      "candidatePlatforms": ["macos-arm64"],
+      "notes": "Apple Silicon unified-memory profile only; GGUF evidence does not transfer."
+    },
+    {
+      "format": "awq",
+      "runtimes": ["runtime-specific"],
+      "candidatePlatforms": ["windows-x64-nvidia", "linux-x64-nvidia"],
+      "notes": "Requires an explicitly compatible model architecture, kernels, driver, and runtime."
+    },
+    {
+      "format": "gptq",
+      "runtimes": ["runtime-specific"],
+      "candidatePlatforms": ["windows-x64-nvidia", "linux-x64-nvidia"],
+      "notes": "Group size, activation ordering, kernels, and backend support are part of compatibility."
+    },
+    {
+      "format": "fp8",
+      "runtimes": ["runtime-specific"],
+      "candidatePlatforms": ["windows-x64-nvidia", "linux-x64-nvidia"],
+      "notes": "Native FP8 capability and runtime kernels are required; storage precision is not execution evidence."
+    },
+    {
+      "format": "int4",
+      "runtimes": ["runtime-specific"],
+      "candidatePlatforms": ["windows-x64-nvidia", "windows-x64-intel", "windows-x64-amd", "linux-x64-nvidia"],
+      "notes": "INT4 is a class, not one interchangeable format; vendor kernels and exact packing method must match."
+    }
+  ],
+  "defaultDecision": "no-safe-recommendation",
+  "evidenceInheritanceAcrossFormatsPlatformsOrAcceleratorsAllowed": false
+}

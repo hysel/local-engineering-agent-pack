@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestones 1 through 21 are complete for their defined supported-surface, generated-fixture, workflow-foundation, and general-capability scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 22 is in progress with its Tauri/private-IPC desktop architecture selected; implementation remains gated by dependency, security, packaging, and cross-platform evidence. Milestone 23 makes the existing Linux image capability visible while evidence-gating native desktop profiles. Milestones 24 and 25 are documentation-only future expansions for local music/audio and video generation. Milestone 26 plans evidence-gated hardware-adaptive model quantization and trusted artifact selection.
+The repository is in early implementation stage. Milestones 1 through 21 are complete for their defined supported-surface, generated-fixture, workflow-foundation, and general-capability scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 22 is in progress with its Tauri/private-IPC desktop architecture selected; implementation remains gated by dependency, security, packaging, and cross-platform evidence. Milestone 23 now defines consumer-local hardware discovery and consent while native desktop profiles remain evidence-gated. Milestones 24 and 25 have current documentation-only candidate inventories and shared media-consent policy but no executable integrations. Milestone 26 has versioned contracts, an OS-aware sanitized profiler, a dry-run trusted-artifact selector, support boundaries, disclosures, and benchmark gates; live model/recipe promotion remains open.
 
 ## Stage Status
 
@@ -31,10 +31,10 @@ The repository is in early implementation stage. Milestones 1 through 21 are com
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Hardware-aware recommendations, local-only config generation, surface-neutral model lanes, workflow dispatch and envelopes, setup health, cleanup, release readiness, evidence views, cross-platform onboarding, and the stable UI-facing foundation are implemented. Future surface profiles remain separately evidence-gated. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, deterministic and optional bounded LLM routing, live-validated local text and ComfyUI image adapters, runtime provider discovery, typed artifacts, and engineering workflow route plans are implemented with cross-platform contracts. |
 | Milestone 22: Unified Product UI And Task Composition | In progress | Tauri 2, private typed IPC, cross-platform storage, and immutable update/rollback contracts are defined. A patched-source Windows x64 native probe passed, but the fix is unpublished and Linux/native security/package gates remain, so runtime files stay out of the repository. |
-| Milestone 23: Native Local Image Generation | In progress | The pinned Linux ComfyUI/SDXL provider and typed adapter are live-validated; consumer-local Windows NVIDIA, Intel XPU, AMD, and Apple Silicon profiles remain independently evidence-gated. |
-| Milestone 24: Local Music And Audio Generation | Planned | Evaluate local music providers and hardware profiles without shipping any adapter, installer, model configuration, or harness until the exact provider, license, operating system, accelerator, and operation pass the promotion gates. |
-| Milestone 25: Local Video Generation | Planned | Evaluate consumer-local text-to-video and image-to-video providers, licensing, identity consent, artifacts, and native hardware profiles without shipping executable integration before promotion. |
-| Milestone 26: Hardware-Adaptive Model Quantization | Planned | Select or reproducibly create a trusted model artifact for the user's exact hardware and runtime, then promote it only after resource, quality, license, and workflow validation. |
+| Milestone 23: Native Local Image Generation | In progress | The Linux ComfyUI/SDXL profile is live-validated and consumer-local hardware discovery/consent is defined; native Windows and Apple Silicon profiles remain independently gated. |
+| Milestone 24: Local Music And Audio Generation | Research in progress | Exact ACE-Step and accessible Stable Audio candidates plus shared consent policy are recorded; gated Small Music metadata and every live provider profile remain open. |
+| Milestone 25: Local Video Generation | Research in progress | Exact HunyuanVideo, Wan2.2, and LTX-2.3 candidate records plus identity/media consent policy are complete; no live provider is promoted. |
+| Milestone 26: Hardware-Adaptive Model Quantization | Foundation in progress | Versioned plan/artifact contracts, support matrix, sanitized profiling, dry-run trusted-artifact selection, disclosures, and benchmark gates are implemented; live exact-profile validation remains open. |
 
 ## Milestone 1: Minimum Usable Pack
 
@@ -709,7 +709,7 @@ Exit criteria:
 ### Recommended Implementation Order
 
 1. Preserve the current Linux ComfyUI/SDXL profile as the reference contract and do not broaden its evidence.
-2. Define hardware discovery and consent-driven local provider onboarding without requiring an external server.
+2. Define hardware discovery and consent-driven local provider onboarding without requiring an external server. Done as a fail-closed contract and guide; it does not install candidate profiles.
 3. Validate Windows NVIDIA CUDA, followed by Windows Intel XPU and Windows AMD, using separate pinned environments and evidence.
 4. Validate Apple Silicon MPS on a physical Mac as the last native hardware gate to control cost.
 5. Add installer and lifecycle automation only for each exact passing profile.
@@ -743,7 +743,7 @@ Exit criteria:
 
 ### Recommended Implementation Order
 
-1. Record candidate versions, model cards, licenses, distribution terms, download sizes, supported operations, and claimed hardware backends without adding executable integration files.
+1. Record candidate versions, model cards, licenses, distribution terms, download sizes, supported operations, and claimed hardware backends without adding executable integration files. ACE-Step, Stable Audio Small SFX, and Stable Audio Medium are recorded; exact anonymous metadata for gated Stable Audio Small Music remains open.
 2. Evaluate ACE-Step 1.5 first on an available Linux CUDA machine to prove the REST, audio-artifact, privacy, cancellation, recovery, and cleanup boundaries; this evidence must not promote Windows or macOS.
 3. Evaluate Stable Audio 3.0 Small and Medium independently for sound effects, instrumental music, editing, duration, licensing, and consumer hardware fit.
 4. Run separate native profiles for Windows NVIDIA CUDA, Windows Intel XPU, Windows AMD ROCm, and Apple Silicon MLX as hardware becomes available; keep the physical Mac gate last to control cost.
@@ -777,7 +777,7 @@ Exit criteria:
 
 ### Recommended Implementation Order
 
-1. Record exact HunyuanVideo 1.5, Wan2.2 TI2V-5B, and LTX-2.3 versions, model cards, licenses, sizes, operations, and claimed hardware without adding executable integration files.
+1. Record exact HunyuanVideo 1.5, Wan2.2 TI2V-5B, and LTX-2.3 versions, model cards, licenses, sizes, operations, and claimed hardware without adding executable integration files. Done with immutable code/model revisions and published primary-file hashes; no executable integration was added.
 2. Evaluate HunyuanVideo 1.5 and Wan2.2 independently on available Linux NVIDIA hardware; confirm architecture and CUDA compatibility before downloading large model assets.
 3. Evaluate LTX-2.3 only on hardware meeting its documented memory, storage, and CUDA requirements.
 4. Define provider-neutral capability and typed video artifacts only after one exact profile passes.
@@ -817,10 +817,10 @@ Exit criteria:
 
 ### Recommended Implementation Order
 
-1. Define a versioned quantization-plan and quantized-artifact manifest contract, including immutable source identity, license, hashes, recipe, runtime compatibility, local storage, and cleanup state.
-2. Extend hardware and runtime profiling with the exact inputs needed for format selection, context planning, offload, and capacity checks while keeping reports sanitized.
-3. Implement dry-run selection of trusted existing artifacts before adding any local conversion path.
-4. Define bounded benchmark and quality gates that compare source and candidate artifacts across the user's intended capability and engineering lanes.
+1. Define a versioned quantization-plan and quantized-artifact manifest contract, including immutable source identity, license, hashes, recipe, runtime compatibility, local storage, and cleanup state. Done.
+2. Extend hardware and runtime profiling with the exact inputs needed for format selection, context planning, offload, and capacity checks while keeping reports sanitized. Done with an OS-aware, local-only standard-library profiler; exact driver-tool availability remains visible as unknown rather than inferred.
+3. Implement dry-run selection of trusted existing artifacts before adding any local conversion path. Done; the planner performs no network, download, conversion, write, or activation effect.
+4. Define bounded benchmark and quality gates that compare source and candidate artifacts across the user's intended capability and engineering lanes. Done in the quantization guide; live thresholds remain specific to the first exact validation cell.
 5. Validate one Linux NVIDIA GGUF/Ollama path in a disposable environment, using the user's local Ollama host only after explicit test-phase notice and approval.
 6. Add Windows NVIDIA, Windows Intel, Windows AMD, and Apple Silicon paths only when an exact runtime and format have credible native support; keep physical Mac validation last.
 7. Add conversion, activation, rollback, cleanup, and UI integration only for exact profiles that pass all promotion gates.

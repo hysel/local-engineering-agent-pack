@@ -19,9 +19,11 @@ Continue, Aider, and OpenCode are the maintained engineering surfaces. General t
 Milestones 1 through 21 are complete for their defined scopes. Milestone 22 is
 in progress with Tauri 2, private typed sidecar IPC, and cross-platform
 packaging selected for the local web UI and task composition. Milestone 23 owns native
-local image profiles, Milestones 24 and 25 track documentation-only music,
-audio, and video research, and Milestone 26 plans hardware-adaptive model
-quantization. Broader surface and provider parity remains
+local image profiles and now has consumer-local discovery and consent contracts.
+Milestones 24 and 25 retain documentation-only audio/video candidate inventories and
+shared media-consent policy. Milestone 26 now has quantization plan/artifact contracts,
+OS-aware sanitized profiling, explicit support boundaries, and a no-effect dry-run
+selector; live model recipes and activation remain unpromoted. Broader surface and provider parity remains
 evidence-gated.
 
 Capability Evidence Contract v2 now prevents model readiness from being

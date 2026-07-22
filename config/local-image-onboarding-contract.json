@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "description": "Fail-closed hardware discovery and consent contract for consumer-local image-provider onboarding.",
+  "executionDefault": "dry-run",
+  "externalServerRequired": false,
+  "discovery": {
+    "requiredFields": [
+      "operatingSystem",
+      "architecture",
+      "accelerators",
+      "systemMemoryGb",
+      "availableStorageGb",
+      "driverOrRuntimeVersions"
+    ],
+    "acceleratorFields": [
+      "vendor",
+      "model",
+      "memoryType",
+      "usableMemoryGb",
+      "runtime",
+      "runtimeVersion"
+    ],
+    "unknownValueDecision": "candidate-unavailable",
+    "silentCpuFallbackAllowed": false,
+    "machineSpecificValuesRemainLocal": true
+  },
+  "profiles": [
+    {
+      "id": "comfyui-sdxl-linux-nvidia-v100",
+      "operatingSystem": "linux",
+      "accelerator": "nvidia-cuda",
+      "status": "tested-passed",
+      "evidenceScope": "Pinned ComfyUI/SDXL NVIDIA V100 provider only"
+    },
+    {
+      "id": "comfyui-sdxl-windows-nvidia",
+      "operatingSystem": "windows",
+      "accelerator": "nvidia-cuda",
+      "status": "candidate-only"
+    },
+    {
+      "id": "comfyui-sdxl-windows-intel",
+      "operatingSystem": "windows",
+      "accelerator": "intel-xpu",
+      "status": "candidate-only"
+    },
+    {
+      "id": "comfyui-sdxl-windows-amd",
+      "operatingSystem": "windows",
+      "accelerator": "amd",
+      "status": "candidate-only"
+    },
+    {
+      "id": "comfyui-sdxl-macos-apple-silicon",
+      "operatingSystem": "macos",
+      "accelerator": "apple-mps",
+      "status": "candidate-only"
+    }
+  ],
+  "selection": {
+    "exactOperatingSystemAndAcceleratorMatchRequired": true,
+    "evidenceInheritanceAcrossProfilesAllowed": false,
+    "candidateProfilesMayInstall": false,
+    "unsupportedDecision": "unavailable",
+    "cpuFallbackRequiresSeparatelyPromotedProfile": true
+  },
+  "consentBeforeNetworkOrWrite": {
+    "requiredDisclosures": [
+      "provider identity and immutable version",
+      "model identity and immutable revision",
+      "license and use restrictions",
+      "download source and network destinations",
+      "download and temporary storage sizes",
+      "published checksums and verification status",
+      "installation and model storage locations",
+      "expected accelerator and memory fit",
+      "provider binding and local network exposure",
+      "generated artifact and provider-copy retention",
+      "cleanup rollback and uninstall behavior"
+    ],
+    "approvalIsEffectBound": true,
+    "approvalIsSingleUse": true,
+    "approvalMayNotAuthorizeUnknownDownloads": true
+  },
+  "lifecycle": {
+    "bindAddress": "127.0.0.1",
+    "startOnDemand": true,
+    "idleShutdownRequired": true,
+    "customNodesDefault": "disabled",
+    "externalApiNodesDefault": "disabled",
+    "providerStateSeparatedFromEngine": true,
+    "healthAcceleratorArtifactCancellationRecoveryCleanupRollbackUninstallRequired": true
+  },
+  "promotion": {
+    "failedProfileLeavesDocumentationOnly": true,
+    "runtimeOrInstallerFilesRequireExactProfilePass": true,
+    "physicalMacReservedForFinalNativeHardwareGate": true
+  }
+}

@@ -4,7 +4,7 @@
 
 Haven 42 is an evidence-gated, local-first AI workbench for software engineering and general-purpose tasks on Windows, Linux, and macOS. It was previously named Local Engineering Agent Pack. Because the project had no external users at rebrand time, product-specific paths and commands use the Haven 42 identity without a legacy compatibility layer.
 
-Today, the maintained engineering surfaces are Continue, Aider, and OpenCode. Repository-optional local chat, writing, and summarization have a validated Ollama adapter, and local image generation has a validated Linux ComfyUI/SDXL path. The local web UI is planned, native desktop image profiles remain evidence-gated, and music/video generation remains roadmap-only. OpenHands is documentation-only while its isolated validation boundary remains unimplemented.
+Today, the maintained engineering surfaces are Continue, Aider, and OpenCode. Repository-optional local chat, writing, and summarization have a validated Ollama adapter, and local image generation has a validated Linux ComfyUI/SDXL path. The local web UI is planned, native desktop image profiles remain evidence-gated, and music/video candidates remain documentation-only. Quantization contracts, sanitized profiling, and dry-run trusted-artifact selection are implemented without admitting a conversion path. OpenHands is documentation-only while its isolated validation boundary remains unimplemented.
 
 Failed or retired integrations do not ship scripts, harnesses, wrappers, configuration, workflows, or active catalog entries. Fixture-backed cross-platform contracts do not broaden native runtime or hardware claims.
 
@@ -19,6 +19,10 @@ Failed or retired integrations do not ship scripts, harnesses, wrappers, configu
 - Review current plans: [[Roadmap|Roadmap]]
 - Review local image support: [[Local Image Capability|Local-Image-Capability]]
 - Install the validated Linux image provider: [[ComfyUI Image Provider Setup|ComfyUI-Image-Provider-Setup]]
+- Review consumer-local image onboarding: [[Local Image Provider Onboarding|Local-Image-Provider-Onboarding]]
+- Review audio candidates and consent: [[Local Audio Provider Candidates|Local-Audio-Provider-Candidates]] and [[Generative Media Consent Policy|Generative-Media-Consent-Policy]]
+- Review video candidates: [[Local Video Provider Candidates|Local-Video-Provider-Candidates]]
+- Plan hardware-adaptive quantization: [[Hardware-Adaptive Quantization|Hardware-Adaptive-Quantization]]
 - Prepare a release: [[Release Guidance|Release-Guidance]]
 - Choose Fast, Integration, or Full validation: [[Test Tiers|Test-Tiers]]
 - Review desktop storage, update, and rollback boundaries: [[Desktop Storage And Updates|Desktop-Storage-And-Updates]]
@@ -27,9 +31,9 @@ Failed or retired integrations do not ship scripts, harnesses, wrappers, configu
 
 - Milestone 22 — planned local web UI and task composition.
 - Milestone 23 — native local image generation in progress; Linux ComfyUI/SDXL validated.
-- Milestone 24 — local music/audio research only.
-- Milestone 25 — local video research only.
-- Milestone 26 — hardware-adaptive model quantization and trusted artifact selection.
+- Milestone 24 — immutable audio candidate inventory and consent policy complete; live evaluation open.
+- Milestone 25 — immutable video candidate inventory and consent policy complete; live evaluation open.
+- Milestone 26 — contracts, sanitized profiling, and dry-run selection complete; live exact-profile validation open.
 
 ## Support Model
 
