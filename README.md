@@ -4,7 +4,7 @@
 
 Haven 42 is an evidence-gated, local-first AI workbench for software engineering and general-purpose tasks on Windows, Linux, and macOS.
 
-The project began as a reusable pack for coding agents. It now provides a provider-neutral core for discovering capabilities, selecting safe workflows, running supported local agent surfaces, and producing typed artifacts without making a cloud service the default. The future product experience is a local web UI that asks what the user wants to accomplish and routes the request through these tested contracts.
+The project began as a reusable pack for coding agents. It now provides a provider-neutral core for discovering capabilities, selecting safe workflows, running supported local agent surfaces, and producing typed artifacts without making a cloud service the default. The planned product experience is a Tauri desktop application with a bundled local web UI that asks what the user wants to accomplish and routes the request through these tested contracts.
 
 Haven 42 was previously named Local Engineering Agent Pack. Because the project had no external users at the time of the rebrand, product-specific paths, workflow IDs, scripts, and release artifacts adopt the new identity without a legacy compatibility layer; see [`BRANDING.md`](BRANDING.md).
 
@@ -16,13 +16,15 @@ Haven 42 was previously named Local Engineering Agent Pack. Because the project 
 | Engineering workflows | Repository discovery, planning, review, scoped changes, language-aware guidance, workflow dispatch, and evidence reporting are implemented. |
 | General local text | `general.chat`, `content.write`, and `content.summarize` have a live-validated, session-bound Ollama adapter. |
 | Local images | `media.image.create` has a live-validated Linux ComfyUI/SDXL provider and typed PNG artifacts. Native Windows NVIDIA, Intel GPU/XPU, AMD, and Apple Silicon profiles remain candidates until independently validated. |
-| Product UI | A local web UI and multi-step task composition are designed and planned for Milestone 22; no UI implementation is shipped yet. |
+| Product UI | Milestone 22 is in progress with Tauri 2, private typed sidecar IPC, and cross-platform packaging selected; no desktop runtime is shipped before its promotion gates pass. |
 | Music and video | Local music/audio and video generation are roadmap research only. No scripts, adapters, harnesses, workflows, or configuration ship before promotion gates pass. |
 
 ## Product Direction
 
 ```text
-Local web UI (planned)
+Tauri desktop shell with bundled local web UI (planned)
+        |
+Private typed sidecar IPC
         |
 Capability registry and deterministic routing
         |
@@ -47,7 +49,7 @@ Evidence states distinguish `tested-passed`, `tested-partial`, `failed`, `recomm
 | --- | --- | --- |
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Stable workflow, recommendation, dispatch, onboarding, and release foundation. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, local text and image adapters, capability discovery, routing, and typed artifacts. |
-| Milestone 22: Unified Product UI And Task Composition | Planned | Local web experience, guided intent selection, and evidence-preserving multi-step tasks. |
+| Milestone 22: Unified Product UI And Task Composition | In progress | Tauri/private-IPC architecture selected; dependency, security, packaging, signing, and cross-platform validation come before UI shipping. |
 | Milestone 23: Native Local Image Generation | In progress | Linux ComfyUI/SDXL is validated; consumer-local Windows and macOS profiles remain gated. |
 | Milestone 24: Local Music And Audio Generation | Planned | Evaluate local providers, licenses, hardware profiles, safety, and typed audio artifacts. |
 | Milestone 25: Local Video Generation | Planned | Evaluate consumer-local image-to-video and text-to-video candidates without premature integration. |
@@ -78,6 +80,7 @@ For software work, the pack supplies repeatable discovery, implementation planni
 | See maintainer tasks that can proceed without extra prompts | `docs/autonomous-maintainer-queue.md` |
 | Choose from a short guided menu | `docs/haven-42-menu.md` |
 | Review the future unified UI design | `docs/unified-starter-toolkit-ui.md` |
+| Review the desktop runtime, packaging, and signing boundary | `docs/unified-starter-toolkit-ui.md` and `DECISIONS.md` |
 | Generate a beginner setup plan | `docs/beginner-setup-mode.md` |
 | Look up individual script details | `docs/script-reference-appendix.md` |
 | Plan shared assets for multiple projects | `docs/shared-asset-installation.md` |

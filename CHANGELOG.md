@@ -11,6 +11,8 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Selected Tauri 2 with bundled React/TypeScript/Vite assets and a packaged Haven 42 engine sidecar as the Milestone 22 desktop boundary; ordinary desktop operation uses private typed stdin/stdout IPC with no generic shell bridge or listening port, while hardened loopback mode remains separately gated for headless use.
+- Defined cross-platform package and signing policy: unsigned development builds, GitHub-hosted platform builds, free Windows signing paths before paid Artifact Signing, Apple enrollment deferred until the first public macOS beta, signed/notarized public macOS packages, signed public Windows packages, attested Linux artifacts, and a final physical-Mac release gate.
 - Renamed the product to Haven 42 with the tagline "Your private, local AI station," and adopted the `haven-42` identity across the repository, release artifacts, product-specific workflows, scripts, paths, and documentation before external adoption.
 - Refreshed the README and wiki landing page to reflect the provider-neutral local AI workbench direction, current maintained surfaces, validated general text and Linux image capabilities, pass-before-ship model, and Milestones 22 through 25 without prematurely renaming the repository.
 - Added and live-validated the session-bound local Ollama text adapter for bounded chat, writing, and summarization with explicit execute/apply gates, typed artifacts, sanitization, cleanup, and no repository reads.

@@ -80,14 +80,58 @@ Every model, workflow, agent surface, and installer profile shown in the UI must
 
 The UI should call only stable workflow IDs from `config/workflows.json` through `scripts/invoke-workflow.*` using the schema-v1 workflow envelope. Any new UI action should first exist as a script or registry entry with tests.
 
-The first implementation can be local-only and static/serverless if it shells out to existing scripts from the user machine. A hosted production service is out of scope because this pack is local-first and should not upload repository content, hardware profiles, local endpoints, or raw validation transcripts.
+The accepted desktop runtime is Tauri 2 with a React and TypeScript UI built by Vite. The production window loads only bundled local assets. Tauri starts one packaged, platform-specific Haven 42 engine sidecar and exchanges versioned typed JSON over private stdin/stdout IPC. The bridge accepts only registered capability IDs, workflow IDs, and schema-valid arguments. It must not expose arbitrary shell execution, unrestricted filesystem access, raw process spawning, remote UI code, or a generic command method.
+
+The desktop application does not listen on a TCP port. A separately hardened loopback server may be evaluated for headless Linux, SSH-tunneled access, development, and diagnostics, but it is not the ordinary Windows, Linux desktop, or macOS runtime and cannot inherit desktop promotion evidence.
+
+A hosted production service is out of scope because Haven 42 is local-first and should not upload repository content, hardware profiles, local endpoints, prompts, generated artifacts, or raw validation transcripts.
+
+## Desktop Security Boundary
+
+- Use Tauri capability scopes to allow only the packaged Haven 42 sidecar and exact required operations.
+- Keep the webview Content Security Policy restrictive and load no remote scripts, styles, frames, or application pages.
+- Validate every renderer request again in the native bridge and core engine; renderer state is not execution authority.
+- Use native directory selection, then scope repository and artifact access to the explicitly selected roots.
+- Validate external documentation URLs against an allowlist before opening the system browser.
+- Keep provider downloads, model pulls, network probes, writes, and approved-write workflows behind their existing disclosure and approval gates.
+- Preserve the schema-v1 workflow envelope as the initial IPC contract rather than introducing UI-only business logic.
+- Package Node.js, Rust, and Python as build-time or application-private components; do not install them globally for end users.
+
+## Platform Packages
+
+| Platform | Initial package | Native renderer | Promotion boundary |
+| --- | --- | --- | --- |
+| Windows x64 and ARM64 | Per-user EXE installer plus optional portable ZIP | Edge WebView2 | Sign executable components and installer before stable public promotion. |
+| Linux x64 and ARM64 | AppImage first; DEB and RPM only after separate validation | WebKitGTK | Validate each supported distribution and architecture; publish checksums and attestations. |
+| macOS Apple Silicon and Intel | DMG containing `Haven 42.app` | WKWebView | Sign nested code and app, notarize, staple, and complete a final physical-Mac user-flow check. |
+
+Application files are immutable and versioned separately from configuration, state, models, repositories, provider data, generated artifacts, and evidence. Installation must not silently add Ollama, ComfyUI, models, GPU drivers, agent software, startup entries, services, firewall rules, telemetry, or system-wide runtimes.
+
+## Signing And Build Cost Strategy
+
+- Use standard GitHub-hosted Windows, Linux, and macOS runners for the public repository; do not rent an AWS Mac for routine builds or signing.
+- Build unsigned packages during development and sign only approved release candidates.
+- Pursue free Windows signing through Microsoft Store MSIX signing or the SignPath Foundation before paid Microsoft Artifact Signing.
+- Defer Apple Developer Program enrollment until the first public macOS beta is otherwise ready.
+- Store signing credentials only in protected GitHub environments or equivalent secret storage, require release approval, and never commit private keys.
+- Keep macOS physical-hardware testing as the last release gate rather than a routine CI dependency.
+
+## Desktop Runtime Promotion Gates
+
+Tauri and its package assets remain architecture-only until the implementation is explicitly approved and the exact runtime passes:
+
+1. Dependency, license, and supply-chain review for Tauri, Rust crates, frontend packages, WebView2, WKWebView, WebKitGTK, and the packaging toolchain.
+2. Typed IPC tests proving unknown operations, malformed envelopes, arbitrary commands, unauthorized paths, and remote navigation are rejected.
+3. Windows, Linux, and macOS build, install, launch, workflow dispatch, shutdown, uninstall, and user-data-preservation tests.
+4. Updater checksum, attestation or signature, compatibility, atomic activation, health-check, rollback, offline, and retained-version tests.
+5. Platform signing and verification gates for public release candidates, plus the final physical-Mac Gatekeeper and Finder flow.
 
 ## Roadmap Placement
 
 Milestone 20 completed the stable workflow, evidence, onboarding, and dispatcher foundation. Milestone 21 defines and validates general-purpose capabilities, typed artifacts, providers, repository-optional sessions, and routing policy. Milestone 22 implements this UI and later bounded multi-step composition over those two foundations.
 
-Remaining product decisions stay on `TODO.md`:
+Remaining product work stays on `TODO.md`:
 
 - Keep surface-specific profile generation gated by non-Continue compatibility evidence.
 - Decide which local text and image providers form the first supported Milestone 21 vertical slice.
-- Select the local-first Milestone 22 UI runtime and packaging boundary without introducing a hosted-service dependency.
+- Define and validate the Tauri IPC, packaging, signing, updater, and platform promotion contracts before scaffolding a shippable UI.

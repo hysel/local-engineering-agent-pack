@@ -3763,6 +3763,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     $uiDocPath = Join-Path $repoRoot "docs/unified-starter-toolkit-ui.md"
     $readmePath = Join-Path $repoRoot "README.md"
     $todoPath = Join-Path $repoRoot "TODO.md"
+    $roadmapPath = Join-Path $repoRoot "ROADMAP.md"
     $projectPath = Join-Path $repoRoot "PROJECT.md"
     $brandingPath = Join-Path $repoRoot "BRANDING.md"
     $configPath = Join-Path $repoRoot ".continue/config.yaml"
@@ -3774,6 +3775,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     $uiDoc = Get-Content -LiteralPath $uiDocPath -Raw
     $readme = Get-Content -LiteralPath $readmePath -Raw
     $todo = Get-Content -LiteralPath $todoPath -Raw
+    $roadmap = Get-Content -LiteralPath $roadmapPath -Raw
     $project = Get-Content -LiteralPath $projectPath -Raw
     $branding = Get-Content -LiteralPath $brandingPath -Raw
     $continueConfig = Get-Content -LiteralPath $configPath -Raw
@@ -3803,6 +3805,14 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($uiDoc -match "config/workflows\.json") -Message "Unified UI design should use workflow registry as source of truth."
     Assert-True -Condition ($uiDoc -match "scripts/invoke-workflow") -Message "Unified UI design should use workflow dispatcher boundary."
     Assert-True -Condition ($uiDoc -match "local-first") -Message "Unified UI design should preserve local-first boundary."
+    Assert-True -Condition ($uiDoc -match "Tauri 2") -Message "Unified UI design should record the accepted Tauri runtime."
+    Assert-True -Condition ($uiDoc -match "typed JSON over private stdin/stdout IPC") -Message "Unified UI design should require private typed sidecar IPC."
+    Assert-True -Condition ($uiDoc -match "must not expose arbitrary shell execution") -Message "Unified UI design should reject an arbitrary shell bridge."
+    Assert-True -Condition ($uiDoc -match "headless Linux") -Message "Unified UI design should keep headless loopback mode separately scoped."
+    Assert-True -Condition ($uiDoc -match "Microsoft Store MSIX signing or the SignPath Foundation") -Message "Unified UI design should prefer the agreed low-cost Windows signing paths."
+    Assert-True -Condition ($uiDoc -match "Defer Apple Developer Program enrollment") -Message "Unified UI design should defer Apple enrollment until the public beta gate."
+    Assert-True -Condition ($roadmap -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "Roadmap should mark the architecture-selected UI milestone in progress."
+    Assert-True -Condition ($todo -match "\[x\] Select and document Tauri 2") -Message "TODO should mark the UI runtime selection complete."
     Assert-True -Condition ($readme -match "docs/solution-architecture-review\.md") -Message "README should link solution architecture review."
     Assert-True -Condition ($readme -match "docs/unified-starter-toolkit-ui\.md") -Message "README should link unified UI design."
     Assert-True -Condition ($readme -match "(?m)^# Haven 42\r?$") -Message "README should use the Haven 42 product name."

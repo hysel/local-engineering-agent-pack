@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is in early implementation stage. Milestones 1 through 21 are complete for their defined supported-surface, generated-fixture, workflow-foundation, and general-capability scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 22 builds the unified product UI and multi-step experience. Milestone 23 makes the existing Linux image capability visible while evidence-gating native desktop profiles. Milestones 24 and 25 are documentation-only future expansions for local music/audio and video generation.
+The repository is in early implementation stage. Milestones 1 through 21 are complete for their defined supported-surface, generated-fixture, workflow-foundation, and general-capability scopes. Continue, Aider, and OpenCode form the maintained surface set; failed or retired integrations are removed rather than carried as partial implementations. OpenHands remains a documentation-only candidate with a defined but unimplemented isolation boundary. Milestone 22 is in progress with its Tauri/private-IPC desktop architecture selected; implementation remains gated by dependency, security, packaging, and cross-platform evidence. Milestone 23 makes the existing Linux image capability visible while evidence-gating native desktop profiles. Milestones 24 and 25 are documentation-only future expansions for local music/audio and video generation.
 
 ## Stage Status
 
@@ -30,7 +30,7 @@ The repository is in early implementation stage. Milestones 1 through 21 are com
 | Milestone 19: Installer Profiles, Evidence Catalog, And Release Packaging | Complete | Continue profiles plus Aider and OpenCode install/configure/health/test paths satisfy supported-surface parity with deterministic cross-platform contracts. Failed or retired integrations are absent from active catalogs and scripts; OpenHands is documentation-only. |
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Hardware-aware recommendations, local-only config generation, surface-neutral model lanes, workflow dispatch and envelopes, setup health, cleanup, release readiness, evidence views, cross-platform onboarding, and the stable UI-facing foundation are implemented. Future surface profiles remain separately evidence-gated. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, deterministic and optional bounded LLM routing, live-validated local text and ComfyUI image adapters, runtime provider discovery, typed artifacts, and engineering workflow route plans are implemented with cross-platform contracts. |
-| Milestone 22: Unified Product UI And Task Composition | Planned | Build the local-first unified UI over the stable Milestone 20 workflow foundation and Milestone 21 capability contracts, then add tested multi-step composition without bypassing evidence, privacy, or approval policy. |
+| Milestone 22: Unified Product UI And Task Composition | In progress | Tauri 2, bundled local web assets, a packaged engine sidecar, and private typed IPC are selected; implementation remains gated by security, dependency, packaging, signing, and cross-platform promotion tests. |
 | Milestone 23: Native Local Image Generation | In progress | The pinned Linux ComfyUI/SDXL provider and typed adapter are live-validated; consumer-local Windows NVIDIA, Intel XPU, AMD, and Apple Silicon profiles remain independently evidence-gated. |
 | Milestone 24: Local Music And Audio Generation | Planned | Evaluate local music providers and hardware profiles without shipping any adapter, installer, model configuration, or harness until the exact provider, license, operating system, accelerator, and operation pass the promotion gates. |
 | Milestone 25: Local Video Generation | Planned | Evaluate consumer-local text-to-video and image-to-video providers, licensing, identity consent, artifacts, and native hardware profiles without shipping executable integration before promotion. |
@@ -637,6 +637,9 @@ Goal: Provide one local-first product surface over the completed engineering wor
 
 Scope:
 
+- Use Tauri 2 with a React and TypeScript UI built by Vite for ordinary desktop operation. Load bundled local assets only and communicate with a packaged Haven 42 engine sidecar through versioned typed stdin/stdout IPC.
+- Permit only registered capability and workflow IDs through narrowly scoped Tauri permissions; ship no arbitrary shell bridge, unrestricted filesystem API, remote UI code, or default listening port.
+- Keep hardened loopback/browser operation as a separately tested option for headless Linux, SSH-tunneled use, development, and diagnostics.
 - Implement the unified web UI over stable workflow IDs, capability IDs, typed artifacts, and versioned request/result envelopes.
 - Present deterministic first-run choices for chat, writing, summarization, image creation, software work, and local-AI setup.
 - Support repository-optional sessions and clearly identify every artifact location before a write.
@@ -648,6 +651,8 @@ Scope:
 - Add accessible progress, warning, failure, retry, and recovery experiences over the versioned workflow envelope.
 - Add tested multi-step task composition only after individual capabilities and artifact contracts have passed their own gates.
 - Keep future surface-specific profiles outside the UI until their exact integrations pass the agent admission policy.
+- Use GitHub-hosted platform runners for routine builds. Pursue Microsoft Store or SignPath Foundation Windows signing before paid Artifact Signing, and defer Apple Developer enrollment until the first public macOS beta is otherwise ready.
+- Build unsigned development packages, but require signed Windows release components, signed and notarized macOS release packages, and checksummed/attested Linux artifacts before stable promotion.
 
 Exit criteria:
 
@@ -662,14 +667,16 @@ Exit criteria:
 
 ### Recommended Implementation Order
 
-1. Select the local UI runtime and package boundary without introducing a hosted-service dependency.
-2. Implement first-run navigation and capability availability views over the Milestone 21 registry.
-3. Render typed artifacts and workflow progress/error envelopes.
-4. Connect setup, health, model choice, engineering workflows, and evidence views from Milestone 20.
-5. Add repository-free text and image flows only for providers promoted in Milestone 21 or Milestone 23.
-6. Implement the GitHub release updater with explicit channels, network disclosure, immutable asset selection, checksum and signature or attestation verification, compatibility preflight, atomic activation, post-update health checks, rollback, and retained-version cleanup.
-7. Add cross-platform UI contract, updater, rollback, and packaging tests.
-8. Add bounded multi-step composition with explicit intermediate artifacts and approvals.
+1. Select the local UI runtime and package boundary without introducing a hosted-service dependency. Done with Tauri 2, bundled React/TypeScript/Vite assets, a packaged engine sidecar, and private typed stdin/stdout IPC.
+2. Define and test the Tauri capability allowlist, IPC schema, native path-selection boundary, local-only content policy, and headless loopback separation.
+3. Validate pinned dependency and license choices, then scaffold the smallest Windows, Linux, and macOS package slice.
+4. Implement first-run navigation and capability availability views over the Milestone 21 registry.
+5. Render typed artifacts and workflow progress/error envelopes.
+6. Connect setup, health, model choice, engineering workflows, and evidence views from Milestone 20.
+7. Add repository-free text and image flows only for providers promoted in Milestone 21 or Milestone 23.
+8. Implement the GitHub release updater with explicit channels, network disclosure, immutable asset selection, checksum and signature or attestation verification, compatibility preflight, atomic activation, post-update health checks, rollback, and retained-version cleanup.
+9. Add cross-platform UI contract, updater, rollback, packaging, signing, and uninstall tests.
+10. Add bounded multi-step composition with explicit intermediate artifacts and approvals.
 
 ## Milestone 23: Native Local Image Generation
 

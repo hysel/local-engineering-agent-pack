@@ -25,6 +25,26 @@ tested workflow engines -> sanitized reports, local-only config, validation evid
 
 The long-term architecture should keep prompts, rules, templates, validation scripts, and evidence formats portable enough to evaluate with other local-first coding-agent surfaces.
 
+The accepted Milestone 22 desktop architecture adds a Tauri 2 shell without replacing these contracts:
+
+```text
+Bundled React/TypeScript UI
+        |
+        v
+Tauri capability allowlist and native path selection
+        |
+        v
+versioned typed stdin/stdout IPC
+        |
+        v
+packaged Haven 42 engine sidecar
+        |
+        v
+capability registry -> workflow registry -> existing tested engines
+```
+
+The desktop path loads no remote UI code, exposes no generic shell bridge, and listens on no TCP port. A hardened loopback mode is a separate headless Linux, SSH, development, and diagnostics boundary and cannot inherit desktop evidence. Windows, Linux, and macOS launchers, webviews, sidecars, packages, signing, updates, and uninstall behavior are promoted independently.
+
 ## Repository Layers
 
 ### Project Documentation

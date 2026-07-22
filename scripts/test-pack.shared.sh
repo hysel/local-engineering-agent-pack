@@ -1587,6 +1587,14 @@ test_solution_architecture_review_doc() {
     grep -q "config/workflows.json" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
     grep -q "scripts/invoke-workflow" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
     grep -q "local-first" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
+    grep -q "Tauri 2" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
+    grep -q "typed JSON over private stdin/stdout IPC" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
+    grep -q "must not expose arbitrary shell execution" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
+    grep -q "headless Linux" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
+    grep -q "Microsoft Store MSIX signing or the SignPath Foundation" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
+    grep -q "Defer Apple Developer Program enrollment" "$REPO_ROOT/docs/unified-starter-toolkit-ui.md" &&
+    grep -q "Milestone 22: Unified Product UI And Task Composition | In progress" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "\[x\] Select and document Tauri 2" "$REPO_ROOT/TODO.md" &&
     grep -q "docs/solution-architecture-review.md" "$REPO_ROOT/README.md" &&
     grep -q "docs/unified-starter-toolkit-ui.md" "$REPO_ROOT/README.md" &&
     grep -q "local-first AI workbench" "$REPO_ROOT/README.md" &&

@@ -10,14 +10,15 @@ Tagline: Your private, local AI station.
 
 This repository defines an evidence-gated, local-first AI workbench for individual users, developers, teams, consultants, and enterprise groups. It combines repeatable software-engineering workflows with repository-optional chat, writing, summarization, and image capabilities under common routing, approval, privacy, and typed-artifact contracts.
 
-The engineering pack turns common senior engineering activities into version-controlled prompts, rules, agents, and templates that can be reviewed, improved, and reused across repositories. The broader Haven 42 product direction adds an approachable local web experience over the same tested contracts.
+The engineering pack turns common senior engineering activities into version-controlled prompts, rules, agents, and templates that can be reviewed, improved, and reused across repositories. The broader Haven 42 product direction adds an approachable Tauri desktop experience with a bundled local web UI over the same tested contracts.
 
 Continue, Aider, and OpenCode are the maintained engineering surfaces. General text capabilities have a live-validated Ollama adapter, Linux image generation has a live-validated ComfyUI/SDXL provider, and all additional providers or surfaces remain pass-before-ship.
 
 ## Current Stage
 
-Milestones 1 through 21 are complete for their defined scopes. Milestone 22
-owns the planned local web UI and task composition, Milestone 23 owns native
+Milestones 1 through 21 are complete for their defined scopes. Milestone 22 is
+in progress with Tauri 2, private typed sidecar IPC, and cross-platform
+packaging selected for the local web UI and task composition. Milestone 23 owns native
 local image profiles, and Milestones 24 and 25 track documentation-only music,
 audio, and video research. Broader surface and provider parity remains
 evidence-gated.
@@ -29,7 +30,7 @@ implemented. Lane-specific model scoring now keeps WRITE SAFE
 reliability-first while allowing larger validated PLAN ONLY and DEEP REVIEW
 models when hardware permits. Model-backed language promotion, richer
 runtime-measured model metadata, additional script-family consolidation, and
-the optional web UI remain planned work. The onboarding/navigation family now
+the desktop UI implementation remain planned work. The onboarding/navigation family now
 shares catalog, command-rendering, output, and native-dispatch plumbing while
 preserving stable public commands. A schema-v1 workflow envelope now gives
 dispatchers and future UI callers a stable, privacy-conscious JSON boundary.

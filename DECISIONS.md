@@ -2,6 +2,21 @@
 
 This file records important project decisions. Use it for choices that affect architecture, compatibility, governance, or long-term maintenance.
 
+## 2026-07-21: Use Tauri With Private Typed IPC For The Desktop Product
+
+Status: Accepted
+
+Context:
+Haven 42 needs one mainstream local interface across Windows, Linux, and macOS without exposing repository operations through an always-on network service or duplicating the existing workflow and capability logic. A general browser plus loopback API is useful for headless systems, but it adds port, origin, authentication, lifecycle, and filesystem-selection risks to ordinary desktop use.
+
+Decision:
+Use a Tauri 2 desktop shell with a React and TypeScript UI built by Vite. Bundle the Haven 42 core engine as a platform-specific sidecar and communicate through a versioned, typed stdin/stdout IPC contract derived from the existing workflow envelopes. Allow only explicit capability and workflow IDs; do not expose arbitrary shell execution, unrestricted filesystem access, remote UI code, or a generic command bridge. Keep a separately hardened, explicitly enabled loopback mode only for headless Linux, SSH-tunneled access, development, and diagnostics.
+
+Build unsigned packages during development. For public releases, use GitHub-hosted platform runners, pursue no-cost Windows signing through Microsoft Store signing or the SignPath Foundation before paid Artifact Signing, and defer Apple Developer enrollment until the first public macOS beta. Windows and macOS packages must be signed and macOS packages notarized before stable promotion. Linux artifacts require checksums and release attestations. No desktop runtime or signing integration ships until its exact OS and architecture package passes the repository promotion gates.
+
+Consequences:
+Desktop users receive a single web-technology UI without a default listening port, while headless users retain a bounded browser option. Tauri, Rust, WebView2, WKWebView, WebKitGTK, sidecar packaging, installers, signing, notarization, updates, and rollback become independently tested supply-chain boundaries. Node.js, Rust, and Python remain build dependencies rather than global end-user prerequisites. A physical Mac is reserved for final end-user release validation rather than routine CI or signing.
+
 ## 2026-07-21: Keep capability selection separate from execution authority
 
 Status: Accepted
