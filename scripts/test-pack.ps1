@@ -4296,10 +4296,12 @@ Invoke-PackTest "hosted CI verifier enforces exact-SHA cross-platform completion
         foreach ($state in @("Pushed", "CI running", "CI passed", "CI failed")) {
             Assert-True -Condition ($content -match [regex]::Escape($state)) -Message "Verifier should report state: $state"
         }
+        Assert-True -Condition ($content -match "exact run API request is authoritative") -Message "Verifier should treat auth-status preflight as advisory and actual run access as authoritative."
     }
 
     Assert-True -Condition ($doc -match "exact 40-character commit SHA") -Message "Hosted CI docs should require exact-SHA verification."
     Assert-True -Condition ($doc -match "Never reuse a successful run") -Message "Hosted CI docs should reject stale run evidence."
+    Assert-True -Condition ($doc -match "failed .*gh auth status.* preflight as advisory") -Message "Hosted CI docs should explain advisory auth-status handling."
     Assert-True -Condition ($queue -match 'Never call a push successful before `CI passed`') -Message "Maintainer queue should forbid premature success claims."
 }
 Invoke-PackTest "model residency policy is applied across runtime and config paths" {

@@ -40,7 +40,9 @@ command -v gh >/dev/null 2>&1 || {
   exit 1
 }
 
-gh auth status >/dev/null
+if ! gh auth status >/dev/null 2>&1; then
+  printf '%s\n' "Warning: gh auth status reported a problem; continuing because the exact run API request is authoritative. Re-authenticate if the repository or run query fails." >&2
+fi
 
 if [ -z "$repository" ]; then
   repository="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"

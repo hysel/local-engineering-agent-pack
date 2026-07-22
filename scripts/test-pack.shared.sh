@@ -1678,8 +1678,10 @@ test_hosted_ci_verifier_contract() {
     grep -q 'Linux script smoke tests' "$shared" &&
     grep -q 'macOS script smoke tests' "$shared" &&
     grep -q 'State: %s' "$shared" &&
+    grep -q 'exact run API request is authoritative' "$shared" &&
     grep -q 'exact 40-character commit SHA' "$doc" &&
-    grep -q 'Never reuse a successful run' "$doc"
+    grep -q 'Never reuse a successful run' "$doc" &&
+    grep -q 'preflight as advisory' "$doc"
 }
 
 test_wiki_synchronization() {

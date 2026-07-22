@@ -66,7 +66,10 @@ function Write-State {
 
 $script:ghCommand = Resolve-GhCommand
 
-Invoke-Gh -Arguments @("auth", "status") | Out-Null
+$authStatus = Invoke-Gh -Arguments @("auth", "status") -AllowFailure
+if ($authStatus.ExitCode -ne 0) {
+    Write-Warning "gh auth status reported a problem; continuing because the exact run API request is authoritative. Re-authenticate if the repository or run query fails."
+}
 
 if (-not $Repository) {
     $Repository = (Invoke-Gh -Arguments @("repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner")).Text.Trim()

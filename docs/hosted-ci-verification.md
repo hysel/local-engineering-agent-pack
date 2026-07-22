@@ -41,6 +41,8 @@ gh auth login
 gh auth status
 ```
 
+The verifier treats a failed `gh auth status` preflight as advisory because public workflow APIs may still be queryable when the stored default account is stale or another credential source is active. The actual repository and exact-run queries remain authoritative: if they cannot access the requested run, verification fails and the operator must reauthenticate.
+
 ## Windows
 
 Verify the current commit after pushing:
