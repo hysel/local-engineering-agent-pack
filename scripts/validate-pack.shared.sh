@@ -178,6 +178,7 @@ REQUIRED_FILES=(
   "docs/compatibility.md"
   "docs/workflow-chooser.md"
   "docs/desktop-runtime-dependency-evaluation.md"
+  "docs/desktop-dependency-resolution-evidence.md"
   "docs/desktop-ipc-contract.md"
   "docs/script-consolidation-plan.md"
   "docs/autonomous-maintainer-queue.md"

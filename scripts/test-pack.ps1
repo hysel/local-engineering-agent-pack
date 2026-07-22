@@ -4371,14 +4371,16 @@ Invoke-PackTest "ComfyUI setup guide preserves the validated secure provider pro
 
 Invoke-PackTest "desktop runtime and IPC contracts are pinned and fail closed" {
     $dependencyPath = Join-Path $repoRoot "docs/desktop-runtime-dependency-evaluation.md"
+    $resolutionPath = Join-Path $repoRoot "docs/desktop-dependency-resolution-evidence.md"
     $contractDocPath = Join-Path $repoRoot "docs/desktop-ipc-contract.md"
     $ipcPath = Join-Path $repoRoot "config/desktop-ipc-contract.json"
     $policyPath = Join-Path $repoRoot "config/desktop-capability-policy.json"
-    foreach ($path in @($dependencyPath, $contractDocPath, $ipcPath, $policyPath)) {
+    foreach ($path in @($dependencyPath, $resolutionPath, $contractDocPath, $ipcPath, $policyPath)) {
         Assert-True -Condition (Test-Path -LiteralPath $path -PathType Leaf) -Message "Desktop contract asset should exist: $path"
     }
 
     $dependency = Get-Content -LiteralPath $dependencyPath -Raw
+    $resolution = Get-Content -LiteralPath $resolutionPath -Raw
     $contractDoc = Get-Content -LiteralPath $contractDocPath -Raw
     $ipc = Get-Content -LiteralPath $ipcPath -Raw | ConvertFrom-Json
     $policy = Get-Content -LiteralPath $policyPath -Raw | ConvertFrom-Json
@@ -4389,6 +4391,13 @@ Invoke-PackTest "desktop runtime and IPC contracts are pinned and fail closed" {
     }
     foreach ($excluded in @("Electron", "remote JavaScript", "generic filesystem plugin", "updater plugin")) {
         Assert-True -Condition ($dependency.Contains($excluded)) -Message "Desktop dependency review should retain excluded surface: $excluded"
+    }
+    foreach ($marker in @("blocked; do not admit desktop runtime manifests or scaffolding", "Node.js", "24.18.0", "npm", "11.16.0", "89", "443 third-party packages", "247", "RUSTSEC-2025-0081", "RUSTSEC-2024-0429", "PyInstaller", "6.21.0", "zero known vulnerabilities", "GitHub reported no build attestation")) {
+        Assert-True -Condition ($resolution.Contains($marker)) -Message "Desktop dependency resolution should retain marker: $marker"
+    }
+    Assert-True -Condition ($resolution -notmatch "\b(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})\b") -Message "Desktop dependency evidence should not contain a private address."
+    foreach ($unadmitted in @("package.json", "Cargo.toml", "Cargo.lock")) {
+        Assert-True -Condition (-not (Test-Path -LiteralPath (Join-Path $repoRoot $unadmitted))) -Message "Blocked desktop runtime asset should remain unadmitted: $unadmitted"
     }
 
     Assert-Equal -Actual $ipc.schemaVersion -Expected 1 -Message "Desktop IPC contract should be schema v1."
@@ -4419,6 +4428,7 @@ Invoke-PackTest "desktop runtime and IPC contracts are pinned and fail closed" {
         Assert-True -Condition ($contractDoc -match [regex]::Escape($marker)) -Message "Desktop IPC guide should retain marker: $marker"
     }
     Assert-True -Condition ($wikiMap -match "docs/desktop-runtime-dependency-evaluation\.md") -Message "Desktop dependency review should be mapped to the wiki."
+    Assert-True -Condition ($wikiMap -match "docs/desktop-dependency-resolution-evidence\.md") -Message "Desktop dependency evidence should be mapped to the wiki."
     Assert-True -Condition ($wikiMap -match "docs/desktop-ipc-contract\.md") -Message "Desktop IPC guide should be mapped to the wiki."
 }
 

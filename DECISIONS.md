@@ -2,6 +2,19 @@
 
 This file records important project decisions. Use it for choices that affect architecture, compatibility, governance, or long-term maintenance.
 
+## 2026-07-22: Do Not Admit The First Resolved Tauri Runtime Graph
+
+Status: Accepted
+
+Context:
+The exact Windows x64 npm, Cargo, and PyInstaller candidates were resolved in a disposable workspace. npm and Python packaging checks passed, but the Windows Cargo closure reaches five unmaintained rust-unic crates through Tauri's urlpattern dependency. The universal lock also contains Linux-only archived GTK3 bindings and an unsound glib advisory. This workstation lacks the required Microsoft C++ build tools, so no native Tauri compilation or package inspection has passed. The downloaded cargo-audit binary was neither attested by GitHub nor Authenticode-signed, making its results corroborative rather than release-grade provenance evidence.
+
+Decision:
+Keep the Tauri architecture selection, but admit none of the generated manifests, lock files, source scaffolding, toolchains, package directories, virtual environments, audit tools, sidecar probes, or binaries. Require an upstream resolution or explicit time-bounded risk exception for the Windows-reachable unmaintained crates, repeat RustSec auditing with an attested or controlled source-built tool, and run the native build/package gates on a disposable Windows runner before reconsidering runtime admission. Keep the Linux Rust findings separate and blocked.
+
+Consequences:
+Haven 42 retains a narrow shipped surface and truthful roadmap state. The clean npm and PyInstaller results remain useful candidate evidence, but they cannot promote the desktop runtime independently of Cargo and native-package evidence. Visual UI implementation remains deferred.
+
 ## 2026-07-22: Admit Desktop Dependencies And Authority In Evidence-Gated Slices
 
 Status: Accepted
