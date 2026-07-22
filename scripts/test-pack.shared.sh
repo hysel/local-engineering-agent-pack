@@ -1751,6 +1751,7 @@ run_test "release packaging scripts define archives, checksums, and sanitized dr
 run_test "evidence catalog has valid schema and sanitized links" test_evidence_catalog_schema
 test_desktop_runtime_and_ipc_contracts() {
   dependency="$REPO_ROOT/docs/desktop-runtime-dependency-evaluation.md"
+  resolution="$REPO_ROOT/docs/desktop-dependency-resolution-evidence.md"
   contract_doc="$REPO_ROOT/docs/desktop-ipc-contract.md"
   ipc="$REPO_ROOT/config/desktop-ipc-contract.json"
   policy="$REPO_ROOT/config/desktop-capability-policy.json"
@@ -1798,12 +1799,28 @@ PY
     grep -q "remote JavaScript" "$dependency" &&
     grep -q "generic filesystem plugin" "$dependency" &&
     grep -q "updater plugin" "$dependency" &&
+    grep -q "blocked; do not admit desktop runtime manifests or scaffolding" "$resolution" &&
+    grep -q "24.18.0" "$resolution" &&
+    grep -q "11.16.0" "$resolution" &&
+    grep -q "89" "$resolution" &&
+    grep -q "443 third-party packages" "$resolution" &&
+    grep -q "247" "$resolution" &&
+    grep -q "RUSTSEC-2025-0081" "$resolution" &&
+    grep -q "RUSTSEC-2024-0429" "$resolution" &&
+    grep -q "6.21.0" "$resolution" &&
+    grep -q "zero known vulnerabilities" "$resolution" &&
+    grep -q "GitHub reported no build attestation" "$resolution" &&
+    ! grep -Eq '(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.[0-9]{1,3}\.[0-9]{1,3})' "$resolution" &&
+    [ ! -e "$REPO_ROOT/package.json" ] &&
+    [ ! -e "$REPO_ROOT/Cargo.toml" ] &&
+    [ ! -e "$REPO_ROOT/Cargo.lock" ] &&
     grep -q "renderer is untrusted input" "$contract_doc" &&
     grep -q "raw paths" "$contract_doc" &&
     grep -q "single-use" "$contract_doc" &&
     grep -q "Required Negative Tests" "$contract_doc" &&
     grep -q "headless-loopback" "$contract_doc" &&
     grep -q "docs/desktop-runtime-dependency-evaluation.md" "$REPO_ROOT/config/wiki-sync.tsv" &&
+    grep -q "docs/desktop-dependency-resolution-evidence.md" "$REPO_ROOT/config/wiki-sync.tsv" &&
     grep -q "docs/desktop-ipc-contract.md" "$REPO_ROOT/config/wiki-sync.tsv"
 }
 

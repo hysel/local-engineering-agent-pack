@@ -4,7 +4,7 @@
 
 Evaluation date: 2026-07-22
 
-The Milestone 22 desktop stack is **architecture-approved but not admitted for shipment**. This review pins the smallest candidate set so reproducible implementation and platform testing can begin later. It does not add a package manifest, lock file, Rust crate, frontend source tree, installer, or executable runtime.
+The Milestone 22 desktop stack is **architecture-approved but not admitted for shipment**. This review pins the smallest candidate set so reproducible implementation and platform testing can begin later. It does not add a package manifest, lock file, Rust crate, frontend source tree, installer, or executable runtime. The first disposable Windows resolution is recorded in `docs/desktop-dependency-resolution-evidence.md`; Rust maintenance and native-build blockers prevented runtime admission.
 
 Haven 42's pass-before-ship rule applies to the complete resolved dependency graph, not just the direct packages in this document. Exact lock files, checksums, vulnerability reports, license output, and native test evidence are required before a package can be promoted.
 
@@ -13,6 +13,7 @@ Haven 42's pass-before-ship rule applies to the complete resolved dependency gra
 | Component | Exact candidate | Role | License position | Admission state |
 | --- | --- | --- | --- | --- |
 | Tauri Rust workspace | `2.11.5` | Desktop shell, native bridge, bundling | Apache-2.0 OR MIT | Architecture-approved; not installed or shipped |
+| `tauri-build` | `2.6.3` | Rust build-time configuration and code generation | Apache-2.0 OR MIT | Build-time candidate |
 | `@tauri-apps/cli` | `2.11.4` | Build-time CLI | Apache-2.0 OR MIT | Build-time candidate |
 | `@tauri-apps/api` | `2.11.1` | Typed frontend IPC client | Apache-2.0 OR MIT | Runtime candidate |
 | `@tauri-apps/plugin-dialog` | `2.7.2` | User-driven native file and directory selection | MIT OR Apache-2.0 | Candidate with narrow permission scope |
@@ -21,6 +22,7 @@ Haven 42's pass-before-ship rule applies to the complete resolved dependency gra
 | Vite | `8.1.5` | Build bundled local web assets | MIT | Build-time candidate |
 | `@vitejs/plugin-react` | `6.0.4` | React build integration | MIT | Build-time candidate |
 | TypeScript | `7.0.2` | Compile-time type checking | Apache-2.0 | Build-time candidate |
+| `@types/react` / `@types/react-dom` | `19.2.17` / `19.2.3` | Compile-time React types | MIT | Build-time candidates discovered during exact resolution |
 | Node.js | `24.18.0` LTS | Frontend build toolchain | MIT with bundled third-party notices | Build-host only; never installed globally for users |
 | Rust | `1.97.1` stable | Native build toolchain | Apache-2.0 OR MIT | Build-host only; Tauri's lower MSRV does not replace the pinned build image |
 | PyInstaller | `6.21.0` | Package the existing Python engine as a platform-specific sidecar | GPL-2.0 with bootloader exception; selected files Apache-2.0 | Build-time candidate; generated bundles may use the project license subject to bundled dependency licenses |

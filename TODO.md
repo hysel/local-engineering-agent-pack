@@ -395,6 +395,9 @@
 - [x] Select and document Tauri 2 with bundled React/TypeScript/Vite assets, a packaged Haven 42 engine sidecar, private typed stdin/stdout IPC, and a separately promoted headless loopback mode.
 - [x] Pin and review the direct Tauri, Rust, frontend, WebView, sidecar-packaging, installer, and license candidate set without scaffolding shippable runtime files.
 - [x] Define a versioned desktop IPC schema and Tauri capability allowlist that reject arbitrary commands, unknown workflow/capability IDs, malformed envelopes, unauthorized paths, and remote UI navigation.
+- [x] Resolve and audit the exact disposable Windows x64 npm, Cargo, and PyInstaller candidate graphs without admitting their manifests, locks, tools, or outputs.
+- [ ] Resolve the five Windows-reachable unmaintained `rust-unic` advisories through an upstream update or a time-bounded reviewed exception, then repeat the audit with an attested or controlled source-built tool.
+- [ ] Run native `cargo check`, minimal Tauri build, SBOM, and package inspection on a disposable Windows runner with Microsoft C++ build tools before admitting runtime files.
 - [ ] Resolve and lock the full npm, Cargo, Python, native-library, and packaging dependency graph; generate vulnerability, provenance, checksum, and third-party-license reports before runtime admission.
 - [ ] Implement native bridge and sidecar negative tests for malformed/oversized messages, command injection, path/grant escape, approval replay, remote content, cancellation, lifecycle, and privilege boundaries.
 - [ ] Define Windows, Linux, and macOS application, configuration, state, workspace, artifact, cache, update, and rollback locations without mixing immutable engine and user-owned data.

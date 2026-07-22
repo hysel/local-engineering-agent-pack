@@ -169,6 +169,7 @@ $requiredFiles = @(
     "docs/workflow-registry.md",
     "docs/workflow-envelope-contract.md",
     "docs/desktop-runtime-dependency-evaluation.md",
+    "docs/desktop-dependency-resolution-evidence.md",
     "docs/desktop-ipc-contract.md",
     "docs/workflow-chooser.md",
     "docs/script-consolidation-plan.md",

@@ -11,6 +11,7 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Recorded the disposable Windows x64 desktop dependency resolution: npm and PyInstaller graphs passed integrity, license, installation, and vulnerability checks, while Windows-reachable unmaintained Rust crates, Linux-only GTK3/glib findings, audit-tool provenance, and the unrun native Tauri build blocked runtime admission.
 - Pinned the direct Milestone 22 desktop dependency candidates without adding runtime manifests, and documented their licenses, platform prerequisites, supply-chain gates, excluded packages, and re-evaluation triggers.
 - Added schema-v1 private desktop IPC and default-deny Tauri authority contracts covering registered operations, native path grants, effect-bound approvals, strict events, local content, sidecar lifecycle, privacy, and required negative tests.
 - Normalized Python CRLF output at the shared Bash installer boundary so Git Bash on Windows activates the intended rule-pack filename instead of creating a carriage-return-suffixed path.

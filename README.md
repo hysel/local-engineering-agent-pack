@@ -16,7 +16,7 @@ Haven 42 was previously named Local Engineering Agent Pack. Because the project 
 | Engineering workflows | Repository discovery, planning, review, scoped changes, language-aware guidance, workflow dispatch, and evidence reporting are implemented. |
 | General local text | `general.chat`, `content.write`, and `content.summarize` have a live-validated, session-bound Ollama adapter. |
 | Local images | `media.image.create` has a live-validated Linux ComfyUI/SDXL provider and typed PNG artifacts. Native Windows NVIDIA, Intel GPU/XPU, AMD, and Apple Silicon profiles remain candidates until independently validated. |
-| Product UI | Milestone 22 is in progress with Tauri 2, private typed sidecar IPC, and cross-platform packaging selected; no desktop runtime is shipped before its promotion gates pass. |
+| Product UI | Milestone 22 is in progress with Tauri 2 and private typed sidecar IPC selected. Windows dependency resolution found Rust maintenance blockers, so no desktop runtime is shipped. |
 | Music and video | Local music/audio and video generation are roadmap research only. No scripts, adapters, harnesses, workflows, or configuration ship before promotion gates pass. |
 
 ## Product Direction
@@ -82,6 +82,7 @@ For software work, the pack supplies repeatable discovery, implementation planni
 | Review the future unified UI design | `docs/unified-starter-toolkit-ui.md` |
 | Review the desktop runtime, packaging, and signing boundary | `docs/unified-starter-toolkit-ui.md`, `docs/desktop-runtime-dependency-evaluation.md`, and `DECISIONS.md` |
 | Integrate with the private desktop bridge contract | `docs/desktop-ipc-contract.md`, `config/desktop-ipc-contract.json`, and `config/desktop-capability-policy.json` |
+| Review the first Windows desktop dependency resolution | `docs/desktop-dependency-resolution-evidence.md` |
 | Generate a beginner setup plan | `docs/beginner-setup-mode.md` |
 | Look up individual script details | `docs/script-reference-appendix.md` |
 | Plan shared assets for multiple projects | `docs/shared-asset-installation.md` |
