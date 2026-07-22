@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "description": "Dry-run-first plan contract for selecting a trusted quantized model or proposing a reproducible local derivative.",
+  "required": [
+    "schemaVersion",
+    "planId",
+    "createdAtUtc",
+    "mode",
+    "source",
+    "target",
+    "hardwareProfile",
+    "runtimeCompatibility",
+    "storageEstimate",
+    "licenseDecision",
+    "disclosures",
+    "decision"
+  ],
+  "modes": ["existing-artifact", "local-derivative", "no-safe-recommendation"],
+  "source": {
+    "immutableRevisionRequired": true,
+    "inputSha256Required": true,
+    "licenseRequired": true,
+    "derivativeAndRedistributionDecisionRequired": true,
+    "movingBranchAllowed": false
+  },
+  "target": {
+    "formats": ["gguf", "mlx", "awq", "gptq", "fp8", "int4"],
+    "methodAndKernelMustMatchRuntime": true,
+    "bitCountAloneIsCompatibilityEvidence": false,
+    "contextTargetRequired": true,
+    "concurrencyRequired": true,
+    "workloadLaneRequired": true
+  },
+  "selection": {
+    "trustedExistingArtifactPreferred": true,
+    "localConversionRequiresExplicitApproval": true,
+    "unknownCompatibilityDecision": "no-safe-recommendation",
+    "silentCpuFallbackAllowed": false
+  },
+  "disclosureRequirements": [
+    "download source and size",
+    "temporary and final storage",
+    "estimated memory and compute time",
+    "network use",
+    "license and redistribution status",
+    "calibration provenance and privacy",
+    "cleanup and rollback"
+  ],
+  "privacy": {
+    "privateRepositoriesAsCalibrationDefault": false,
+    "promptsOrConversationsAsCalibrationDefault": false,
+    "userDocumentsAsCalibrationDefault": false,
+    "calibrationRequiresRecordedProvenanceLicenseClassificationAndApproval": true,
+    "machineSpecificValuesRemainLocal": true
+  }
+}

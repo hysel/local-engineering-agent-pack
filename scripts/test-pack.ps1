@@ -3983,7 +3983,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
         Assert-True -Condition ($readme -match [regex]::Escape($marker)) -Message "README should reflect current product position: $marker"
     }
     Assert-True -Condition ($readme -match "Linux ComfyUI/SDXL.*validated") -Message "README should state the bounded validated image baseline."
-    Assert-True -Condition ($readme -match "music/audio and video generation are roadmap research only") -Message "README should keep unshipped media capabilities clearly gated."
+    Assert-True -Condition ($readme -match "documentation-only candidate inventories") -Message "README should keep unshipped media capabilities clearly gated."
     Assert-True -Condition ($readme -notmatch "\b(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})\b") -Message "README should not contain a private address."
     Assert-True -Condition ($todo -match "Solution Architecture Review Backlog") -Message "TODO should include solution architecture backlog."
     Assert-True -Condition ($todo -match "\[x\] Add a milestone solution completeness audit") -Message "TODO should mark solution audit doc complete."
@@ -3998,7 +3998,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($roadmap -match "shared Linux provider as an optional advanced deployment") -Message "Roadmap should not require an external server for consumer image generation."
     Assert-True -Condition ($todo -match "\[ \] Validate a pinned Windows Intel GPU/XPU image-provider profile") -Message "TODO should track live Intel GPU provider validation."
     Assert-True -Condition ($roadmap -match "## Milestone 23: Native Local Image Generation") -Message "Roadmap should expose native local image generation as its own milestone."
-    Assert-True -Condition ($roadmap -match "Linux ComfyUI/SDXL provider and typed adapter are live-validated") -Message "Image milestone should retain the validated Linux baseline."
+    Assert-True -Condition ($roadmap -match "Linux ComfyUI/SDXL profile is live-validated") -Message "Image milestone should retain the validated Linux baseline."
     Assert-True -Condition ($roadmap -match "Cross-platform fixture contracts do not promote native Windows or macOS execution") -Message "Image milestone should not broaden Linux evidence."
     Assert-True -Condition ($todo -match "## Milestone 23: Native Local Image Generation") -Message "TODO should track native image-provider profiles separately."
     Assert-True -Condition ($roadmap -match "## Milestone 24: Local Music And Audio Generation") -Message "Roadmap should include local music and audio generation."
@@ -4011,7 +4011,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($roadmap -match "Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration") -Message "Music candidates should remain documentation-only until promotion."
     Assert-True -Condition ($roadmap -match "voice cloning" -and $roadmap -match "silent CPU fallback") -Message "Music roadmap should retain consent and accelerator-verification gates."
     Assert-True -Condition ($todo -match "## Milestone 24: Local Music And Audio Generation") -Message "TODO should track music provider evaluation."
-    Assert-True -Condition ($todo -match "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries") -Message "TODO should preserve the failed-candidate exclusion rule."
+    Assert-True -Condition ($todo -match "\[x\] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries") -Message "TODO should enforce the failed-candidate exclusion rule."
     Assert-True -Condition ($roadmap -match "## Milestone 25: Local Video Generation") -Message "Roadmap should include local video generation."
     foreach ($candidate in @("HunyuanVideo 1.5", "Wan2.2 TI2V-5B", "LTX-2.3")) {
         Assert-True -Condition ($roadmap -match [regex]::Escape($candidate)) -Message "Video roadmap should retain candidate: $candidate"
@@ -4020,7 +4020,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
     Assert-True -Condition ($roadmap -match "Candidate status must not add registry entries, scripts, adapters, harnesses, templates, workflows, configuration, runtime files, or installer automation") -Message "Video candidates should remain documentation-only until promotion."
     Assert-True -Condition ($roadmap -match "deepfake risk" -and $roadmap -match "generated-content disclosure") -Message "Video roadmap should retain identity and disclosure gates."
     Assert-True -Condition ($todo -match "## Milestone 25: Local Video Generation") -Message "TODO should track video provider evaluation."
-    Assert-True -Condition ($todo -match "\[ \] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation") -Message "TODO should preserve the failed video-candidate exclusion rule."
+    Assert-True -Condition ($todo -match "\[x\] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation") -Message "TODO should enforce the failed video-candidate exclusion rule."
     Assert-True -Condition ($roadmap -match "cross-platform core-engine updater") -Message "Roadmap should include automatic core-engine updates."
     Assert-True -Condition ($roadmap -match "stable releases published by the official GitHub repository") -Message "Core updates should use official GitHub releases."
     Assert-True -Condition ($roadmap.Contains('Never update a production installation with an unattended `git pull` or from a moving branch')) -Message "Core updater should reject moving source branches."
@@ -4629,6 +4629,61 @@ Invoke-PackTest "desktop sidecar IPC policy rejects hostile messages" {
     }
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Desktop IPC policy hostile self-test should pass."
     Assert-True -Condition (($output -join "`n") -match "passed: 29 cases") -Message "Desktop IPC policy should execute every hostile regression case."
+}
+
+Invoke-PackTest "media onboarding and quantization foundations fail closed" {
+    $imageContractPath = Join-Path $repoRoot "config/local-image-onboarding-contract.json"
+    $planContractPath = Join-Path $repoRoot "config/quantization-plan-contract.json"
+    $artifactContractPath = Join-Path $repoRoot "config/quantized-artifact-manifest-contract.json"
+    $matrixPath = Join-Path $repoRoot "config/quantization-support-matrix.json"
+    $plannerPath = Join-Path $repoRoot "scripts/quantization-planner.py"
+
+    foreach ($path in @($imageContractPath, $planContractPath, $artifactContractPath, $matrixPath, $plannerPath)) {
+        Assert-True -Condition (Test-Path -LiteralPath $path) -Message "Roadmap foundation file should exist: $path"
+    }
+
+    $image = Get-Content -LiteralPath $imageContractPath -Raw | ConvertFrom-Json
+    $plan = Get-Content -LiteralPath $planContractPath -Raw | ConvertFrom-Json
+    $artifact = Get-Content -LiteralPath $artifactContractPath -Raw | ConvertFrom-Json
+    $matrix = Get-Content -LiteralPath $matrixPath -Raw | ConvertFrom-Json
+    Assert-Equal -Actual $image.schemaVersion -Expected 1 -Message "Image onboarding contract should be schema v1."
+    Assert-True -Condition (-not $image.externalServerRequired -and $image.executionDefault -eq "dry-run") -Message "Consumer image onboarding should be local and dry-run first."
+    Assert-True -Condition (-not $image.discovery.silentCpuFallbackAllowed) -Message "Image onboarding should reject silent CPU fallback."
+    Assert-True -Condition (-not $image.selection.evidenceInheritanceAcrossProfilesAllowed) -Message "Image evidence should not cross profiles."
+    Assert-True -Condition ($image.promotion.failedProfileLeavesDocumentationOnly) -Message "Failed image profiles should leave documentation only."
+    Assert-True -Condition ($plan.selection.trustedExistingArtifactPreferred -and -not $plan.selection.silentCpuFallbackAllowed) -Message "Quantization planning should prefer trusted artifacts and reject silent fallback."
+    Assert-True -Condition ($artifact.output.storageOutsideEngineAndRepository -and $artifact.activation.previousKnownGoodRetained) -Message "Quantized artifacts should stay outside the engine and preserve rollback."
+    Assert-Equal -Actual $matrix.defaultDecision -Expected "no-safe-recommendation" -Message "Unknown quantization compatibility should fail closed."
+    foreach ($format in @("gguf", "mlx", "awq", "gptq", "fp8", "int4")) {
+        Assert-True -Condition (@($matrix.formats | Where-Object { $_.format -eq $format }).Count -eq 1) -Message "Quantization matrix should include $format."
+    }
+
+    $capabilities = Get-Content -LiteralPath (Join-Path $repoRoot "config/capabilities.json") -Raw
+    $workflows = Get-Content -LiteralPath (Join-Path $repoRoot "config/workflows.json") -Raw
+    Assert-True -Condition ($capabilities -notmatch 'audio\.music\.create|media\.video\.create') -Message "Documentation-only media candidates must not enter the capability registry."
+    Assert-True -Condition ($workflows -notmatch 'audio\.music\.create|media\.video\.create') -Message "Documentation-only media candidates must not enter the workflow registry."
+
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    Assert-True -Condition ($null -ne $python) -Message "Python 3 is required for quantization planner tests."
+    $selfTest = @(& $python.Source $plannerPath --self-test 2>&1)
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Quantization planner self-test should pass."
+    Assert-True -Condition (($selfTest -join "`n") -match "3 cases") -Message "Quantization planner should exercise all selection decisions."
+    $profileText = @(& $python.Source $plannerPath profile --storage-root $repoRoot --context-tokens 16384 --concurrency 1 --workload-lane tool-use 2>&1) -join "`n"
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "OS-aware quantization profile should run."
+    $profile = $profileText | ConvertFrom-Json
+    Assert-Equal -Actual $profile.schemaVersion -Expected 1 -Message "Quantization profile should be schema v1."
+    Assert-True -Condition ($profile.privacy.localOnlyHardwareValuesIncluded -and -not $profile.privacy.persistentIdentityValuesIncluded) -Message "Quantization profile should expose local planning values without persistent identity fields."
+    Assert-Equal -Actual $profile.target.workloadLane -Expected "tool-use" -Message "Quantization profile should preserve the requested lane."
+
+    foreach ($wrapper in @("scripts/get-quantization-profile.ps1", "scripts/get-quantization-profile.linux.sh", "scripts/get-quantization-profile.macos.sh", "scripts/plan-model-quantization.ps1", "scripts/plan-model-quantization.linux.sh", "scripts/plan-model-quantization.macos.sh")) {
+        Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot $wrapper)) -Message "OS-aware quantization wrapper should exist: $wrapper"
+    }
+
+    foreach ($doc in @("docs/local-image-provider-onboarding.md", "docs/local-audio-provider-candidates.md", "docs/local-video-provider-candidates.md", "docs/generative-media-consent-policy.md", "docs/hardware-adaptive-quantization.md")) {
+        $content = Get-Content -LiteralPath (Join-Path $repoRoot $doc) -Raw
+        Assert-True -Condition ($content -notmatch "\b(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})\b") -Message "Roadmap evidence should not contain private endpoints: $doc"
+        Assert-True -Condition ((Get-Content -LiteralPath (Join-Path $repoRoot "config/wiki-sync.tsv") -Raw) -match [regex]::Escape($doc)) -Message "Roadmap foundation doc should be mapped to the wiki: $doc"
+    }
 }
 
 if ($failed) {

@@ -432,45 +432,46 @@
 ## Milestone 23: Native Local Image Generation
 
 - [x] Validate the pinned Linux ComfyUI/SDXL provider, typed PNG artifact, metadata exclusion, history cleanup, recovery, SSH tunnel, and visual result for its exact NVIDIA V100 scope.
-- [ ] Define hardware discovery and consent-driven local image-provider onboarding that does not require an external server.
+- [x] Define hardware discovery and consent-driven local image-provider onboarding that does not require an external server.
 - [ ] Validate a pinned Windows NVIDIA CUDA image-provider profile before shipping its local installer or runtime files.
 - [ ] Validate a pinned Windows Intel GPU/XPU image-provider profile, including XPU acceleration, generation, metadata, recovery, cleanup, and typed-adapter evidence, before shipping its local installer or runtime files.
 - [ ] Validate a pinned Windows AMD GPU image-provider profile before shipping its local installer or runtime files.
 - [ ] Validate a pinned Apple Silicon MPS image-provider profile on a physical Mac as the last native hardware gate before shipping its local installer or runtime files.
-- [ ] Keep custom nodes and external API nodes disabled unless each exact extension independently passes promotion.
+- [x] Keep custom nodes and external API nodes disabled unless each exact extension independently passes promotion.
 - [ ] Add native installer and provider lifecycle files only after the exact profile passes; failed profiles leave documentation only.
 
 ## Milestone 24: Local Music And Audio Generation
 
 - [ ] Record exact ACE-Step 1.5 and Stable Audio 3.0 candidate versions, model cards, download sizes, checksums, licenses, supported operations, and claimed hardware paths without adding executable integration assets.
+  - ACE-Step 1.5, Stable Audio Small SFX, and Stable Audio Medium are recorded from official immutable sources; gated Stable Audio Small Music did not expose exact anonymous revision/file metadata and remains open.
 - [ ] Externally evaluate ACE-Step 1.5 on Linux CUDA for REST health, instrumental and vocal generation, typed WAV/FLAC artifact requirements, privacy, cancellation, recovery, cleanup, and uninstall behavior.
 - [ ] Externally evaluate Stable Audio 3.0 Small and Medium for sound effects, instrumental music, editing, duration, licensing, and consumer hardware fit.
 - [ ] Validate Windows NVIDIA CUDA, Windows Intel XPU, Windows AMD ROCm, Apple Silicon MLX, and Linux CUDA independently; keep the physical Mac run last.
-- [ ] Add reference-audio, voice-cloning, identifiable-voice, lyrics, artist-style, attribution, and commercial-use consent policy before provider promotion.
+- [x] Add reference-audio, voice-cloning, identifiable-voice, lyrics, artist-style, attribution, and commercial-use consent policy before provider promotion.
 - [ ] Define `audio.music.create`, typed audio artifacts, discovery, and a dry-run-first adapter only after an exact provider profile passes every external gate.
-- [ ] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries for a failed or documentation-only candidate.
+- [x] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries for a failed or documentation-only candidate.
 - [ ] Expose music creation in the unified UI only after provider promotion, native evidence, cleanup, packaging, and exact-SHA hosted checks pass.
 
 ## Milestone 25: Local Video Generation
 
-- [ ] Record exact HunyuanVideo 1.5, Wan2.2 TI2V-5B, and LTX-2.3 candidate versions, model cards, licenses, sizes, supported operations, and claimed hardware without adding executable integration assets.
+- [x] Record exact HunyuanVideo 1.5, Wan2.2 TI2V-5B, and LTX-2.3 candidate versions, model cards, licenses, sizes, supported operations, and claimed hardware without adding executable integration assets.
 - [ ] Externally evaluate HunyuanVideo 1.5 and Wan2.2 separately on compatible Linux NVIDIA hardware for text-to-video, image-to-video, typed video artifacts, privacy, consent, cancellation, recovery, cleanup, and uninstall behavior.
 - [ ] Evaluate LTX-2.3 only on hardware meeting its documented 32 GB VRAM, storage, CUDA, and license constraints.
-- [ ] Keep Windows Intel, Windows AMD, and Apple Silicon video profiles unavailable until an exact native provider path passes; test any Windows NVIDIA path independently from Linux.
-- [ ] Add reference-media, identity, face-animation, likeness, voice, deepfake, artist-style, disclosure, and commercial-use consent policy before promotion.
+- [x] Keep Windows Intel, Windows AMD, and Apple Silicon video profiles unavailable until an exact native provider path passes; test any Windows NVIDIA path independently from Linux.
+- [x] Add reference-media, identity, face-animation, likeness, voice, deepfake, artist-style, disclosure, and commercial-use consent policy before promotion.
 - [ ] Define `media.video.create`, typed MP4/WebM artifacts, discovery, and a dry-run-first adapter only after an exact provider profile passes every external gate.
-- [ ] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation for a failed or documentation-only candidate.
+- [x] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation for a failed or documentation-only candidate.
 - [ ] Expose video generation in the unified UI only after provider promotion, native evidence, consent, cleanup, packaging, and exact-SHA hosted checks pass.
 
 ## Milestone 26: Hardware-Adaptive Model Quantization
 
-- [ ] Define versioned quantization-plan and artifact-manifest contracts with immutable source identity, license, hashes, pinned tools, recipe parameters, runtime compatibility, local storage, and cleanup state.
-- [ ] Extend sanitized hardware profiling with accelerator capabilities, usable memory, runtime and driver versions, instruction support, storage headroom, context target, concurrency, and workload lane.
-- [ ] Implement dry-run selection that prefers a trusted compatible pre-quantized artifact and explains when local conversion is unnecessary or unsafe.
-- [ ] Define explicit support matrices for GGUF/Ollama or llama.cpp, Apple Silicon MLX, and accelerator-specific AWQ, GPTQ, FP8, or INT4 paths without treating equal bit counts as interchangeable.
-- [ ] Add provenance, checksum, derivative-license, redistribution, calibration-data privacy, download-size, temporary-storage, compute-time, and cleanup disclosures before conversion.
-- [ ] Define comparative gates for load time, first-token latency, throughput, peak memory, disk use, context stability, accelerator use, general capability quality, tool calls, and engineering workflow reliability.
+- [x] Define versioned quantization-plan and artifact-manifest contracts with immutable source identity, license, hashes, pinned tools, recipe parameters, runtime compatibility, local storage, and cleanup state.
+- [x] Extend sanitized hardware profiling with accelerator capabilities, usable memory, runtime and driver versions, instruction support, storage headroom, context target, concurrency, and workload lane.
+- [x] Implement dry-run selection that prefers a trusted compatible pre-quantized artifact and explains when local conversion is unnecessary or unsafe.
+- [x] Define explicit support matrices for GGUF/Ollama or llama.cpp, Apple Silicon MLX, and accelerator-specific AWQ, GPTQ, FP8, or INT4 paths without treating equal bit counts as interchangeable.
+- [x] Add provenance, checksum, derivative-license, redistribution, calibration-data privacy, download-size, temporary-storage, compute-time, and cleanup disclosures before conversion.
+- [x] Define comparative gates for load time, first-token latency, throughput, peak memory, disk use, context stability, accelerator use, general capability quality, tool calls, and engineering workflow reliability.
 - [ ] Validate one disposable Linux NVIDIA GGUF/Ollama path first; notify the user before every phase that needs the local Ollama server.
 - [ ] Validate Windows NVIDIA, Windows Intel, Windows AMD, and Apple Silicon paths independently, keeping physical Mac testing last.
 - [ ] Add activation, previous-model rollback, cleanup, catalog admission, and UI integration only for exact model/recipe/runtime/hardware combinations that pass.
-- [ ] Ship no conversion scripts, harnesses, runtime configuration, model artifacts, or active catalog entries for failed or incomplete candidates.
+- [x] Ship no conversion scripts, harnesses, runtime configuration, model artifacts, or active catalog entries for failed or incomplete candidates.

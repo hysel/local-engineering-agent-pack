@@ -209,6 +209,8 @@ The project domain is local-first engineering workflow guidance.
 - Model lane: a purpose-specific local model role such as WRITE SAFE, PLAN ONLY, or DEEP REVIEW.
 - Selection policy: a versioned scoring contract that requires exact capability evidence and ranks eligible models for one model lane.
 - Model-fit profile: a versioned, reviewable memory-planning assumption for an exact model tag, including quantization assumption, weights, context-sensitive cache, runtime overhead, architecture, and reserve.
+- Quantization plan: a no-effect decision that binds immutable source identity, license, target runtime/format, local hardware inputs, storage, disclosures, and either an exact trusted artifact, a possible local derivative, or no safe recommendation.
+- Quantized-artifact manifest: a local lifecycle record for exact input/output hashes, pinned tools, recipe parameters, runtime/hardware evidence, validation, activation, rollback, and cleanup.
 
 ## Initial Architecture Decisions
 
@@ -223,6 +225,8 @@ The project domain is local-first engineering workflow guidance.
 - Model-lane eligibility must require exact surface, version, provider, operating system, operation, and validation-mode evidence; scores may rank eligible models but must not manufacture missing capability evidence.
 - WRITE SAFE selection should favor validated reliability and VRAM headroom, while planning and review may favor greater fitting capacity after exact lane evidence is established.
 - Curated model-fit profiles should take precedence over name-derived estimates, disclose every assumption, and keep unknown tags labeled as low-confidence rather than implying measured compatibility.
+- Trusted compatible pre-quantized artifacts should be preferred over local conversion; equal bit counts never imply format, kernel, runtime, or accelerator compatibility.
+- Quantization planning may inspect local hardware but must omit persistent identity fields, perform no network/download/conversion/activation effects, and keep profiles and model artifacts out of commits.
 - Future UI callers should use stable workflow IDs and the versioned envelope rather than invoking or parsing individual script families directly.
 
 ## Open Questions

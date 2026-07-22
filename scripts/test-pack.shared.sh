@@ -1738,7 +1738,7 @@ test_solution_architecture_review_doc() {
     grep -q "Milestone 24: Local Music And Audio Generation" "$REPO_ROOT/README.md" &&
     grep -q "Milestone 25: Local Video Generation" "$REPO_ROOT/README.md" &&
     grep -q "Linux ComfyUI/SDXL.*validated" "$REPO_ROOT/README.md" &&
-    grep -q "music/audio and video generation are roadmap research only" "$REPO_ROOT/README.md" &&
+    grep -q "documentation-only candidate inventories" "$REPO_ROOT/README.md" &&
     ! grep -Eq '(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.[0-9]{1,3}\.[0-9]{1,3})' "$REPO_ROOT/README.md" &&
     grep -q "Solution Architecture Review Backlog" "$REPO_ROOT/TODO.md" &&
     grep -q "\\[x\\] Add a milestone solution completeness audit" "$REPO_ROOT/TODO.md" &&
@@ -1753,7 +1753,7 @@ test_solution_architecture_review_doc() {
     grep -q "shared Linux provider as an optional advanced deployment" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "\[ \] Validate a pinned Windows Intel GPU/XPU image-provider profile" "$REPO_ROOT/TODO.md" &&
     grep -q "## Milestone 23: Native Local Image Generation" "$REPO_ROOT/ROADMAP.md" &&
-    grep -q "Linux ComfyUI/SDXL provider and typed adapter are live-validated" "$REPO_ROOT/ROADMAP.md" &&
+    grep -q "Linux ComfyUI/SDXL profile is live-validated" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "Cross-platform fixture contracts do not promote native Windows or macOS execution" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "## Milestone 23: Native Local Image Generation" "$REPO_ROOT/TODO.md" &&
     grep -q "## Milestone 24: Local Music And Audio Generation" "$REPO_ROOT/ROADMAP.md" &&
@@ -1766,7 +1766,7 @@ test_solution_architecture_review_doc() {
     grep -q "Candidate status alone must not add registry entries, scripts, adapters, templates, workflows, installer files, or model configuration" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "silent CPU fallback" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "## Milestone 24: Local Music And Audio Generation" "$REPO_ROOT/TODO.md" &&
-    grep -q "\[ \] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries" "$REPO_ROOT/TODO.md" &&
+    grep -q "\[x\] Ship no music scripts, adapters, harnesses, templates, workflows, configuration, or registry entries" "$REPO_ROOT/TODO.md" &&
     grep -q "## Milestone 25: Local Video Generation" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "HunyuanVideo 1.5" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "Wan2.2 TI2V-5B" "$REPO_ROOT/ROADMAP.md" &&
@@ -1775,7 +1775,7 @@ test_solution_architecture_review_doc() {
     grep -q "Candidate status must not add registry entries, scripts, adapters, harnesses, templates, workflows, configuration, runtime files, or installer automation" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "generated-content disclosure" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "## Milestone 25: Local Video Generation" "$REPO_ROOT/TODO.md" &&
-    grep -q "\[ \] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation" "$REPO_ROOT/TODO.md" &&
+    grep -q "\[x\] Ship no video scripts, adapters, harnesses, templates, workflows, configuration, registry entries, runtime files, or installer automation" "$REPO_ROOT/TODO.md" &&
     grep -q "cross-platform core-engine updater" "$REPO_ROOT/ROADMAP.md" &&
     grep -q "stable releases published by the official GitHub repository" "$REPO_ROOT/ROADMAP.md" &&
     grep -q 'Never update a production installation with an unattended `git pull` or from a moving branch' "$REPO_ROOT/ROADMAP.md" &&
@@ -1996,6 +1996,59 @@ test_desktop_sidecar_ipc_policy() {
   printf '%s\n' "$output" | grep -q "passed: 29 cases"
 }
 
+test_media_onboarding_and_quantization_foundations() {
+  python3 - "$REPO_ROOT" <<'PY' || return 1
+import json
+import pathlib
+import re
+import sys
+
+root = pathlib.Path(sys.argv[1])
+image = json.loads((root / "config/local-image-onboarding-contract.json").read_text(encoding="utf-8"))
+plan = json.loads((root / "config/quantization-plan-contract.json").read_text(encoding="utf-8"))
+artifact = json.loads((root / "config/quantized-artifact-manifest-contract.json").read_text(encoding="utf-8"))
+matrix = json.loads((root / "config/quantization-support-matrix.json").read_text(encoding="utf-8"))
+assert image["schemaVersion"] == 1
+assert image["externalServerRequired"] is False
+assert image["executionDefault"] == "dry-run"
+assert image["discovery"]["silentCpuFallbackAllowed"] is False
+assert image["selection"]["evidenceInheritanceAcrossProfilesAllowed"] is False
+assert image["promotion"]["failedProfileLeavesDocumentationOnly"] is True
+assert plan["selection"]["trustedExistingArtifactPreferred"] is True
+assert plan["selection"]["silentCpuFallbackAllowed"] is False
+assert artifact["output"]["storageOutsideEngineAndRepository"] is True
+assert artifact["activation"]["previousKnownGoodRetained"] is True
+assert matrix["defaultDecision"] == "no-safe-recommendation"
+assert {item["format"] for item in matrix["formats"]} == {"gguf", "mlx", "awq", "gptq", "fp8", "int4"}
+for registry in ("config/capabilities.json", "config/workflows.json"):
+    text = (root / registry).read_text(encoding="utf-8")
+    assert "audio.music.create" not in text
+    assert "media.video.create" not in text
+wiki = (root / "config/wiki-sync.tsv").read_text(encoding="utf-8")
+private_ip = re.compile(r"\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})\b")
+for doc in (
+    "docs/local-image-provider-onboarding.md",
+    "docs/local-audio-provider-candidates.md",
+    "docs/local-video-provider-candidates.md",
+    "docs/generative-media-consent-policy.md",
+    "docs/hardware-adaptive-quantization.md",
+):
+    assert doc in wiki
+    assert not private_ip.search((root / doc).read_text(encoding="utf-8"))
+PY
+  python3 "$REPO_ROOT/scripts/quantization-planner.py" --self-test | grep -q "3 cases" || return 1
+  profile="$(python3 "$REPO_ROOT/scripts/quantization-planner.py" profile --storage-root "$REPO_ROOT" --context-tokens 16384 --concurrency 1 --workload-lane tool-use)" || return 1
+  python3 - "$profile" <<'PY'
+import json
+import sys
+profile = json.loads(sys.argv[1])
+assert profile["schemaVersion"] == 1
+assert profile["privacy"]["localOnlyHardwareValuesIncluded"] is True
+assert profile["privacy"]["persistentIdentityValuesIncluded"] is False
+assert profile["target"]["workloadLane"] == "tool-use"
+PY
+}
+
 run_test "model recommendation catalog has valid schema" test_catalog_schema
 run_test "committed config uses starter sample model" test_committed_config_uses_starter_model
 run_test "MLX model recommendation catalog has valid schema" test_mlx_catalog_schema
@@ -2058,6 +2111,7 @@ run_test "model residency policy is applied across runtime and config paths" tes
 run_test "ComfyUI setup guide preserves the validated secure provider profile" test_comfyui_setup_guide_contract
 run_test "desktop runtime and IPC contracts are pinned and fail closed" test_desktop_runtime_and_ipc_contracts
 run_test "desktop sidecar IPC policy rejects hostile messages" test_desktop_sidecar_ipc_policy
+run_test "media onboarding and quantization foundations fail closed" test_media_onboarding_and_quantization_foundations
 
 if [ "$FAILED" -eq 1 ]; then
   printf 'Test run failed. Tier=%s; %s tests executed; %s skipped; %s seconds.\n' "$TEST_TIER" "$TEST_COUNT" "$SKIPPED_COUNT" "$((SECONDS - RUN_STARTED_SECONDS))" >&2

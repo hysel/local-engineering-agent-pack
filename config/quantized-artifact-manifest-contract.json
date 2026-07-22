@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "description": "Reproducibility and lifecycle manifest contract for an exact locally generated or selected quantized artifact.",
+  "required": [
+    "schemaVersion",
+    "artifactId",
+    "createdAtUtc",
+    "sourceModel",
+    "inputs",
+    "toolchain",
+    "recipe",
+    "output",
+    "runtimeCompatibility",
+    "hardwareEvidence",
+    "validation",
+    "license",
+    "activation",
+    "cleanupState"
+  ],
+  "sourceModel": {
+    "immutableRepositoryAndRevisionRequired": true,
+    "sourceOverwrittenAllowed": false,
+    "inputHashesRequired": true
+  },
+  "toolchain": {
+    "pinnedVersionsRequired": true,
+    "checksumsOrAttestationsRequired": true,
+    "untrackedInstallerExecutionAllowed": false
+  },
+  "recipe": {
+    "formatMethodBitsGroupSizeCalibrationKvCacheContextBatchAndOffloadRecorded": true,
+    "unknownParametersAllowed": false
+  },
+  "output": {
+    "sha256Required": true,
+    "sizeBytesRequired": true,
+    "storageOutsideEngineAndRepository": true,
+    "sourceAndDerivativePathsMustDiffer": true
+  },
+  "validation": {
+    "exactModelRecipeRuntimeOsAcceleratorContextAndOperationScope": true,
+    "resourceFunctionalQualityToolUseCleanupAndRollbackRequired": true,
+    "failedArtifactMayBecomeSelectable": false
+  },
+  "activation": {
+    "explicitUserChoiceRequired": true,
+    "previousKnownGoodRetained": true,
+    "atomicConfigSwitchRequired": true,
+    "automaticRollbackOnHealthFailure": true
+  }
+}

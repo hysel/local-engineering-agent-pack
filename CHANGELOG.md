@@ -11,6 +11,10 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Added fail-closed, consent-driven consumer-local image-provider onboarding with exact OS/accelerator evidence boundaries and no candidate installer admission.
+- Recorded immutable documentation-only ACE-Step, Stable Audio, HunyuanVideo, Wan2.2, and LTX-2.3 candidate identities, sizes, checksums, licenses, claimed operations, and unresolved gates.
+- Added a shared generative-media consent policy for reference media, voice and likeness, lyrics and style requests, attribution, commercial use, disclosure, retention, and cleanup.
+- Added versioned quantization plan/artifact contracts, an explicit format/runtime support matrix, OS-aware sanitized hardware profiling, dry-run trusted-artifact selection, disclosures, and comparative promotion gates without adding a conversion path.
 - Defined cross-platform desktop storage ownership and a strict signed immutable-release update/rollback manifest contract without admitting an updater or runtime scaffold.
 - Recorded a successful controlled-source Windows x64 Tauri native-build probe for the upstream `urlpattern 0.6` fix while keeping the unpublished dependency and all runtime files blocked from shipment.
 - Added a standard-library desktop sidecar IPC admission policy with hostile offline tests while leaving native bridge and lifecycle gates explicitly open.

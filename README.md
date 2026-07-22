@@ -17,7 +17,8 @@ Haven 42 was previously named Local Engineering Agent Pack. Because the project 
 | General local text | `general.chat`, `content.write`, and `content.summarize` have a live-validated, session-bound Ollama adapter. |
 | Local images | `media.image.create` has a live-validated Linux ComfyUI/SDXL provider and typed PNG artifacts. Native Windows NVIDIA, Intel GPU/XPU, AMD, and Apple Silicon profiles remain candidates until independently validated. |
 | Product UI | Milestone 22 is in progress with Tauri 2 and private typed sidecar IPC selected. Windows dependency resolution found Rust maintenance blockers, so no desktop runtime is shipped. |
-| Music and video | Local music/audio and video generation are roadmap research only. No scripts, adapters, harnesses, workflows, or configuration ship before promotion gates pass. |
+| Music and video | Current documentation-only candidate inventories and a shared consent policy are recorded. No provider scripts, adapters, harnesses, workflows, or configuration ship before promotion gates pass. |
+| Model quantization | Versioned contracts, sanitized hardware profiling, and dry-run trusted-artifact selection are implemented; no conversion or model artifact is shipped before exact live validation. |
 
 ## Product Direction
 
@@ -51,9 +52,9 @@ Evidence states distinguish `tested-passed`, `tested-partial`, `failed`, `recomm
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, local text and image adapters, capability discovery, routing, and typed artifacts. |
 | Milestone 22: Unified Product UI And Task Composition | In progress | Tauri/private-IPC architecture selected; dependency, security, packaging, signing, and cross-platform validation come before UI shipping. |
 | Milestone 23: Native Local Image Generation | In progress | Linux ComfyUI/SDXL is validated; consumer-local Windows and macOS profiles remain gated. |
-| Milestone 24: Local Music And Audio Generation | Planned | Evaluate local providers, licenses, hardware profiles, safety, and typed audio artifacts. |
-| Milestone 25: Local Video Generation | Planned | Evaluate consumer-local image-to-video and text-to-video candidates without premature integration. |
-| Milestone 26: Hardware-Adaptive Model Quantization | Planned | Select trusted quantizations or reproducibly create and validate local derivatives for the user's exact hardware and runtime. |
+| Milestone 24: Local Music And Audio Generation | Research in progress | Immutable candidate facts and consent policy are recorded; live providers remain unpromoted. |
+| Milestone 25: Local Video Generation | Research in progress | HunyuanVideo, Wan2.2, and LTX-2.3 are recorded without executable integration. |
+| Milestone 26: Hardware-Adaptive Model Quantization | Foundation in progress | Contracts, profiling, support boundaries, disclosures, benchmark gates, and dry-run selection are implemented; live validation remains. |
 
 See [`ROADMAP.md`](ROADMAP.md) for milestone scope and [`docs/solution-architecture-review.md`](docs/solution-architecture-review.md) for the completeness standard.
 
@@ -72,6 +73,9 @@ For software work, the pack supplies repeatable discovery, implementation planni
 | Choose beginner or team setup path | `docs/setup-paths.md` |
 | Pick the right local model | `docs/local-model-selection.md` |
 | Generate a hardware-aware model/config recommendation | `docs/hardware-aware-recommendations.md` |
+| Profile hardware or plan trusted model quantization | `docs/hardware-adaptive-quantization.md` |
+| Review local image onboarding gates | `docs/local-image-provider-onboarding.md` |
+| Review documentation-only audio/video candidates | `docs/local-audio-provider-candidates.md` and `docs/local-video-provider-candidates.md` |
 | Understand config generation choices | `docs/config-generation-strategy.md` |
 | Review stable workflow entry points | `docs/workflow-registry.md` |
 | Integrate automation with the versioned workflow envelope | `docs/workflow-envelope-contract.md` |
