@@ -11,6 +11,7 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Added repository-free Writing and Summarization modes to the loopback-only web application. All three text modes use exact admitted capability IDs, bounded in-memory inputs, typed chat or Markdown results, and verified model unload without filesystem or repository access.
 - Added the first runnable Haven 42 product slice: a zero-new-dependency, loopback-only local web application with sanitized system status, explicit loopback/trusted-LAN Ollama validation, installed-model selection, bounded private chat, cross-origin defenses, session-only state, and verified unload after success, failure, and shutdown.
 - Fixed native Bash testing on Windows by securely resolving an installed Python 3 exposed as `python`, `python.exe`, or `py -3`, validating its major version, and activating a fail-closed `python3` compatibility launcher for child shell scripts without installing software or permanently changing the machine `PATH`.
 - Added a cross-platform, read-only security-aware model catalog that combines bounded discovery records, immutable artifact identity, fail-closed per-artifact license policy, hardware fit, and revision-bound validation evidence into shared beginner and advanced product decisions without downloading models, executing remote code, or changing runtime configuration.

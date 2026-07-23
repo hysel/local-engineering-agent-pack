@@ -1818,7 +1818,7 @@ test_solution_architecture_review_doc() {
     grep -q "25: Local Video Generation" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "26: Hardware-Adaptive Model Quantization" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "21: General-Purpose AI Assistant And Intent Routing | Complete | Complete for the promoted provider set" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "22: Unified Product UI And Task Composition | In progress; 22A runnable | Local web chat MVP admitted; broader UI and native packaging gated" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "22: Unified Product UI And Task Composition | In progress; 22A text tools runnable | Local web chat, writing, and summarization admitted; broader UI and native packaging gated" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "21: General-Purpose AI Assistant And Intent Routing | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "22: Unified Product UI And Task Composition | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "automated status-consistency checks" "$REPO_ROOT/docs/solution-architecture-review.md" &&
@@ -2299,19 +2299,20 @@ PY
 }
 
 test_local_web_mvp() {
-  python3 "$REPO_ROOT/scripts/test-haven42-web.py" | grep -q "25 security and behavior checks" || return 1
+  python3 "$REPO_ROOT/scripts/test-haven42-web.py" | grep -q "41 security and behavior checks" || return 1
   python3 - "$REPO_ROOT" <<'PY'
 import json, pathlib, sys
 root = pathlib.Path(sys.argv[1])
 policy = json.loads((root / "config/local-web-runtime-policy.json").read_text(encoding="utf-8"))
 assert policy["runtimeId"] == "haven42.local-web"
-assert policy["implementationStatus"] == "mvp-admitted"
+assert policy["implementationStatus"] == "text-tools-admitted"
 assert policy["bind"]["remoteBindAllowed"] is False
 assert policy["browser"]["remoteAssetsAllowed"] is False
 assert policy["browser"]["telemetryAllowed"] is False
 assert policy["browser"]["csrfTokenRequiredForEffects"] is True
-assert policy["chat"]["modelResidency"] == "unload-after-response"
-assert policy["chat"]["unloadOnFailure"] is True and policy["chat"]["unloadOnShutdown"] is True
+assert policy["text"]["capabilityIds"] == ["general.chat", "content.write", "content.summarize"]
+assert policy["text"]["modelResidency"] == "unload-after-response"
+assert policy["text"]["unloadOnFailure"] is True and policy["text"]["unloadOnShutdown"] is True
 assets = (root / "web/static/index.html").read_text(encoding="utf-8") + (root / "web/static/app.js").read_text(encoding="utf-8")
 lowered = assets.lower()
 for forbidden in ('src="http://', "src='http://", 'href="http://', "href='http://", 'src="https://', "src='https://", 'href="https://', "href='https://", 'fetch("http://', "fetch('http://", 'fetch("https://', "fetch('https://"):

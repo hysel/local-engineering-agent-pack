@@ -64,7 +64,7 @@ Maintainers can exercise the preparatory offline update boundary directly with `
 
 Use the platform-specific entry points when you need exact script behavior or script-specific arguments. The registry lists Windows, Linux, and macOS entry points for every workflow.
 
-The runnable local product entry point is `scripts/start-haven42-web.ps1` on Windows or `scripts/start-haven42-web.linux.sh` / `scripts/start-haven42-web.macos.sh` on Unix. It starts the loopback-only status, Ollama discovery, and chat MVP; see `docs/local-web-mvp.md`.
+The runnable local product entry point is `scripts/start-haven42-web.ps1` on Windows or `scripts/start-haven42-web.linux.sh` / `scripts/start-haven42-web.macos.sh` on Unix. It starts the loopback-only status, Ollama discovery, chat, writing, and summarization application; see `docs/local-web-mvp.md`.
 
 ## Candidate-Foundation Utilities
 

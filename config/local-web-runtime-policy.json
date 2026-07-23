@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "runtimeId": "haven42.local-web",
-  "implementationStatus": "mvp-admitted",
+  "implementationStatus": "text-tools-admitted",
   "bind": {
     "allowedAddresses": ["127.0.0.1"],
     "defaultPort": 4242,
@@ -22,10 +22,10 @@
     "ipLiteralRequired": true,
     "credentialsInUrlAllowed": false,
     "redirectsAllowed": false,
-    "modelDiscoveryRequiredBeforeChat": true
+    "modelDiscoveryRequiredBeforeUse": true
   },
-  "chat": {
-    "capabilityId": "general.chat",
+  "text": {
+    "capabilityIds": ["general.chat", "content.write", "content.summarize"],
     "providerId": "ollama.local-text",
     "repositoryAccess": false,
     "fileWrites": false,

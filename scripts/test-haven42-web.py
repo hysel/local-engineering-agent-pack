@@ -25,6 +25,7 @@ class FakeState:
     loaded: set[str] = set()
     requests: list[tuple[str, dict]] = []
     fail_chat = False
+    fail_connect = False
 
 
 class FakeOllama(BaseHTTPRequestHandler):
@@ -41,7 +42,10 @@ class FakeOllama(BaseHTTPRequestHandler):
 
     def do_GET(self):  # noqa: N802
         if self.path == "/api/version":
-            self._json(200, {"version": "test-1.0"})
+            if FakeState.fail_connect:
+                self._json(503, {"error": "forced-connect-failure"})
+            else:
+                self._json(200, {"version": "test-1.0"})
         elif self.path == "/api/tags":
             self._json(200, {"models": [{"name": name} for name in FakeState.models]})
         elif self.path == "/api/ps":
@@ -154,9 +158,13 @@ def main() -> int:
         checks += 3
 
         status, error, _ = request_json(
-            origin + "/api/chat",
+            origin + "/api/text",
             "POST",
-            {"model": "invented:latest", "messages": [{"role": "user", "content": "hello"}]},
+            {
+                "capabilityId": "general.chat",
+                "model": "invented:latest",
+                "messages": [{"role": "user", "content": "hello"}],
+            },
             token,
             origin,
         )
@@ -164,31 +172,119 @@ def main() -> int:
         checks += 1
 
         status, reply, _ = request_json(
-            origin + "/api/chat",
+            origin + "/api/text",
             "POST",
-            {"model": "qwen3.5:9b", "messages": [{"role": "user", "content": "hello"}]},
+            {
+                "capabilityId": "general.chat",
+                "model": "qwen3.5:9b",
+                "messages": [{"role": "user", "content": "hello"}],
+            },
             token,
             origin,
         )
         assert status == 200 and reply["content"] == "LOCAL_WEB_OK"
+        assert reply["capabilityId"] == "general.chat" and reply["kind"] == "chat-message"
         assert reply["modelUnloaded"] is True and not FakeState.loaded
         chat_payload = next(body for path, body in FakeState.requests if path == "/api/chat")
         assert chat_payload["keep_alive"] == 0 and chat_payload["stream"] is False
         assert chat_payload["messages"][0]["role"] == "system"
         assert any(path == "/api/generate" and body["keep_alive"] == 0 for path, body in FakeState.requests)
-        checks += 5
+        checks += 6
+
+        for capability_id, expected_title, prompt_fragment in (
+            ("content.write", "Generated Writing", "clean Markdown"),
+            ("content.summarize", "Summary", "material supplied"),
+        ):
+            status, reply, _ = request_json(
+                origin + "/api/text",
+                "POST",
+                {
+                    "capabilityId": capability_id,
+                    "model": "qwen3.5:9b",
+                    "messages": [{"role": "user", "content": "bounded source"}],
+                },
+                token,
+                origin,
+            )
+            assert status == 200 and reply["kind"] == "markdown-document"
+            assert reply["capabilityId"] == capability_id and reply["title"] == expected_title
+            matching_payload = [body for path, body in FakeState.requests if path == "/api/chat"][-1]
+            assert prompt_fragment in matching_payload["messages"][0]["content"]
+            assert reply["modelUnloaded"] is True and not FakeState.loaded
+            checks += 4
+
+        status, error, _ = request_json(
+            origin + "/api/text",
+            "POST",
+            {
+                "capabilityId": "media.video.create",
+                "model": "qwen3.5:9b",
+                "messages": [{"role": "user", "content": "hello"}],
+            },
+            token,
+            origin,
+        )
+        assert status == 400 and error["error"] == "capability-not-admitted"
+        checks += 1
+
+        status, error, _ = request_json(
+            origin + "/api/text",
+            "POST",
+            {
+                "capabilityId": "content.summarize",
+                "model": "qwen3.5:9b",
+                "messages": [
+                    {"role": "user", "content": "one"},
+                    {"role": "assistant", "content": "two"},
+                    {"role": "user", "content": "three"},
+                ],
+            },
+            token,
+            origin,
+        )
+        assert status == 400 and error["error"] == "single-input-required"
+        checks += 1
 
         FakeState.fail_chat = True
         status, error, _ = request_json(
-            origin + "/api/chat",
+            origin + "/api/text",
             "POST",
-            {"model": "qwen3.5:9b", "messages": [{"role": "user", "content": "force failure"}]},
+            {
+                "capabilityId": "general.chat",
+                "model": "qwen3.5:9b",
+                "messages": [{"role": "user", "content": "force failure"}],
+            },
             token,
             origin,
         )
         assert status == 502 and error["error"] == "ollama-chat-failed"
         assert not FakeState.loaded
         checks += 2
+
+        FakeState.fail_chat = False
+        FakeState.fail_connect = True
+        status, error, _ = request_json(
+            origin + "/api/connect",
+            "POST",
+            {"endpoint": fake_url, "trustScope": "loopback", "timeoutSeconds": 30},
+            token,
+            origin,
+        )
+        assert status == 502 and error["error"] == "ollama-connection-failed"
+        status, error, _ = request_json(
+            origin + "/api/text",
+            "POST",
+            {
+                "capabilityId": "general.chat",
+                "model": "qwen3.5:9b",
+                "messages": [{"role": "user", "content": "must stay disconnected"}],
+            },
+            token,
+            origin,
+        )
+        assert status == 409 and error["error"] == "ollama-not-connected"
+        assert state.public_status()["provider"]["connected"] is False
+        checks += 3
 
         try:
             WEB.HavenWebServer(("0.0.0.0", 0), WEB.HavenState())
@@ -199,11 +295,15 @@ def main() -> int:
 
         policy = json.loads((ROOT / "config/local-web-runtime-policy.json").read_text(encoding="utf-8"))
         assert policy["bind"]["remoteBindAllowed"] is False
-        assert policy["chat"]["modelResidency"] == "unload-after-response"
+        assert policy["text"]["modelResidency"] == "unload-after-response"
+        assert policy["text"]["capabilityIds"] == [
+            "general.chat", "content.write", "content.summarize"
+        ]
         assert policy["browser"]["remoteAssetsAllowed"] is False
         javascript = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
         assert "innerHTML" not in javascript and "X-Haven-Token" in javascript
-        checks += 4
+        assert "/api/text" in javascript and "content.summarize" in javascript
+        checks += 6
     finally:
         app.shutdown()
         app.server_close()

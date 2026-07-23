@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Haven 42 local-web MVP.
+"""Haven 42 local-web application.
 
 This process binds only to IPv4 loopback, serves bundled assets, and proxies
 bounded requests to an explicitly selected Ollama endpoint. Configuration and
-chat content stay in memory and are never written by this server.
+text content stay in memory and are never written by this server.
 """
 
 from __future__ import annotations
@@ -40,10 +40,20 @@ MAX_REQUEST_BYTES = 64 * 1024
 MAX_MESSAGE_BYTES = 32 * 1024
 MAX_CHAT_RESPONSE_BYTES = 1024 * 1024
 MAX_CONVERSATION_MESSAGES = 20
-SYSTEM_PROMPT = (
-    "Answer the user's general question clearly. Do not claim repository access "
-    "or actions you did not perform."
-)
+CAPABILITY_PROMPTS = {
+    "general.chat": (
+        "Answer the user's general question clearly. Do not claim repository access "
+        "or actions you did not perform."
+    ),
+    "content.write": (
+        "Create the requested general-purpose content as clean Markdown. Do not claim "
+        "external facts were verified unless the user supplied them."
+    ),
+    "content.summarize": (
+        "Summarize only the material supplied by the user. Preserve uncertainty and "
+        "do not invent missing facts. Return clean Markdown."
+    ),
+}
 
 
 class WebRequestError(ValueError):
@@ -124,6 +134,11 @@ class HavenState:
         if timeout_seconds < 5 or timeout_seconds > 300:
             raise WebRequestError("invalid-provider-timeout")
         base_url = policy["baseUrl"]
+        with self.lock:
+            self.base_url = None
+            self.trust_scope = None
+            self.models = ()
+            self.ollama_version = None
         try:
             version = _provider_json(base_url, "/api/version", timeout_seconds)
             tags = _provider_json(base_url, "/api/tags", timeout_seconds)
@@ -177,13 +192,20 @@ class HavenState:
             return False
         return False
 
-    def chat(self, model: str, messages: list[dict[str, str]]) -> dict[str, Any]:
+    def run_text_capability(
+        self,
+        capability_id: str,
+        model: str,
+        messages: list[dict[str, str]],
+    ) -> dict[str, Any]:
         with self.lock:
             base_url = self.base_url
             timeout_seconds = self.timeout_seconds
             allowed_models = self.models
         if base_url is None:
             raise WebRequestError("ollama-not-connected", HTTPStatus.CONFLICT)
+        if capability_id not in CAPABILITY_PROMPTS:
+            raise WebRequestError("capability-not-admitted")
         if model not in allowed_models:
             raise WebRequestError("model-not-discovered")
         if not messages or len(messages) > MAX_CONVERSATION_MESSAGES:
@@ -206,6 +228,10 @@ class HavenState:
             raise WebRequestError("conversation-too-large", HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
         if clean_messages[-1]["role"] != "user":
             raise WebRequestError("last-message-must-be-user")
+        if capability_id != "general.chat" and (
+            len(clean_messages) != 1 or clean_messages[0]["role"] != "user"
+        ):
+            raise WebRequestError("single-input-required")
 
         with self.lock:
             self.used_models.add((base_url, model, timeout_seconds))
@@ -221,7 +247,10 @@ class HavenState:
                     "stream": False,
                     "keep_alive": 0,
                     "options": {"temperature": 0.2},
-                    "messages": [{"role": "system", "content": SYSTEM_PROMPT}, *clean_messages],
+                    "messages": [
+                        {"role": "system", "content": CAPABILITY_PROMPTS[capability_id]},
+                        *clean_messages,
+                    ],
                 },
                 maximum_bytes=MAX_CHAT_RESPONSE_BYTES,
             )
@@ -234,11 +263,20 @@ class HavenState:
         content = str((response or {}).get("message", {}).get("content", ""))
         if not content.strip():
             raise WebRequestError("empty-model-response", HTTPStatus.BAD_GATEWAY)
+        artifact_kind = "chat-message" if capability_id == "general.chat" else "markdown-document"
         return {
             "schemaVersion": 1,
-            "kind": "chat-message",
+            "kind": artifact_kind,
+            "capabilityId": capability_id,
             "role": "assistant",
             "content": content,
+            "title": (
+                None
+                if capability_id == "general.chat"
+                else "Generated Writing"
+                if capability_id == "content.write"
+                else "Summary"
+            ),
             "model": model,
             "providerId": "ollama.local-text",
             "modelUnloaded": unloaded,
@@ -376,10 +414,17 @@ class HavenRequestHandler(BaseHTTPRequestHandler):
                 )
                 self._send_json(HTTPStatus.OK, result)
                 return
-            if self.path == "/api/chat":
-                if set(body) != {"model", "messages"} or not isinstance(body["messages"], list):
-                    raise WebRequestError("invalid-chat-fields")
-                result = self.server.state.chat(str(body["model"]), body["messages"])
+            if self.path == "/api/text":
+                if (
+                    set(body) != {"capabilityId", "model", "messages"}
+                    or not isinstance(body["messages"], list)
+                ):
+                    raise WebRequestError("invalid-text-fields")
+                result = self.server.state.run_text_capability(
+                    str(body["capabilityId"]),
+                    str(body["model"]),
+                    body["messages"],
+                )
                 self._send_json(HTTPStatus.OK, result)
                 return
             raise WebRequestError("not-found", HTTPStatus.NOT_FOUND)
@@ -391,7 +436,7 @@ class HavenRequestHandler(BaseHTTPRequestHandler):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run the local-only Haven 42 web MVP.")
+    parser = argparse.ArgumentParser(description="Run the local-only Haven 42 web application.")
     parser.add_argument("--host", default="127.0.0.1", help=argparse.SUPPRESS)
     parser.add_argument("--port", type=int, default=4242)
     parser.add_argument("--no-open", action="store_true", help="Do not open the default browser.")
@@ -401,7 +446,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     if args.host != "127.0.0.1":
-        print("Haven 42 web MVP may bind only to 127.0.0.1.", file=sys.stderr)
+        print("Haven 42 web application may bind only to 127.0.0.1.", file=sys.stderr)
         return 2
     if args.port < 0 or args.port > 65535:
         print("Port must be from 0 through 65535.", file=sys.stderr)
@@ -414,7 +459,7 @@ def main() -> int:
         return 1
     url = server.expected_origin
     print(f"Haven 42 is available at {url}")
-    print("The server is loopback-only. Configuration and chat content are not persisted.")
+    print("The server is loopback-only. Configuration and text content are not persisted.")
     if not args.no_open:
         threading.Timer(0.4, lambda: webbrowser.open(url)).start()
     try:

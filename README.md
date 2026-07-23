@@ -4,7 +4,7 @@
 
 Haven 42 is an evidence-gated, local-first AI workbench for software engineering and general-purpose tasks on Windows, Linux, and macOS.
 
-The project began as a reusable pack for coding agents. It now provides a provider-neutral core for discovering capabilities, selecting safe workflows, running supported local agent surfaces, and producing typed artifacts without making a cloud service the default. Its first runnable product experience is a cross-platform local web application for system status, Ollama discovery, installed-model selection, and private chat. Native Tauri packaging remains optional later work.
+The project began as a reusable pack for coding agents. It now provides a provider-neutral core for discovering capabilities, selecting safe workflows, running supported local agent surfaces, and producing typed artifacts without making a cloud service the default. Its runnable cross-platform local web application provides system status, Ollama discovery, installed-model selection, private chat, writing, and summarization. Native Tauri packaging remains optional later work.
 
 ## What Works Today
 
@@ -14,7 +14,7 @@ The project began as a reusable pack for coding agents. It now provides a provid
 | Engineering workflows | Repository discovery, planning, review, scoped changes, language-aware guidance, workflow dispatch, and evidence reporting are implemented. |
 | General local text | `general.chat`, `content.write`, and `content.summarize` use one provider-neutral, session-bound adapter. Ollama is live-validated, including an exact Linux Laguna XS 2.1 conformance cell. llama.cpp is live-validated on its exact Linux NVIDIA/CUDA profile and remains engine-evidence-only on Windows AMD/HIP; every selection fails closed outside admitted profiles. |
 | Local images | `media.image.create` has a live-validated Linux ComfyUI/SDXL provider and typed PNG artifacts. A native Windows AMD/RX 7800 XT cell now passes repeated generation, active cancellation, forced recovery, retention cleanup, and uninstall, but remains partial because no newer immutable AMD release exists for the update/rollback gate and consumer onboarding/installer behavior is not yet admitted. Windows NVIDIA, Intel GPU/XPU, and Apple Silicon remain candidates. |
-| Product UI | The Milestone 22A local-web MVP now runs on Windows, Linux, and macOS with no new dependencies. It shows sanitized system status, connects to a user-selected loopback or trusted-LAN Ollama endpoint, discovers installed models, provides chat, and unloads the selected model after every response or failure. Tauri packaging and broader UI capabilities remain separately gated. |
+| Product UI | The Milestone 22A local-web application runs on Windows, Linux, and macOS with no new dependencies. It shows sanitized system status, connects to a user-selected loopback or trusted-LAN Ollama endpoint, discovers installed models, provides chat, writing, and summarization, and unloads the selected model after every response or failure. Tauri packaging and broader UI capabilities remain separately gated. |
 | Music and video | The documentation-only candidate inventories remain the shipping boundary. ACE-Step has a partial exact-profile Linux CUDA instrumental pass; video remains documentation-only. No provider scripts, adapters, harnesses, workflows, or configuration ship before full promotion gates pass. |
 | Model quantization | Versioned contracts, sanitized profiling, and trusted-artifact selection are implemented; exact Linux NVIDIA and Windows AMD Ollama comparisons passed, while every other hardware/runtime cell remains evidence-gated. |
 | Inference engines | Provider, engine, backend, and model layers are separated. llama.cpp CUDA passed on Linux NVIDIA and HIP passed on Windows AMD; Vulkan failed the patch gate, Intel work is parked pending hardware, IPEX-LLM is retired, and LM Studio is optional API-only software. |
@@ -33,7 +33,7 @@ Local providers and supported agent surfaces
 Typed artifacts, validation evidence, and recovery
 ```
 
-The current web process binds only to `127.0.0.1`, serves bundled assets, keeps configuration and chat in memory, and admits only the `general.chat` Ollama slice. The design keeps provider selection, evidence state, permissions, privacy disclosures, and write approval outside model prompts.
+The current web process binds only to `127.0.0.1`, serves bundled assets, keeps configuration and text in memory, and admits the evidence-gated `general.chat`, `content.write`, and `content.summarize` Ollama capabilities. The design keeps provider selection, evidence state, permissions, privacy disclosures, and write approval outside model prompts.
 
 ## Evidence Before Features
 
@@ -47,7 +47,7 @@ Evidence states distinguish `tested-passed`, `tested-partial`, `failed`, `recomm
 | --- | --- | --- |
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Stable workflow, recommendation, dispatch, onboarding, and release foundation. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, provider-neutral local text, local images, capability discovery, routing, and typed artifacts. |
-| Milestone 22: Unified Product UI And Task Composition | In progress; runnable 22A MVP | Local web system status, Ollama connection/model discovery, chat, and verified unload are implemented; broader capabilities and optional native packaging remain open. |
+| Milestone 22: Unified Product UI And Task Composition | In progress; runnable 22A text tools | Local web system status, Ollama connection/model discovery, chat, writing, summarization, and verified unload are implemented; software workflows, images, composition, and optional native packaging remain open. |
 | Milestone 23: Native Local Image Generation | In progress | Linux ComfyUI/SDXL is validated; Windows AMD has a partial native pass, while remaining consumer-local gates stay open. |
 | Milestone 24: Local Music And Audio Generation | Live feasibility in progress | ACE-Step has a partial Linux CUDA instrumental pass; no audio provider is promoted. |
 | Milestone 25: Local Video Generation | Research in progress | HunyuanVideo, Wan2.2, and LTX-2.3 are recorded without executable integration. |
@@ -769,7 +769,7 @@ Use `docs/local-config-safety.md` before adding local endpoints, model experimen
 - Documentation and product-management assistant roles
 - Reusable templates for architecture, AI, security, and performance artifacts
 - Optional MCP integration points for richer repository and tool context
-- A runnable local web MVP for status, Ollama model discovery, and private chat over the same versioned capability contracts
+- A runnable local web application for status, Ollama model discovery, private chat, writing, and summarization over the same versioned capability contracts
 
 ## Repository Layout
 

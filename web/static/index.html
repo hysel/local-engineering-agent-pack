@@ -20,8 +20,10 @@
 
   <main class="shell">
     <aside class="rail" aria-label="Primary navigation">
-      <button class="nav-item active" type="button"><span>⌂</span>Home</button>
-      <button class="nav-item" type="button"><span>✦</span>Chat</button>
+      <button class="nav-item active" id="home-nav" type="button"><span>⌂</span>Home</button>
+      <button class="nav-item capability-nav" data-capability="general.chat" type="button"><span>✦</span>Chat</button>
+      <button class="nav-item capability-nav" data-capability="content.write" type="button"><span>✎</span>Writing</button>
+      <button class="nav-item capability-nav" data-capability="content.summarize" type="button"><span>≡</span>Summarize</button>
       <button class="nav-item muted" type="button" disabled><span>⌘</span>Software <small>Soon</small></button>
       <button class="nav-item muted" type="button" disabled><span>◫</span>Images <small>Soon</small></button>
       <button class="nav-item" id="models-nav" type="button"><span>◉</span>Models</button>
@@ -36,9 +38,9 @@
 
     <section class="workspace">
       <div class="hero">
-        <p class="eyebrow">LOCAL WEB MVP</p>
+        <p class="eyebrow">PRIVATE LOCAL AI</p>
         <h1>Your AI, ready when you are.</h1>
-        <p>Connect an Ollama server, choose an installed model, and start a private conversation.</p>
+        <p>Connect Ollama once, then chat, draft content, or summarize material without sending it to a cloud service.</p>
       </div>
 
       <div class="dashboard-grid">
@@ -96,17 +98,26 @@
         </section>
       </div>
 
-      <section class="panel chat-panel">
+      <section class="panel chat-panel" id="text-panel">
         <div class="panel-heading chat-heading">
           <div>
-            <p class="eyebrow">03 · CHAT</p>
-            <h2>Private conversation</h2>
+            <p class="eyebrow" id="capability-eyebrow">03 · CHAT</p>
+            <h2 id="capability-title">Private conversation</h2>
           </div>
-          <label class="model-select">Model
-            <select id="model" disabled>
-              <option>Connect Ollama first</option>
-            </select>
-          </label>
+          <div class="text-actions">
+            <button class="button secondary" id="new-task-button" type="button">New task</button>
+            <label class="model-select">Model
+              <select id="model" disabled>
+                <option>Connect Ollama first</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="mode-tabs" role="tablist" aria-label="Text task">
+          <button class="mode-tab active" data-capability="general.chat" type="button" role="tab" aria-selected="true">Chat</button>
+          <button class="mode-tab" data-capability="content.write" type="button" role="tab" aria-selected="false">Write</button>
+          <button class="mode-tab" data-capability="content.summarize" type="button" role="tab" aria-selected="false">Summarize</button>
         </div>
 
         <div class="messages" id="messages" aria-live="polite">
@@ -114,19 +125,19 @@
             <div class="avatar">42</div>
             <div>
               <strong>Haven 42</strong>
-              <p>Connect your Ollama server above. Once it responds, choose an installed model and we can talk.</p>
+              <p id="welcome-message">Connect your Ollama server above. Once it responds, choose an installed model and we can talk.</p>
             </div>
           </article>
         </div>
 
-        <form class="composer" id="chat-form">
-          <label class="sr-only" for="prompt">Message</label>
+        <form class="composer" id="text-form">
+          <label class="sr-only" id="prompt-label" for="prompt">Message</label>
           <textarea id="prompt" rows="2" maxlength="32768" placeholder="Connect Ollama to begin…" disabled></textarea>
-          <button class="button send" id="send-button" type="submit" disabled aria-label="Send message">↑</button>
+          <button class="button send" id="send-button" type="submit" disabled aria-label="Run task">↑</button>
         </form>
         <div class="chat-footer">
-          <span id="chat-status">Provider not connected</span>
-          <span>Messages are not written to disk</span>
+          <span id="text-status">Provider not connected</span>
+          <span>Inputs and responses are not written to disk</span>
         </div>
       </section>
     </section>

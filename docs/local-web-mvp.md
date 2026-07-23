@@ -1,6 +1,6 @@
 # Local Web MVP
 
-Haven 42 now has a runnable first product slice for Windows, Linux, and macOS. It opens a local browser page, reports sanitized host readiness, connects to an explicitly selected Ollama endpoint, discovers installed models, and provides repository-free chat.
+Haven 42 has a runnable local product experience for Windows, Linux, and macOS. It opens a local browser page, reports sanitized host readiness, connects to an explicitly selected Ollama endpoint, discovers installed models, and provides repository-free chat, writing, and summarization.
 
 This is a local application, not a hosted website. It does not require Node.js, Rust, Tauri, a cloud account, executable signing, or a public deployment.
 
@@ -40,11 +40,17 @@ For an Ollama server on your trusted home or work network:
 
 Hostnames, credentials in URLs, paths, query strings, redirects, link-local addresses, public addresses under the trusted-LAN scope, and unsafe address classes are rejected. Connection settings remain in memory and are lost when Haven 42 closes.
 
-## Chat And Model Cleanup
+## Chat, Writing, Summarization, And Model Cleanup
 
-Chat uses the registered `general.chat` capability and `ollama.local-text` provider. It does not read a repository, write files, download models, or persist the endpoint, prompt, conversation, or response.
+Use the task selector above the input area or the left navigation:
 
-Every chat request sends `keep_alive: 0`. Haven 42 then makes an explicit unload request and verifies that the selected model left Ollama's process list. The same cleanup runs after a provider failure and again when the local web process closes.
+- **Chat** uses `general.chat` and keeps up to 20 bounded messages in browser memory for follow-up questions.
+- **Write** uses `content.write` and sends one bounded writing request. It returns a Markdown-document result in the page.
+- **Summarize** uses `content.summarize` and sends one bounded source input. Its system instruction permits only source-grounded summarization and requires uncertainty to be preserved.
+
+Changing modes or selecting **New task** clears the visible in-memory task. These capabilities use the registered `ollama.local-text` provider. They do not read a repository, write files, download models, or persist the endpoint, input, conversation, or response.
+
+Every text request sends `keep_alive: 0`. Haven 42 then makes an explicit unload request and verifies that the selected model left Ollama's process list. The same cleanup runs after a provider failure and again when the local web process closes.
 
 ## Security Boundary
 
@@ -63,12 +69,12 @@ The renderer never receives a shell, executable, arbitrary process, filesystem, 
 
 The machine-readable boundary is `config/local-web-runtime-policy.json`. The offline integration suite is `scripts/test-haven42-web.py`.
 
-## Current MVP Boundary
+## Current Runtime Boundary
 
-This first slice intentionally includes only system status, Ollama connection, installed-model selection, and chat. Software workflows, images, model management, persistence, multi-user access, remote browser access, automatic updates, and native packaging remain unavailable until their separate runtime and security gates pass.
+The admitted application includes system status, Ollama connection, installed-model selection, chat, writing, and summarization. Software workflows, images, model management, persistence, multi-user access, remote browser access, automatic updates, and native packaging remain unavailable until their separate runtime and security gates pass.
 
 Tauri remains an optional later packaging path. It is not required to run or validate this local-web slice.
 
 ## Validation Evidence
 
-The sanitized Windows application-host and trusted-LAN Ollama validation cell is recorded in `examples/local-web-mvp-validation.md`. It covers page rendering, secure session bootstrap, discovery, model selection, bounded chat, response-content exclusion, application unload, and an independently empty Ollama process list.
+The sanitized Windows application-host and trusted-LAN Ollama validation cell is recorded in `examples/local-web-mvp-validation.md`. It covers page rendering, secure session bootstrap, discovery, model selection, all three bounded text modes, response-content exclusion, application unload, and an independently empty Ollama process list.

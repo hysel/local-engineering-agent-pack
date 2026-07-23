@@ -4033,7 +4033,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
         Assert-True -Condition ($doc -match [regex]::Escape($milestone)) -Message "Solution architecture review should cover milestone $milestone."
     }
     Assert-True -Condition ($doc -match "21: General-Purpose AI Assistant And Intent Routing \| Complete \| Complete for the promoted provider set") -Message "Solution audit should keep completed Milestone 21 aligned with the roadmap."
-    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress; 22A runnable \| Local web chat MVP admitted; broader UI and native packaging gated") -Message "Solution audit should report the admitted local-web MVP without broadening native runtime claims."
+    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress; 22A text tools runnable \| Local web chat, writing, and summarization admitted; broader UI and native packaging gated") -Message "Solution audit should report the admitted local-web text tools without broadening native runtime claims."
     Assert-True -Condition ($doc -notmatch "21: General-Purpose AI Assistant And Intent Routing \| Planned" -and $doc -notmatch "22: Unified Product UI And Task Composition \| Planned") -Message "Solution audit must not retain stale Milestone 21 or 22 status."
     Assert-True -Condition ($roadmap -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $roadmap -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "Roadmap should align with the architecture audit for Milestones 21 and 22."
     Assert-True -Condition ($readme -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $readme -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "README should align with the architecture audit for Milestones 21 and 22."
@@ -4887,7 +4887,7 @@ Invoke-PackTest "product UI first slice is registry-backed and fail closed" {
     Assert-True -Condition ((Get-Content -LiteralPath (Join-Path $repoRoot "config/wiki-sync.tsv") -Raw) -match "docs/product-ui-first-slice\.md") -Message "The product UI guide should be mapped to the wiki."
 }
 
-Invoke-PackTest "local web MVP is loopback-only and unloads models" {
+Invoke-PackTest "local web text tools are loopback-only and unload models" {
     $python = Get-Command python -ErrorAction SilentlyContinue
     if (-not $python) { $python = Get-Command python3 -ErrorAction SilentlyContinue }
     Assert-True -Condition ($null -ne $python) -Message "Python 3 is required for local-web validation."
@@ -4899,12 +4899,13 @@ Invoke-PackTest "local web MVP is loopback-only and unloads models" {
     }
     $result = @(& $python.Source $testPath 2>&1)
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Local-web offline integration test should pass."
-    Assert-True -Condition (($result -join "`n") -match "25 security and behavior checks") -Message "Local-web integration coverage should remain complete."
+    Assert-True -Condition (($result -join "`n") -match "41 security and behavior checks") -Message "Local-web integration coverage should remain complete."
     $policy = Get-Content -LiteralPath $policyPath -Raw | ConvertFrom-Json
     Assert-Equal -Actual $policy.runtimeId -Expected "haven42.local-web" -Message "Local-web runtime identity should be stable."
-    Assert-True -Condition ($policy.implementationStatus -eq "mvp-admitted" -and -not $policy.bind.remoteBindAllowed) -Message "Only the loopback MVP should be admitted."
+    Assert-True -Condition ($policy.implementationStatus -eq "text-tools-admitted" -and -not $policy.bind.remoteBindAllowed) -Message "Only the loopback text-tool runtime should be admitted."
     Assert-True -Condition (-not $policy.browser.remoteAssetsAllowed -and -not $policy.browser.telemetryAllowed -and $policy.browser.csrfTokenRequiredForEffects) -Message "Browser security should remain local and default-deny."
-    Assert-True -Condition ($policy.chat.modelResidency -eq "unload-after-response" -and $policy.chat.unloadOnFailure -and $policy.chat.unloadOnShutdown) -Message "Model cleanup should be mandatory."
+    Assert-True -Condition ($policy.text.modelResidency -eq "unload-after-response" -and $policy.text.unloadOnFailure -and $policy.text.unloadOnShutdown) -Message "Model cleanup should be mandatory."
+    Assert-Equal -Actual (($policy.text.capabilityIds | Sort-Object) -join ",") -Expected "content.summarize,content.write,general.chat" -Message "Only the three admitted local text capabilities should be exposed."
     foreach ($wrapper in @("scripts/start-haven42-web.ps1", "scripts/start-haven42-web.linux.sh", "scripts/start-haven42-web.macos.sh", "scripts/start-haven42-web.shared.sh")) {
         Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot $wrapper) -PathType Leaf) -Message "Cross-platform local-web launcher should exist: $wrapper"
     }

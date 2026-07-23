@@ -162,6 +162,7 @@ input:focus, select:focus, textarea:focus { border-color: rgba(98, 230, 198, 0.6
 .button:hover:not(:disabled) { transform: translateY(-1px); }
 .button:disabled { opacity: 0.45; cursor: default; }
 .button.primary { padding: 0 18px; color: #06221b; background: var(--accent); }
+.button.secondary { padding: 9px 12px; color: var(--ink); background: rgba(98, 230, 198, 0.08); border: 1px solid var(--line); }
 details { margin-top: 16px; color: var(--muted); }
 summary { cursor: pointer; font-size: 12px; }
 .advanced-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
@@ -178,8 +179,12 @@ summary { cursor: pointer; font-size: 12px; }
 
 .chat-panel { min-height: 410px; display: flex; flex-direction: column; }
 .chat-heading { padding: 24px 24px 0; }
+.text-actions { display: flex; align-items: center; gap: 12px; }
 .model-select { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
 .model-select select { min-width: 190px; padding: 8px 34px 8px 10px; }
+.mode-tabs { display: flex; gap: 6px; margin: 0 24px 10px; padding: 4px; width: fit-content; border: 1px solid var(--line); border-radius: 11px; background: rgba(4, 12, 13, 0.45); }
+.mode-tab { appearance: none; border: 0; border-radius: 8px; padding: 8px 13px; color: var(--muted); background: transparent; font: 700 12px/1 inherit; cursor: pointer; }
+.mode-tab:hover, .mode-tab.active { color: var(--ink); background: rgba(98, 230, 198, 0.1); }
 .messages { padding: 10px 24px 24px; min-height: 220px; max-height: 52vh; overflow: auto; }
 .message { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 16px 0; border-bottom: 1px solid rgba(132, 190, 180, 0.08); }
 .message.user { opacity: 0.85; }
@@ -208,7 +213,10 @@ summary { cursor: pointer; font-size: 12px; }
   .field-row, .advanced-grid { grid-template-columns: 1fr; }
   .button.primary { min-height: 44px; }
   .panel-heading.chat-heading { display: block; }
+  .text-actions { align-items: stretch; flex-direction: column-reverse; margin-top: 14px; }
   .model-select { margin-top: 14px; display: grid; }
+  .mode-tabs { width: auto; }
+  .mode-tab { flex: 1; }
   .chat-footer { display: grid; }
 }
 

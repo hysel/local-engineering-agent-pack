@@ -17,8 +17,8 @@ Continue, Aider, and OpenCode are the maintained engineering surfaces. General t
 ## Current Stage
 
 Milestones 1 through 21 are complete for their defined scopes. Milestone 22A now has
-a runnable Python standard-library local web MVP with loopback-only serving, sanitized system
-status, explicit Ollama connection, installed-model discovery, bounded chat, and verified model unload. Milestone 22B retains optional Tauri packaging, broader capability composition, updates, and native platform gates. Milestone 23 owns native
+a runnable Python standard-library local web application with loopback-only serving, sanitized system
+status, explicit Ollama connection, installed-model discovery, bounded chat, writing, summarization, and verified model unload. Milestone 22B retains optional Tauri packaging, broader capability composition, updates, and native platform gates. Milestone 23 owns native
 local image profiles and now has consumer-local discovery and consent contracts.
 Milestones 24 and 25 retain documentation-only audio/video candidate inventories and
 shared media-consent policy. Milestone 26 now has quantization plan/artifact contracts,

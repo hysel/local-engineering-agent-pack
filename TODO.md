@@ -412,6 +412,7 @@
 - [x] Keep engine binaries separate from user configuration, workspaces, models, provider data, generated artifacts, and evidence in the versioned storage and update contracts.
 - [ ] Add compatibility preflight, atomic activation, post-update health checks, automatic rollback, retained-version cleanup, offline behavior, and a disabled-update mode.
 - [x] Implement Milestone 22A as a zero-new-dependency, loopback-only local web MVP over the Milestone 21 `general.chat` capability: sanitized system status, explicit Ollama endpoint validation, installed-model discovery, model selection, bounded chat, and verified unload after success, failure, and shutdown.
+- [x] Expand Milestone 22A with repository-free `content.write` and `content.summarize` modes, typed chat/Markdown results, in-memory task reset, and the same bounded provider and unload policy.
 - [ ] Expand the local web UI over the Milestone 20 workflow foundation and remaining evidence-gated Milestone 21 capabilities without duplicating business logic.
 - [ ] Keep Tauri as optional Milestone 22B native packaging after its published dependency, bridge, signing, package, and platform gates pass; the local web product must not wait on it.
 - [x] Define the first product slice, first-run flow, Home/Chat/Software/Images/Models/System navigation, approval review, wireframes, and renderer-safe registry-backed view model without admitting a desktop runtime.
@@ -422,7 +423,8 @@
   - The framework-neutral contract and view-model foundation are complete; native renderer and runtime integration remain open.
 - [ ] Render typed artifacts plus versioned progress, warning, result, and error envelopes.
 - [ ] Connect setup, health, model choice, software workflows, validation, cleanup, and evidence views without duplicating business logic.
-- [ ] Add repository-free text and image flows only for evidence-gated Milestone 21 providers.
+- [x] Add repository-free text flows only for evidence-gated Milestone 21 providers.
+- [ ] Add a repository-free image flow only for the promoted Linux ComfyUI/SDXL profile, with explicit availability and artifact controls.
 - [ ] Add accessible cross-platform UI contract, failure, recovery, and packaging tests.
 - [ ] Add bounded multi-step composition with explicit intermediate artifacts and approvals.
 

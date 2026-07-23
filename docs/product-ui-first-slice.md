@@ -4,7 +4,7 @@
 
 The first Haven 42 product slice now has a runnable loopback-only implementation
 for sanitized system readiness, explicit Ollama connection, installed-model
-selection, private chat, and verified unload. See `docs/local-web-mvp.md`.
+selection, private chat, writing, summarization, and verified unload. See `docs/local-web-mvp.md`.
 
 The broader product-navigation phase still defines the future user experience
 React, npm, Cargo, a sidecar binary, installer, or updater into the product.
