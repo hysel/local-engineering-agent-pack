@@ -11,6 +11,7 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Defined the first Haven 42 product UI slice with first-run, Home, Chat, Software, Images, Models, System, approval, progress, and result wireframes; added a fail-closed registry-backed view-model builder that exposes no commands, endpoints, tokens, or execution authority while desktop runtime admission remains blocked.
 - Promoted the llama.cpp local-text adapter to live-validated for its exact Linux NVIDIA/CUDA profile after pinned-server discovery, exact-profile admission, OpenAI-compatible invocation, exact-output, sanitization, GPU-use, timing, shutdown, and disposable-environment cleanup passed; Windows AMD/HIP remains engine-evidence-only.
 - Added a cross-platform offline core-update policy with strict immutable-release, compatibility, host-asset, approved-host, byte-size, and SHA-256 validation. It explicitly cannot use the network, write, download, stage, attest, activate, or touch user data.
 - Expanded the desktop sidecar policy self-test to 46 hostile cases covering nested execution fields, grant types and duplication, approval session binding, inactive cancellation, event binding, and terminal-event completeness while keeping native bridge gates open.

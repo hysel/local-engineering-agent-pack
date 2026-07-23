@@ -20,6 +20,8 @@ The UI must be a wrapper over existing workflow registry entries and tested scri
 
 The first screen should ask what the user wants to do, then route to an available capability or the setup console when prerequisites are missing.
 
+The approved first product slice, navigation map, interaction flow, and low-fidelity wireframes are recorded in `docs/product-ui-first-slice.md`. The framework-neutral source is `config/ui-navigation-contract.json`, and `scripts/build-ui-view-model.py` produces renderer-safe state with execution disabled until desktop runtime admission.
+
 | Area | Source of truth |
 | --- | --- |
 | Intent menu | `docs/haven-42-menu.md`, `scripts/show-haven-42-menu.*`, `config/workflows.json` |
@@ -135,5 +137,5 @@ Milestone 20 completed the stable workflow, evidence, onboarding, and dispatcher
 Remaining product work stays on `TODO.md`:
 
 - Keep surface-specific profile generation gated by non-Continue compatibility evidence.
-- Decide which local text and image providers form the first supported Milestone 21 vertical slice.
+- Implement the approved local chat and system-readiness first slice in the native renderer after runtime admission; keep image actions availability-gated.
 - Define and validate the Tauri IPC, packaging, signing, updater, and platform promotion contracts before scaffolding a shippable UI.

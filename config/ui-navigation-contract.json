@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "productName": "Haven 42",
+  "description": "Framework-neutral navigation and presentation contract for the first Haven 42 product slice. It contains no executable paths, endpoints, provider credentials, or UI-only business logic.",
+  "implementationStatus": "contract-and-view-model-only",
+  "runtimeAdmitted": false,
+  "principles": {
+    "localFirst": true,
+    "deterministicNavigationAlwaysAvailable": true,
+    "rendererIsExecutionAuthority": false,
+    "remoteContentAllowed": false,
+    "providerAvailabilityMustBeDiscovered": true,
+    "effectsMustBeDisclosedBeforeApproval": true,
+    "blockedCapabilitiesMayBeDisplayedButNotExecuted": true
+  },
+  "shell": {
+    "regions": ["primary-navigation", "page-header", "main-content", "task-status", "privacy-status"],
+    "primaryNavigation": ["home", "chat", "software", "images", "models", "system"],
+    "persistentStatus": ["execution-location", "provider", "network-use", "repository-access"]
+  },
+  "routes": [
+    { "id": "welcome", "path": "/welcome", "title": "Welcome", "kind": "first-run", "requiresFirstRunComplete": false },
+    { "id": "privacy", "path": "/welcome/privacy", "title": "Privacy and control", "kind": "first-run", "requiresFirstRunComplete": false },
+    { "id": "readiness", "path": "/welcome/readiness", "title": "System readiness", "kind": "first-run", "requiresFirstRunComplete": false },
+    { "id": "home", "path": "/", "title": "What do you want to do?", "kind": "navigation", "requiresFirstRunComplete": true },
+    { "id": "chat", "path": "/chat", "title": "Chat", "kind": "capability", "requiresFirstRunComplete": true },
+    { "id": "software", "path": "/software", "title": "Software project", "kind": "capability", "requiresFirstRunComplete": true },
+    { "id": "images", "path": "/images", "title": "Create an image", "kind": "capability", "requiresFirstRunComplete": true },
+    { "id": "models", "path": "/models", "title": "Models and providers", "kind": "management", "requiresFirstRunComplete": true },
+    { "id": "system", "path": "/system", "title": "System readiness", "kind": "management", "requiresFirstRunComplete": true },
+    { "id": "review", "path": "/review", "title": "Review action", "kind": "approval", "requiresFirstRunComplete": true },
+    { "id": "task", "path": "/tasks/:requestId", "title": "Task progress", "kind": "execution", "requiresFirstRunComplete": true },
+    { "id": "result", "path": "/tasks/:requestId/result", "title": "Result", "kind": "result", "requiresFirstRunComplete": true }
+  ],
+  "firstRun": {
+    "steps": ["welcome", "privacy", "readiness", "home"],
+    "networkProbeByDefault": false,
+    "installsSoftwareByDefault": false,
+    "downloadsModelsByDefault": false,
+    "requiresRepository": false,
+    "completionStoredAsUserState": true
+  },
+  "homeActions": [
+    {
+      "id": "chat-with-local-ai",
+      "title": "Chat with local AI",
+      "description": "Ask questions or have a private conversation using a configured local text provider.",
+      "routeId": "chat",
+      "operationKind": "capability",
+      "operationId": "general.chat",
+      "recommended": true
+    },
+    {
+      "id": "work-on-software",
+      "title": "Work on a software project",
+      "description": "Plan, review, validate, or make an explicitly approved change in a selected repository.",
+      "routeId": "software",
+      "operationKind": "capability",
+      "operationId": "engineering.software-work",
+      "recommended": true
+    },
+    {
+      "id": "create-image",
+      "title": "Create an image",
+      "description": "Generate an image only when an evidence-gated image provider is configured and available.",
+      "routeId": "images",
+      "operationKind": "capability",
+      "operationId": "media.image.create",
+      "recommended": false
+    },
+    {
+      "id": "manage-models",
+      "title": "Manage models and providers",
+      "description": "Profile hardware, compare evidence, choose models, and review downloads before they happen.",
+      "routeId": "models",
+      "operationKind": "capability",
+      "operationId": "setup.local-ai",
+      "recommended": false
+    },
+    {
+      "id": "check-system",
+      "title": "Check system readiness",
+      "description": "Review local setup, provider availability, evidence, and remediation without changing the machine.",
+      "routeId": "system",
+      "operationKind": "workflow",
+      "operationId": "test-local-agent-health",
+      "recommended": true
+    }
+  ],
+  "routeWorkflows": {
+    "software": ["show-workflow-chooser", "classify-project", "generate-runtime-context"],
+    "models": ["profile-local-hardware", "recommend-agent-config", "generate-model-scorecard", "pull-local-agent-models"],
+    "system": ["test-local-agent-health", "generate-evidence-dashboard", "get-beginner-setup-plan"]
+  },
+  "taskStateMachine": {
+    "initial": "compose",
+    "states": ["compose", "availability-check", "disclosure", "approval-required", "ready", "running", "cancelling", "succeeded", "failed", "cancelled"],
+    "terminalStates": ["succeeded", "failed", "cancelled"],
+    "rules": [
+      "availability is checked before execution",
+      "effects are derived by policy and never supplied by the renderer",
+      "approval is required whenever the desktop IPC policy requires it",
+      "approval denial returns to compose without side effects",
+      "execution events have strictly increasing sequence values and exactly one terminal event",
+      "retry creates a new request and never reuses an approval token"
+    ]
+  },
+  "approvalReview": {
+    "requiredFields": ["operation-name", "execution-location", "provider", "network-use", "repository-access", "file-writes", "model-downloads", "external-provider", "artifact-destination"],
+    "confirmLabel": "Approve and continue",
+    "denyLabel": "Go back",
+    "rememberApprovalAllowed": false,
+    "approvalTokenVisibleToRenderer": false,
+    "changedEffectsInvalidateApproval": true
+  },
+  "resultPresentation": {
+    "eventTypes": ["accepted", "progress", "warning", "result", "error"],
+    "typedArtifactsRequired": true,
+    "rawProviderOutputShownByDefault": false,
+    "rawPathsShownByDefault": false,
+    "retryRequiresNewRequest": true
+  },
+  "sourceContracts": {
+    "capabilities": "config/capabilities.json",
+    "providers": "config/providers.json",
+    "workflows": "config/workflows.json",
+    "desktopIpc": "config/desktop-ipc-contract.json",
+    "desktopAuthority": "config/desktop-capability-policy.json",
+    "typedArtifacts": "config/typed-artifact-contract.json"
+  }
+}

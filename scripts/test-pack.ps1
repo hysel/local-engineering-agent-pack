@@ -3958,7 +3958,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
         Assert-True -Condition ($doc -match [regex]::Escape($milestone)) -Message "Solution architecture review should cover milestone $milestone."
     }
     Assert-True -Condition ($doc -match "21: General-Purpose AI Assistant And Intent Routing \| Complete \| Complete for the promoted provider set") -Message "Solution audit should keep completed Milestone 21 aligned with the roadmap."
-    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress \| Architecture-complete; runtime dependency-gated") -Message "Solution audit should keep Milestone 22 in progress and dependency-gated."
+    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress \| First slice complete; runtime dependency-gated") -Message "Solution audit should keep Milestone 22 first-slice complete, in progress, and runtime dependency-gated."
     Assert-True -Condition ($doc -notmatch "21: General-Purpose AI Assistant And Intent Routing \| Planned" -and $doc -notmatch "22: Unified Product UI And Task Composition \| Planned") -Message "Solution audit must not retain stale Milestone 21 or 22 status."
     Assert-True -Condition ($roadmap -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $roadmap -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "Roadmap should align with the architecture audit for Milestones 21 and 22."
     Assert-True -Condition ($readme -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $readme -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "README should align with the architecture audit for Milestones 21 and 22."
@@ -4715,6 +4715,43 @@ Invoke-PackTest "provider performance evidence and capacity preflight fail close
     Assert-True -Condition (-not $ready.NetworkUsed -and -not $ready.FilesWritten -and -not $ready.ProcessesTerminated -and -not $ready.DriverOrServiceChanged) -Message "Capacity preflight should have no machine effects."
     $tooLarge = Invoke-CommandCapture -FilePath $capacityScript -Arguments @("-ProfilePath", $capacityFixture, "-RequiredAcceleratorMiB", "16000", "-RequiredSystemMiB", "8000", "-RequiredDiskMiB", "8000", "-ReserveMiB", "1000", "-AsJson")
     Assert-True -Condition ($tooLarge.ExitCode -ne 0 -and $tooLarge.Output -match 'insufficient-capacity') -Message "Insufficient accelerator headroom should fail closed."
+}
+
+Invoke-PackTest "product UI first slice is registry-backed and fail closed" {
+    $uiPath = Join-Path $repoRoot "config/ui-navigation-contract.json"
+    $builderPath = Join-Path $repoRoot "scripts/build-ui-view-model.py"
+    $docPath = Join-Path $repoRoot "docs/product-ui-first-slice.md"
+    $ui = Get-Content -LiteralPath $uiPath -Raw | ConvertFrom-Json
+    $capabilities = Get-Content -LiteralPath (Join-Path $repoRoot "config/capabilities.json") -Raw | ConvertFrom-Json
+    $workflows = Get-Content -LiteralPath (Join-Path $repoRoot "config/workflows.json") -Raw | ConvertFrom-Json
+    Assert-Equal -Actual $ui.schemaVersion -Expected 1 -Message "UI navigation should be schema v1."
+    Assert-True -Condition (-not $ui.runtimeAdmitted -and -not $ui.principles.rendererIsExecutionAuthority -and -not $ui.principles.remoteContentAllowed) -Message "The UI contract must not claim runtime admission or renderer authority."
+    Assert-True -Condition (-not $ui.firstRun.networkProbeByDefault -and -not $ui.firstRun.installsSoftwareByDefault -and -not $ui.firstRun.downloadsModelsByDefault) -Message "First run must be offline and non-installing by default."
+    Assert-True -Condition (-not $ui.approvalReview.rememberApprovalAllowed -and -not $ui.approvalReview.approvalTokenVisibleToRenderer) -Message "UI approvals must be nonpersistent and opaque."
+    $capabilityIds = @($capabilities.capabilities.id)
+    $workflowById = @{}
+    foreach ($workflow in $workflows.workflows) { $workflowById[$workflow.id] = $workflow }
+    foreach ($action in $ui.homeActions) {
+        if ($action.operationKind -eq "capability") {
+            Assert-True -Condition ($capabilityIds -contains $action.operationId) -Message "UI home actions must reference registered capabilities: $($action.operationId)"
+        } else {
+            Assert-True -Condition ($workflowById.ContainsKey($action.operationId) -and $workflowById[$action.operationId].uiReady) -Message "UI home actions must reference UI-ready workflows: $($action.operationId)"
+        }
+    }
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $python) { $python = Get-Command python3 -ErrorAction SilentlyContinue }
+    Assert-True -Condition ($null -ne $python) -Message "Python 3 is required for UI view-model validation."
+    $selfTest = @(& $python.Source $builderPath --self-test 2>&1)
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "UI view-model self-test should pass."
+    Assert-True -Condition (($selfTest -join "`n") -match "3 cases") -Message "UI view-model should exercise all fail-closed cases."
+    $modelText = @(& $python.Source $builderPath --platform windows 2>&1) -join "`n"
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "UI view model should build without network or runtime dependencies."
+    $model = $modelText | ConvertFrom-Json
+    Assert-Equal -Actual $model.initialRouteId -Expected "welcome" -Message "Incomplete first run should begin at Welcome."
+    Assert-True -Condition (-not $model.executionEnabled -and -not $model.runtimeAdmitted) -Message "The nonvisual skeleton must not enable execution."
+    Assert-True -Condition ($modelText -notmatch 'entryPoints|127\.0\.0\.1|192\.168\.|approvalTokenId') -Message "Renderer-safe UI state must exclude executable paths, endpoints, and approval tokens."
+    Assert-True -Condition ((Get-Content -LiteralPath $docPath -Raw) -match "What do you want to do\?") -Message "The first-slice guide should document the agreed home experience."
+    Assert-True -Condition ((Get-Content -LiteralPath (Join-Path $repoRoot "config/wiki-sync.tsv") -Raw) -match "docs/product-ui-first-slice\.md") -Message "The product UI guide should be mapped to the wiki."
 }
 
 Invoke-PackTest "media onboarding and quantization foundations fail closed" {
