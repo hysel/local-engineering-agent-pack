@@ -11,6 +11,7 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Fixed native Bash testing on Windows by securely resolving an installed Python 3 exposed as `python`, `python.exe`, or `py -3`, validating its major version, and activating a fail-closed `python3` compatibility launcher for child shell scripts without installing software or permanently changing the machine `PATH`.
 - Added a cross-platform, read-only security-aware model catalog that combines bounded discovery records, immutable artifact identity, fail-closed per-artifact license policy, hardware fit, and revision-bound validation evidence into shared beginner and advanced product decisions without downloading models, executing remote code, or changing runtime configuration.
 - Added eight capability-specific onboarding setting schemas plus a renderer-independent default-deny evaluator. Structured advanced settings may preserve, narrow, or block evidence but cannot forge validation, approval, commands, raw endpoints, paths, or credentials; hostile tests verify zero machine effects, strict trusted-admission shape, and sanitized decisions.
 - Removed rename-era identity language so tracked product documentation, prompts, tests, packages, and wiki content use only the Haven 42 name and canonical repository identity.

@@ -1,0 +1,20 @@
+#!/bin/bash
+set -uo pipefail
+
+if [ -z "${HAVEN42_TEST_PYTHON_COMMAND:-}" ]; then
+  printf '%s\n' 'ERROR Python 3 compatibility launcher was used without a validated command.' >&2
+  exit 1
+fi
+
+case "${HAVEN42_TEST_PYTHON_MODE:-}" in
+  direct)
+    exec "$HAVEN42_TEST_PYTHON_COMMAND" "$@"
+    ;;
+  py-launcher)
+    exec "$HAVEN42_TEST_PYTHON_COMMAND" -3 "$@"
+    ;;
+  *)
+    printf '%s\n' 'ERROR Python 3 compatibility launcher received an invalid mode.' >&2
+    exit 1
+    ;;
+esac
