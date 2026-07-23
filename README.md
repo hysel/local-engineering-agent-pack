@@ -4,7 +4,7 @@
 
 Haven 42 is an evidence-gated, local-first AI workbench for software engineering and general-purpose tasks on Windows, Linux, and macOS.
 
-The project began as a reusable pack for coding agents. It now provides a provider-neutral core for discovering capabilities, selecting safe workflows, running supported local agent surfaces, and producing typed artifacts without making a cloud service the default. The planned product experience is a Tauri desktop application with a bundled local web UI that asks what the user wants to accomplish and routes the request through these tested contracts.
+The project began as a reusable pack for coding agents. It now provides a provider-neutral core for discovering capabilities, selecting safe workflows, running supported local agent surfaces, and producing typed artifacts without making a cloud service the default. Its first runnable product experience is a cross-platform local web application for system status, Ollama discovery, installed-model selection, and private chat. Native Tauri packaging remains optional later work.
 
 ## What Works Today
 
@@ -14,7 +14,7 @@ The project began as a reusable pack for coding agents. It now provides a provid
 | Engineering workflows | Repository discovery, planning, review, scoped changes, language-aware guidance, workflow dispatch, and evidence reporting are implemented. |
 | General local text | `general.chat`, `content.write`, and `content.summarize` use one provider-neutral, session-bound adapter. Ollama is live-validated, including an exact Linux Laguna XS 2.1 conformance cell. llama.cpp is live-validated on its exact Linux NVIDIA/CUDA profile and remains engine-evidence-only on Windows AMD/HIP; every selection fails closed outside admitted profiles. |
 | Local images | `media.image.create` has a live-validated Linux ComfyUI/SDXL provider and typed PNG artifacts. A native Windows AMD/RX 7800 XT cell now passes repeated generation, active cancellation, forced recovery, retention cleanup, and uninstall, but remains partial because no newer immutable AMD release exists for the update/rollback gate and consumer onboarding/installer behavior is not yet admitted. Windows NVIDIA, Intel GPU/XPU, and Apple Silicon remain candidates. |
-| Product UI | Milestone 22 now has an agreed first-run experience, navigation contract, wireframes, a registry-backed nonvisual view model, and product-wide progressive onboarding. Eight capability-specific advanced-setting domains now use a renderer-independent, default-deny evaluator that rejects authority-bearing input and causes no machine effects. The 46 engine-side IPC and 55 native-authority policy cases remain preparatory; execution stays disabled and dependency blockers still prevent a desktop runtime from shipping. |
+| Product UI | The Milestone 22A local-web MVP now runs on Windows, Linux, and macOS with no new dependencies. It shows sanitized system status, connects to a user-selected loopback or trusted-LAN Ollama endpoint, discovers installed models, provides chat, and unloads the selected model after every response or failure. Tauri packaging and broader UI capabilities remain separately gated. |
 | Music and video | The documentation-only candidate inventories remain the shipping boundary. ACE-Step has a partial exact-profile Linux CUDA instrumental pass; video remains documentation-only. No provider scripts, adapters, harnesses, workflows, or configuration ship before full promotion gates pass. |
 | Model quantization | Versioned contracts, sanitized profiling, and trusted-artifact selection are implemented; exact Linux NVIDIA and Windows AMD Ollama comparisons passed, while every other hardware/runtime cell remains evidence-gated. |
 | Inference engines | Provider, engine, backend, and model layers are separated. llama.cpp CUDA passed on Linux NVIDIA and HIP passed on Windows AMD; Vulkan failed the patch gate, Intel work is parked pending hardware, IPEX-LLM is retired, and LM Studio is optional API-only software. |
@@ -22,11 +22,9 @@ The project began as a reusable pack for coding agents. It now provides a provid
 ## Product Direction
 
 ```text
-Tauri desktop shell with bundled local web UI (planned)
+Loopback-only local web application (available)
         |
-Private typed sidecar IPC
-        |
-Capability registry and deterministic routing
+Capability registry, provider policy, and Ollama adapter
         |
 Workflow dispatcher and approval policy
         |
@@ -35,7 +33,7 @@ Local providers and supported agent surfaces
 Typed artifacts, validation evidence, and recovery
 ```
 
-The design keeps provider selection, evidence state, permissions, privacy disclosures, and write approval outside model prompts. Optional LLM routing may suggest an intent, but deterministic policy decides what can actually run.
+The current web process binds only to `127.0.0.1`, serves bundled assets, keeps configuration and chat in memory, and admits only the `general.chat` Ollama slice. The design keeps provider selection, evidence state, permissions, privacy disclosures, and write approval outside model prompts.
 
 ## Evidence Before Features
 
@@ -49,7 +47,7 @@ Evidence states distinguish `tested-passed`, `tested-partial`, `failed`, `recomm
 | --- | --- | --- |
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Stable workflow, recommendation, dispatch, onboarding, and release foundation. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, provider-neutral local text, local images, capability discovery, routing, and typed artifacts. |
-| Milestone 22: Unified Product UI And Task Composition | In progress | First product slice and 101 fail-closed engine/native-boundary policy cases defined; actual native bridge, dependency, packaging, signing, and cross-platform gates remain. |
+| Milestone 22: Unified Product UI And Task Composition | In progress; runnable 22A MVP | Local web system status, Ollama connection/model discovery, chat, and verified unload are implemented; broader capabilities and optional native packaging remain open. |
 | Milestone 23: Native Local Image Generation | In progress | Linux ComfyUI/SDXL is validated; Windows AMD has a partial native pass, while remaining consumer-local gates stay open. |
 | Milestone 24: Local Music And Audio Generation | Live feasibility in progress | ACE-Step has a partial Linux CUDA instrumental pass; no audio provider is promoted. |
 | Milestone 25: Local Video Generation | Research in progress | HunyuanVideo, Wan2.2, and LTX-2.3 are recorded without executable integration. |
@@ -63,10 +61,38 @@ The goal is to make useful local AI capabilities approachable without weakening 
 
 For software work, the pack supplies repeatable discovery, implementation planning, code review, security review, architecture review, performance review, documentation, and product-management workflows. For general tasks, it supplies repository-optional sessions and explicit local capability boundaries for chat, writing, summarization, and image creation.
 
-## Which Path Should I Use?
+## Run The Local Web App
+
+The first Haven 42 product slice needs only Python 3 and an Ollama server with at least one installed model.
+
+Windows:
+
+```powershell
+.\scripts\start-haven42-web.ps1
+```
+
+Linux:
+
+```bash
+./scripts/start-haven42-web.linux.sh
+```
+
+macOS:
+
+```bash
+./scripts/start-haven42-web.macos.sh
+```
+
+Haven 42 opens a browser on `http://127.0.0.1:4242`. Connect the default same-machine Ollama endpoint or choose **Trusted local network** for an explicitly selected private IP server. Configuration and messages are not persisted, models are never downloaded, and the selected model is unloaded after every response, provider failure, and application shutdown.
+
+See [`docs/local-web-mvp.md`](docs/local-web-mvp.md) for connection, security, advanced settings, and current-scope details.
+
 
 | If you want to... | Start here |
+## Which Path Should I Use?
+
 | --- | --- |
+| Launch local Haven 42 chat | `docs/local-web-mvp.md` |
 | Install the pack in a project | `Quick Start` |
 | Set up Continue in VS Code or VSCodium | `docs/vscode-continue-setup.md` |
 | Choose beginner or team setup path | `docs/setup-paths.md` |
@@ -743,7 +769,7 @@ Use `docs/local-config-safety.md` before adding local endpoints, model experimen
 - Documentation and product-management assistant roles
 - Reusable templates for architecture, AI, security, and performance artifacts
 - Optional MCP integration points for richer repository and tool context
-- A planned local web UI over the same versioned capability and workflow contracts
+- A runnable local web MVP for status, Ollama model discovery, and private chat over the same versioned capability contracts
 
 ## Repository Layout
 

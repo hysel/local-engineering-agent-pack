@@ -89,7 +89,9 @@ The engine derives the user-facing configuration state: `validated`, `customized
 
 The UI should call only stable workflow IDs from `config/workflows.json` through `scripts/invoke-workflow.*` using the schema-v1 workflow envelope. Any new UI action should first exist as a script or registry entry with tests.
 
-The accepted desktop runtime is Tauri 2 with a React and TypeScript UI built by Vite. The production window loads only bundled local assets. Tauri starts one packaged, platform-specific Haven 42 engine sidecar and exchanges versioned typed JSON over private stdin/stdout IPC. The bridge accepts only registered capability IDs, workflow IDs, and schema-valid arguments. It must not expose arbitrary shell execution, unrestricted filesystem access, raw process spawning, remote UI code, or a generic command method.
+Milestone 22A is a runnable local web MVP implemented with the Python standard library and bundled HTML, CSS, and JavaScript. It binds only to `127.0.0.1`, requires Host, Origin, and in-memory request-token checks, stores no configuration or chat, and currently admits only sanitized system status plus the Ollama-backed `general.chat` slice. See `docs/local-web-mvp.md`.
+
+The optional Milestone 22B desktop runtime remains Tauri 2 with bundled React and TypeScript UI built by Vite. The production window would load only bundled local assets. Tauri would start one packaged, platform-specific Haven 42 engine sidecar and exchange versioned typed JSON over private stdin/stdout IPC. The bridge accepts only registered capability IDs, workflow IDs, and schema-valid arguments. It must not expose arbitrary shell execution, unrestricted filesystem access, raw process spawning, remote UI code, or a generic command method.
 
 The desktop application does not listen on a TCP port. A separately hardened loopback server may be evaluated for headless Linux, SSH-tunneled access, development, and diagnostics, but it is not the ordinary Windows, Linux desktop, or macOS runtime and cannot inherit desktop promotion evidence.
 
@@ -141,7 +143,7 @@ Tauri and its package assets remain architecture-only until the implementation i
 
 ## Roadmap Placement
 
-Milestone 20 completed the stable workflow, evidence, onboarding, and dispatcher foundation. Milestone 21 defines and validates general-purpose capabilities, typed artifacts, providers, repository-optional sessions, and routing policy. Milestone 22 implements this UI and later bounded multi-step composition over those two foundations.
+Milestone 20 completed the stable workflow, evidence, onboarding, and dispatcher foundation. Milestone 21 defines and validates general-purpose capabilities, typed artifacts, providers, repository-optional sessions, and routing policy. Milestone 22A now implements the first runnable chat slice; later Milestone 22 work expands the UI and bounded multi-step composition over those foundations.
 
 Remaining product work stays on `TODO.md`:
 

@@ -56,6 +56,7 @@ $integrationTests = @(
     "capability registry and deterministic routing enforce policy boundaries",
     "general AI sessions are repository optional and dry-run first",
     "local text capabilities are session bound and typed",
+    "local web MVP is loopback-only and unloads models",
     "provider discovery and engineering routing preserve policy boundaries",
     "optional LLM routing is advisory and registry gated",
     "local image capability is session bound typed and evidence gated",
@@ -4032,7 +4033,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
         Assert-True -Condition ($doc -match [regex]::Escape($milestone)) -Message "Solution architecture review should cover milestone $milestone."
     }
     Assert-True -Condition ($doc -match "21: General-Purpose AI Assistant And Intent Routing \| Complete \| Complete for the promoted provider set") -Message "Solution audit should keep completed Milestone 21 aligned with the roadmap."
-    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress \| First slice and policy boundary complete; native runtime dependency-gated") -Message "Solution audit should keep Milestone 22 first-slice and policy-boundary complete while native runtime remains gated."
+    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress; 22A runnable \| Local web chat MVP admitted; broader UI and native packaging gated") -Message "Solution audit should report the admitted local-web MVP without broadening native runtime claims."
     Assert-True -Condition ($doc -notmatch "21: General-Purpose AI Assistant And Intent Routing \| Planned" -and $doc -notmatch "22: Unified Product UI And Task Composition \| Planned") -Message "Solution audit must not retain stale Milestone 21 or 22 status."
     Assert-True -Condition ($roadmap -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $roadmap -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "Roadmap should align with the architecture audit for Milestones 21 and 22."
     Assert-True -Condition ($readme -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $readme -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "README should align with the architecture audit for Milestones 21 and 22."
@@ -4884,6 +4885,32 @@ Invoke-PackTest "product UI first slice is registry-backed and fail closed" {
     Assert-True -Condition ((Get-Content -LiteralPath $docPath -Raw) -match "What do you want to do\?") -Message "The first-slice guide should document the agreed home experience."
     Assert-True -Condition ((Get-Content -LiteralPath (Join-Path $repoRoot "docs/progressive-onboarding.md") -Raw) -match "Advanced mode is control, not a bypass") -Message "Progressive onboarding docs should preserve advanced-mode safety."
     Assert-True -Condition ((Get-Content -LiteralPath (Join-Path $repoRoot "config/wiki-sync.tsv") -Raw) -match "docs/product-ui-first-slice\.md") -Message "The product UI guide should be mapped to the wiki."
+}
+
+Invoke-PackTest "local web MVP is loopback-only and unloads models" {
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $python) { $python = Get-Command python3 -ErrorAction SilentlyContinue }
+    Assert-True -Condition ($null -ne $python) -Message "Python 3 is required for local-web validation."
+    $testPath = Join-Path $repoRoot "scripts/test-haven42-web.py"
+    $policyPath = Join-Path $repoRoot "config/local-web-runtime-policy.json"
+    $docPath = Join-Path $repoRoot "docs/local-web-mvp.md"
+    foreach ($path in @($testPath, $policyPath, $docPath, (Join-Path $repoRoot "web/server.py"), (Join-Path $repoRoot "web/static/index.html"), (Join-Path $repoRoot "web/static/app.js"), (Join-Path $repoRoot "web/static/styles.css"))) {
+        Assert-True -Condition (Test-Path -LiteralPath $path -PathType Leaf) -Message "Local-web MVP file should exist: $path"
+    }
+    $result = @(& $python.Source $testPath 2>&1)
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Local-web offline integration test should pass."
+    Assert-True -Condition (($result -join "`n") -match "25 security and behavior checks") -Message "Local-web integration coverage should remain complete."
+    $policy = Get-Content -LiteralPath $policyPath -Raw | ConvertFrom-Json
+    Assert-Equal -Actual $policy.runtimeId -Expected "haven42.local-web" -Message "Local-web runtime identity should be stable."
+    Assert-True -Condition ($policy.implementationStatus -eq "mvp-admitted" -and -not $policy.bind.remoteBindAllowed) -Message "Only the loopback MVP should be admitted."
+    Assert-True -Condition (-not $policy.browser.remoteAssetsAllowed -and -not $policy.browser.telemetryAllowed -and $policy.browser.csrfTokenRequiredForEffects) -Message "Browser security should remain local and default-deny."
+    Assert-True -Condition ($policy.chat.modelResidency -eq "unload-after-response" -and $policy.chat.unloadOnFailure -and $policy.chat.unloadOnShutdown) -Message "Model cleanup should be mandatory."
+    foreach ($wrapper in @("scripts/start-haven42-web.ps1", "scripts/start-haven42-web.linux.sh", "scripts/start-haven42-web.macos.sh", "scripts/start-haven42-web.shared.sh")) {
+        Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot $wrapper) -PathType Leaf) -Message "Cross-platform local-web launcher should exist: $wrapper"
+    }
+    $assets = (Get-Content -LiteralPath (Join-Path $repoRoot "web/static/index.html") -Raw) + (Get-Content -LiteralPath (Join-Path $repoRoot "web/static/app.js") -Raw)
+    Assert-True -Condition ($assets -notmatch '(?i)(src|href)\s*=\s*["'']https?://|fetch\(\s*["'']https?://' -and $assets -notmatch 'innerHTML') -Message "Web assets must not load remote content or inject HTML."
+    Assert-True -Condition ((Get-Content -LiteralPath (Join-Path $repoRoot "config/wiki-sync.tsv") -Raw) -match "docs/local-web-mvp\.md") -Message "Local-web guidance should be mapped to the wiki."
 }
 
 Invoke-PackTest "media onboarding and quantization foundations fail closed" {

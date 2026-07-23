@@ -2,9 +2,11 @@
 
 ## Decision
 
-The first Haven 42 product slice is a local, web-technology interface that can
-later run inside the admitted Tauri desktop shell. This phase defines the user
-experience and produces a renderer-safe view model; it does not admit Tauri,
+The first Haven 42 product slice now has a runnable loopback-only implementation
+for sanitized system readiness, explicit Ollama connection, installed-model
+selection, private chat, and verified unload. See `docs/local-web-mvp.md`.
+
+The broader product-navigation phase still defines the future user experience
 React, npm, Cargo, a sidecar binary, installer, or updater into the product.
 
 The first useful vertical slice is local chat plus system readiness. Software
