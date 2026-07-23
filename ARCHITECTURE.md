@@ -49,6 +49,8 @@ capability registry -> workflow registry -> existing tested engines
 
 The desktop path loads no remote UI code, exposes no generic shell bridge, and listens on no TCP port. A hardened loopback mode is a separate headless Linux, SSH, development, and diagnostics boundary and cannot inherit desktop evidence. Windows, Linux, and macOS launchers, webviews, sidecars, packages, signing, updates, and uninstall behavior are promoted independently.
 
+The first product slice is defined by `config/ui-navigation-contract.json` and rendered as framework-neutral state by `scripts/build-ui-view-model.py`. The model joins only registered capabilities, providers, UI-ready workflows, and optional runtime availability evidence. It exposes no executable path, endpoint, approval token, or execution authority; `runtimeAdmitted` and `executionEnabled` stay false until the native bridge passes its separate gates. See `docs/product-ui-first-slice.md`.
+
 ## Repository Layers
 
 ### Project Documentation

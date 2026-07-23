@@ -1716,7 +1716,7 @@ test_solution_architecture_review_doc() {
     grep -q "25: Local Video Generation" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "26: Hardware-Adaptive Model Quantization" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "21: General-Purpose AI Assistant And Intent Routing | Complete | Complete for the promoted provider set" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "22: Unified Product UI And Task Composition | In progress | Architecture-complete; runtime dependency-gated" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "22: Unified Product UI And Task Composition | In progress | First slice complete; runtime dependency-gated" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "21: General-Purpose AI Assistant And Intent Routing | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "22: Unified Product UI And Task Composition | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "automated status-consistency checks" "$REPO_ROOT/docs/solution-architecture-review.md" &&
@@ -2159,6 +2159,41 @@ assert profile["target"]["workloadLane"] == "tool-use"
 PY
 }
 
+test_product_ui_first_slice() {
+  python3 "$REPO_ROOT/scripts/build-ui-view-model.py" --self-test | grep -q "3 cases" || return 1
+  model="$(python3 "$REPO_ROOT/scripts/build-ui-view-model.py" --platform linux)" || return 1
+  python3 - "$REPO_ROOT" "$model" <<'PY' || return 1
+import json, pathlib, sys
+root = pathlib.Path(sys.argv[1])
+model = json.loads(sys.argv[2])
+ui = json.loads((root / "config/ui-navigation-contract.json").read_text(encoding="utf-8"))
+capabilities = json.loads((root / "config/capabilities.json").read_text(encoding="utf-8"))
+workflows = json.loads((root / "config/workflows.json").read_text(encoding="utf-8"))
+assert ui["schemaVersion"] == 1 and ui["runtimeAdmitted"] is False
+assert ui["principles"]["rendererIsExecutionAuthority"] is False
+assert ui["principles"]["remoteContentAllowed"] is False
+assert ui["firstRun"]["networkProbeByDefault"] is False
+assert ui["firstRun"]["installsSoftwareByDefault"] is False
+assert ui["firstRun"]["downloadsModelsByDefault"] is False
+assert ui["approvalReview"]["rememberApprovalAllowed"] is False
+assert ui["approvalReview"]["approvalTokenVisibleToRenderer"] is False
+capability_ids = {item["id"] for item in capabilities["capabilities"]}
+workflow_by_id = {item["id"]: item for item in workflows["workflows"]}
+for action in ui["homeActions"]:
+    if action["operationKind"] == "capability":
+        assert action["operationId"] in capability_ids
+    else:
+        assert workflow_by_id[action["operationId"]]["uiReady"] is True
+assert model["initialRouteId"] == "welcome"
+assert model["executionEnabled"] is False and model["runtimeAdmitted"] is False
+rendered = json.dumps(model)
+for forbidden in ("entryPoints", "127.0.0.1", "192.168.", "approvalTokenId"):
+    assert forbidden not in rendered
+assert "What do you want to do?" in (root / "docs/product-ui-first-slice.md").read_text(encoding="utf-8")
+assert "docs/product-ui-first-slice.md" in (root / "config/wiki-sync.tsv").read_text(encoding="utf-8")
+PY
+}
+
 run_test "model recommendation catalog has valid schema" test_catalog_schema
 run_test "committed config uses starter sample model" test_committed_config_uses_starter_model
 run_test "MLX model recommendation catalog has valid schema" test_mlx_catalog_schema
@@ -2224,6 +2259,7 @@ run_test "desktop sidecar IPC policy rejects hostile messages" test_desktop_side
 run_test "core update policy fails closed before cryptographic admission" test_core_update_policy
 run_test "workflow reliability threat model and data lifecycle fail closed" test_workflow_reliability_and_data_lifecycle
 run_test "provider performance evidence and capacity preflight fail closed" test_provider_evidence_and_capacity
+run_test "product UI first slice is registry-backed and fail closed" test_product_ui_first_slice
 run_test "media onboarding and quantization foundations fail closed" test_media_onboarding_and_quantization_foundations
 
 if [ "$FAILED" -eq 1 ]; then
