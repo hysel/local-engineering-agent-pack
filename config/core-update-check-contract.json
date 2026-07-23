@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "haven42.offline-release-check",
+  "input": "previously acquired normalized GitHub Release metadata plus a local immutable update manifest",
+  "networkAllowed": false,
+  "downloadAllowed": false,
+  "stagingAllowed": false,
+  "activationAllowed": false,
+  "maximumAssets": 256,
+  "requiredReleaseFields": [
+    "schemaVersion",
+    "repository",
+    "tagName",
+    "draft",
+    "prerelease",
+    "immutable",
+    "releaseUrl",
+    "assets"
+  ],
+  "requiredAssetFields": ["name", "url", "sizeBytes"],
+  "stablePolicy": {
+    "repository": "hysel/haven-42",
+    "draftAllowed": false,
+    "prereleaseAllowed": false,
+    "immutableRequired": true,
+    "manifestAssetName": "haven-42-core-update-manifest.json"
+  }
+}

@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import argparse
 import csv
+from datetime import datetime, timezone
 import json
 import platform
+import re
 import secrets
 import sys
 import threading
@@ -58,6 +60,34 @@ CAPABILITY_PROMPTS = {
 }
 MODEL_RECOMMENDATIONS_PATH = ROOT / "config" / "text-capability-model-recommendations.json"
 EVIDENCE_CATALOG_PATH = ROOT / "config" / "evidence-catalog.tsv"
+MODEL_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/:+-]{0,255}$")
+CAPABILITY_OPERATION = {
+    "general.chat": "general-chat",
+    "content.write": "general-writing",
+    "content.summarize": "general-summarization",
+}
+CAPABILITY_SUMMARY = (
+    {
+        "id": "general.chat", "label": "Chat", "operationKind": "capability",
+        "operationId": "general.chat", "state": "configuration-required", "execution": "local",
+    },
+    {
+        "id": "content.write", "label": "Writing", "operationKind": "capability",
+        "operationId": "content.write", "state": "configuration-required", "execution": "local",
+    },
+    {
+        "id": "content.summarize", "label": "Summarization", "operationKind": "capability",
+        "operationId": "content.summarize", "state": "configuration-required", "execution": "local",
+    },
+    {
+        "id": "software", "label": "Software", "operationKind": "workflow-group",
+        "operationId": None, "state": "not-admitted-in-web", "execution": "unavailable",
+    },
+    {
+        "id": "media.image.create", "label": "Images", "operationKind": "capability",
+        "operationId": "media.image.create", "state": "provider-profile-required", "execution": "unavailable",
+    },
+)
 
 
 class WebRequestError(ValueError):
@@ -78,15 +108,26 @@ def load_model_recommendations(
             evidence_records = tuple(csv.DictReader(stream, delimiter="\t"))
         if (
             not isinstance(value, dict)
+            or set(value) != {"schemaVersion", "catalogId", "selectionPolicy", "capabilities"}
             or value.get("schemaVersion") != 1
+            or value.get("catalogId") != "haven42.text-capability-model-recommendations"
             or not isinstance(value.get("capabilities"), dict)
+            or set(value["capabilities"]) != set(CAPABILITY_PROMPTS)
+            or value.get("selectionPolicy") != {
+                "automaticRequiresExactCapabilityEvidence": True,
+                "unknownInstalledModelsAre": "unverified",
+                "downloadsAllowed": False,
+                "hardwareFitSource": "execution-host-profile-required",
+            }
         ):
             return {}
         result: dict[str, tuple[dict[str, Any], ...]] = {}
+        evidence_ids: set[str] = set()
         for capability_id, records in value["capabilities"].items():
             if capability_id not in CAPABILITY_PROMPTS or not isinstance(records, list):
                 return {}
             admitted: list[dict[str, Any]] = []
+            seen_models: set[str] = set()
             for record in records:
                 if (
                     not isinstance(record, dict)
@@ -95,14 +136,22 @@ def load_model_recommendations(
                         "evidenceOperation", "evidence",
                     }
                     or not isinstance(record["model"], str)
-                    or not record["model"].strip()
-                    or len(record["model"]) > 256
+                    or not MODEL_NAME.fullmatch(record["model"])
+                    or record["model"] in seen_models
+                    or isinstance(record["priority"], bool)
                     or not isinstance(record["priority"], int)
+                    or record["priority"] < 0
+                    or record["priority"] > 1000
                     or record["evidenceStatus"] != "passed"
                     or not isinstance(record["evidenceId"], str)
                     or not record["evidenceId"].strip()
+                    or record["evidenceId"] in evidence_ids
                     or not isinstance(record["evidenceOperation"], str)
+                    or record["evidenceOperation"] != CAPABILITY_OPERATION[capability_id]
                     or not isinstance(record["evidence"], str)
+                    or not record["evidence"].startswith("examples/")
+                    or not record["evidence"].endswith(".md")
+                    or ".." in Path(record["evidence"]).parts
                     or not any(
                         evidence.get("area") == "general-capability"
                         and evidence.get("provider") == "Ollama"
@@ -114,6 +163,8 @@ def load_model_recommendations(
                     )
                 ):
                     return {}
+                seen_models.add(record["model"])
+                evidence_ids.add(record["evidenceId"])
                 admitted.append({
                     "model": record["model"],
                     "priority": record["priority"],
@@ -229,6 +280,7 @@ class HavenState:
 
     def public_status(self) -> dict[str, Any]:
         with self.lock:
+            connected = self.base_url is not None
             return {
                 "schemaVersion": 1,
                 "kind": "haven42-web-status",
@@ -246,6 +298,23 @@ class HavenState:
                     "trustScope": self.trust_scope,
                     "version": self.ollama_version,
                     "modelCount": len(self.models),
+                },
+                "capabilities": [
+                    {
+                        **item,
+                        "state": (
+                            "available"
+                            if connected and item["id"] in CAPABILITY_PROMPTS
+                            else item["state"]
+                        ),
+                    }
+                    for item in CAPABILITY_SUMMARY
+                ],
+                "updates": {
+                    "mode": "disabled",
+                    "networkCheckPerformed": False,
+                    "downloadAllowed": False,
+                    "activationAllowed": False,
                 },
                 "privacy": {
                     "configurationPersisted": False,
@@ -287,8 +356,7 @@ class HavenState:
             str(item.get("name") or item.get("model", "")).strip()
             for item in records
             if isinstance(item, dict)
-            and str(item.get("name") or item.get("model", "")).strip()
-            and len(str(item.get("name") or item.get("model", "")).strip()) <= 256
+            and MODEL_NAME.fullmatch(str(item.get("name") or item.get("model", "")).strip())
         })
         with self.lock:
             self.base_url = base_url
@@ -308,6 +376,21 @@ class HavenState:
             "idleUnloadSeconds": idle_unload_seconds,
         }
         result.update(build_model_decisions(models, self.model_recommendations))
+        result["providerHealth"] = {
+            "status": "healthy",
+            "providerId": "ollama.local-text",
+            "trustScope": policy["trustScope"],
+            "modelDiscovery": "complete",
+            "modelCount": len(models),
+            "configurationPersisted": False,
+        }
+        result["evidenceBoundary"] = {
+            "catalogStatus": result["catalogStatus"],
+            "recommendationBinding": "model-name-and-capability-evidence",
+            "immutableDigestBound": False,
+            "hardwareFitMeasured": False,
+            "unknownModelsGainAuthority": False,
+        }
         return result
 
     def _unload(self, model: str, base_url: str, timeout_seconds: int) -> bool:
@@ -464,6 +547,34 @@ class HavenState:
                 residency = f"warm-for-{idle_unload_seconds}-seconds"
                 self._schedule_idle_unload(target, idle_unload_seconds)
         artifact_kind = "chat-message" if capability_id == "general.chat" else "markdown-document"
+        now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        artifact = {
+            "schemaVersion": 1,
+            "artifactType": artifact_kind,
+            "status": "succeeded",
+            "createdAtUtc": now,
+            "sourceCapabilityId": capability_id,
+            "content": {
+                "role": "assistant",
+                "title": (
+                    None
+                    if capability_id == "general.chat"
+                    else "Generated Writing"
+                    if capability_id == "content.write"
+                    else "Summary"
+                ),
+                "text": content,
+            },
+            "policy": {
+                "localExecution": True,
+                "externalProvider": False,
+                "repositoryRead": False,
+                "fileWrite": False,
+                "networkAccess": False,
+                "modelDownload": False,
+                "approvalRequired": False,
+            },
+        }
         return {
             "schemaVersion": 1,
             "kind": artifact_kind,
@@ -483,6 +594,11 @@ class HavenState:
             "modelResidency": residency,
             "promptPersisted": False,
             "endpointPersisted": False,
+            "events": [
+                {"sequence": 1, "type": "accepted", "code": "TEXT_REQUEST_ACCEPTED"},
+                {"sequence": 2, "type": "result", "code": "TEXT_ARTIFACT_READY"},
+            ],
+            "artifact": artifact,
         }
 
     def unload_used_models(self) -> bool:

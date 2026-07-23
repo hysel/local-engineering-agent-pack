@@ -11,6 +11,14 @@ This project follows a simple changelog format:
 
 ## Unreleased
 
+- Added truthful local-web capability, provider-health, evidence-boundary, and disabled-update views; Chat, Writing, and Summarization become available only after provider validation while Software and Images remain visibly gated.
+- Added schema-validated typed local-web artifacts and progress/result/error rendering, plus keyboard focus management, ARIA step/status semantics, a skip link, visible focus treatment, and reduced-motion coverage.
+- Added a dependency-free headless Chromium test that completes first-run setup, validates readiness and focus trapping, handles an unverified installed model, opens chat, and renders a typed result against an isolated fake provider.
+- Hardened the server-owned recommendation catalog against unsafe/duplicate model names, forged capability/operation evidence, duplicate evidence IDs, traversal-like paths, and unknown schema fields.
+- Added an offline-only GitHub Release candidate contract and hostile-input fixture tests that cannot use the network, download, write, or activate an update.
+- Changed local Full-test receipts to schema v2 content-tree authority so a metadata-only commit over already-tested content does not repeat the suite; hosted CI remains independent.
+- Hardened Windows and shared local-web Python selection so stale command aliases are rejected unless they execute as Python 3.
+
 - Added a security-first, memory-only first-run web wizard that connects a loopback or trusted-LAN Ollama server, exposes advanced timeout and residency controls, reports separate Chat/Writing/Summarization readiness, and hands a validated setup into chat without persisting configuration or downloading models.
 - Replaced first-provider-result defaults with a fail-closed engine-owned text recommendation catalog, automatic exact-evidence selections, Recommended/Compatible/Unverified/Missing states, advanced per-capability overrides, reset-to-automatic, and non-downloading missing-model guidance.
 - Changed the local web layout so chat is the primary desktop workspace, the oversized hero is compact, navigation remains pinned, and provider plus system configuration stay in a bounded sticky right column with a chat-first responsive fallback.

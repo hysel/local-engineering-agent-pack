@@ -38,7 +38,15 @@ macOS:
 ./scripts/start-haven42-web.macos.sh
 ```
 
-The launcher opens `http://127.0.0.1:4242`. Use `-NoOpen` on Windows or `--no-open` on Linux and macOS to start without opening the default browser. Use `-Port` or `--port` to select another loopback port.
+The launcher opens `http://127.0.0.1:4242`. Use `-NoOpen` on Windows or `--no-open` on Linux and macOS to start without opening the default browser. Use `-Port` or `--port` to select another loopback port. Every launcher probes candidate commands and accepts only a working Python 3 interpreter; a stale Windows `py` command or store alias is skipped rather than failing later with a misleading server error.
+
+## Accessibility And Capability Status
+
+The wizard is a labeled modal with an announced description and current-step state. Keyboard focus enters the wizard after secure-session bootstrap, moves to the active step, and remains trapped among visible controls until setup finishes. A skip link, visible focus styles, semantic status/alert regions, responsive layout, sufficient status contrast, and reduced-motion behavior support keyboard and assistive-technology use.
+
+The capability view is read-only and engine-derived. Chat, Writing, and Summarization change from `configuration-required` to `available` only after a successful provider check. Software stays `not-admitted-in-web`; Images stays `provider-profile-required`. Clicking either unavailable navigation item explains its state and never invokes an operation.
+
+The System view reports sanitized provider health, catalog evidence matching, the current lack of immutable artifact-digest binding, and a disabled/no-network update state. These labels disclose evidence boundaries; they do not promote a provider, model, or capability.
 
 ## Chat-First Layout
 
@@ -81,11 +89,13 @@ The MVP:
 
 The renderer never receives a shell, executable, arbitrary process, filesystem, model-download, or repository-access surface.
 
-The machine-readable boundary is `config/local-web-runtime-policy.json`, and the evidence-gated text recommendation input is `config/text-capability-model-recommendations.json`. The offline integration suite is `scripts/test-haven42-web.py`.
+Text responses include a schema-v1 typed artifact and ordered accepted/result events. Browser JavaScript validates the capability, artifact type, source capability, terminal status, and event sequence before rendering content. The UI reports typed progress/result/error state and explicitly says that no file was written. Workflow warning/retry/recovery envelopes remain future integration work.
+
+The machine-readable boundary is `config/local-web-runtime-policy.json`, and the evidence-gated text recommendation input is `config/text-capability-model-recommendations.json`. The offline security/integration suite is `scripts/test-haven42-web.py`; the dependency-free real-browser wizard/chat flow is `scripts/test-haven42-web-browser.mjs`.
 
 ## Current Runtime Boundary
 
-The admitted application includes system status, Ollama connection, installed-model selection, chat, writing, and summarization. Software workflows, images, model management, persistence, multi-user access, remote browser access, automatic updates, and native packaging remain unavailable until their separate runtime and security gates pass.
+The admitted application includes system status, read-only capability/health/evidence views, Ollama connection, installed-model selection, chat, writing, and summarization. Software workflows, images, model management, persistence, multi-user access, remote browser access, automatic updates, and native packaging remain unavailable until their separate runtime and security gates pass.
 
 Tauri remains an optional later packaging path. It is not required to run or validate this local-web slice.
 

@@ -35,7 +35,9 @@ The provider address, machine identity, prompt response, and hardware details we
 | Application-reported model unload | Pass |
 | Independent process-list cleanup after explicit/final cleanup | Pass; empty |
 
-The offline integration suite separately passed 63 security and behavior checks covering Host, Origin, token, automatic local/LAN classification, public/unsafe endpoint rejection, remote assets, per-capability model selection, model-switch cleanup, immediate and idle cleanup modes, stale-timer rejection, explicit cleanup, all three admitted text capabilities, typed response kinds, single-input enforcement, unsupported-capability rejection, failed-reconnect authority clearing, provider/empty-response cleanup, and loopback-binding boundaries.
+The offline integration suite separately passed 99 security and behavior checks covering Host, Origin, token, automatic local/LAN classification, public/unsafe endpoint rejection, unsafe discovered-model filtering, hostile recommendation-catalog rejection, remote assets, five truthful capability states, read-only health/evidence status, per-capability model selection, model-switch cleanup, immediate and idle cleanup modes, stale-timer rejection, explicit cleanup, all three admitted text capabilities, typed artifacts and events, single-input enforcement, unsupported-capability rejection, failed-reconnect authority clearing, provider/empty-response cleanup, accessibility contracts, and loopback-binding boundaries.
+
+A dependency-free headless Chromium flow separately passed 19 checks against an isolated loopback fake provider. It verified dialog and step semantics, secure-bootstrap focus, provider-step focus, capability-specific readiness, visible-control focus trapping, chat handoff, advanced-only handling for an unknown installed model, and typed no-file-written result rendering. It made no request to a real model server and downloaded no browser or test dependency.
 
 ## Evidence Boundary
 

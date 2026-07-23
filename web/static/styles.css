@@ -13,6 +13,8 @@
 }
 
 * { box-sizing: border-box; }
+.skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 10px 14px; color: #06221b; background: var(--accent); border-radius: 8px; transform: translateY(-150%); }
+.skip-link:focus { transform: translateY(0); }
 
 body {
   margin: 0;
@@ -101,6 +103,7 @@ body::before {
   background: linear-gradient(145deg, #14282b, #091416);
   box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
 }
+.wizard-card:focus { outline: 2px solid var(--accent); outline-offset: 3px; }
 .wizard-progress { display: flex; gap: 8px; margin-bottom: 28px; }
 .wizard-progress span { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--muted); border: 1px solid var(--line); font: 700 11px/1 ui-monospace, monospace; }
 .wizard-progress span.active { color: #06221b; border-color: var(--accent); background: var(--accent); }
@@ -225,6 +228,8 @@ summary { cursor: pointer; font-size: 12px; }
 .advanced-grid label { display: grid; gap: 7px; }
 .notice { margin-top: 14px; color: var(--danger); border: 1px solid rgba(255, 154, 138, 0.2); background: rgba(255, 92, 70, 0.06); padding: 10px 12px; border-radius: 9px; font-size: 12px; }
 .hidden { display: none; }
+.task-event { margin: 0 24px 10px; padding: 9px 11px; border-left: 3px solid var(--accent); color: var(--muted); background: rgba(98, 230, 198, 0.06); font-size: 11px; }
+.task-event.error { border-left-color: var(--danger); color: var(--danger); }
 
 .status-list { margin: 0; }
 .status-list div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(132, 190, 180, 0.09); }
@@ -232,6 +237,13 @@ summary { cursor: pointer; font-size: 12px; }
 .status-list dt { color: var(--muted); font-size: 12px; }
 .status-list dd { margin: 0; font-size: 12px; text-align: right; }
 .accent { color: var(--accent); }
+.capability-list { display: grid; gap: 8px; }
+.capability-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(132, 190, 180, 0.09); }
+.capability-item:last-child { border: 0; }
+.capability-item strong { font-size: 12px; }
+.capability-item small { color: var(--muted); font-size: 10px; }
+.capability-state { color: var(--accent); text-align: right; }
+.capability-state.unavailable, .capability-state.required { color: var(--muted); }
 
 .chat-panel { height: calc(100vh - 186px); min-height: 560px; max-height: 880px; display: flex; flex-direction: column; }
 .chat-heading { padding: 24px 24px 0; }

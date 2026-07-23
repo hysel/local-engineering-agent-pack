@@ -407,6 +407,7 @@
 - [ ] Pursue Microsoft Store or SignPath Foundation Windows signing before paid Artifact Signing; defer Apple Developer enrollment until the first public macOS beta is otherwise ready.
 - [x] Define a versioned core-engine update manifest for immutable Windows, macOS, and Linux assets published through GitHub Releases.
 - [x] Add a cross-platform offline core-update policy that strictly validates manifest shape, immutable release identity, exact host asset, compatibility schemas, byte size, and SHA-256 while always denying download, staging, and activation.
+- [x] Add a strict offline GitHub Release candidate contract and fixture check that validates official source, stable/immutable status, tag/manifest binding, approved HTTPS asset URLs, and exactly one manifest asset while denying network, download, writes, and activation.
 - [ ] Add opt-in automatic stable-release checks, downloads, and installation without using unattended `git pull` or a moving branch.
 - [ ] Verify downloaded engine assets with checksums and a release signature or attestation before staging or activation.
 - [x] Keep engine binaries separate from user configuration, workspaces, models, provider data, generated artifacts, and evidence in the versioned storage and update contracts.
@@ -425,13 +426,16 @@
 - [x] Define one product-wide progressive onboarding pattern with guided setup, existing-setup connection, not-now, advanced controls on both active paths, and engine-derived validated/customized/unverified/blocked states.
 - [x] Define eight capability-specific advanced-setting schemas and an offline default-deny evaluator that rejects renderer authority, raw sensitive values, evidence forgery, and cross-domain admission without machine effects.
 - [x] Add a versioned, read-only model catalog assembler that combines discovery, exact artifact identity, per-artifact license policy, hardware fit, and revision-bound evidence into one fail-closed beginner/advanced decision.
-- [ ] Add first-run intent navigation, capability availability, evidence states, and policy disclosures.
-  - The framework-neutral contract and view-model foundation are complete; native renderer and runtime integration remain open.
+- [x] Add first-run intent navigation, capability availability, evidence states, and policy disclosures to the admitted local-web slice.
+  - Chat, Writing, and Summarization become available only after provider validation; Software remains not admitted and Images remains provider-profile-required. Native renderer integration remains separately gated.
 - [ ] Render typed artifacts plus versioned progress, warning, result, and error envelopes.
+- [x] Render local-web typed chat-message/Markdown artifacts and typed progress/result/error state without file writes; warning envelopes and broader workflow rendering remain open under the parent task.
 - [ ] Connect setup, health, model choice, software workflows, validation, cleanup, and evidence views without duplicating business logic.
+- [x] Connect local-web setup, provider health, model choice, cleanup status, evidence boundary, and disabled-update state; software workflow execution and broader validation evidence remain open under the parent task.
 - [x] Add repository-free text flows only for evidence-gated Milestone 21 providers.
 - [ ] Add a repository-free image flow only for the promoted Linux ComfyUI/SDXL profile, with explicit availability and artifact controls.
 - [ ] Add accessible cross-platform UI contract, failure, recovery, and packaging tests.
+- [x] Add local-web keyboard/focus/ARIA/reduced-motion contracts, hostile catalog tests, and a dependency-free headless Chromium wizard/chat flow on Windows; native packaging and full cross-platform browser recovery coverage remain open under the parent task.
 - [ ] Add bounded multi-step composition with explicit intermediate artifacts and approvals.
 
 ## Solution Architecture Review Backlog

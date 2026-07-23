@@ -10,7 +10,7 @@ The project began as a reusable pack for coding agents. It now provides a provid
 
 | Capability | Status | What that means |
 | --- | --- | --- |
-| Local browser assistant | **Available** | A first-run wizard connects Ollama, explains privacy boundaries, and selects the best currently validated installed model separately for chat, writing, and summarization. Chat remains the primary workspace, with advanced manual overrides and five-minute balanced model residency. |
+| Local browser assistant | **Available** | An accessible first-run wizard connects Ollama, explains privacy boundaries, and selects the best currently validated installed model separately for chat, writing, and summarization. Chat remains the primary workspace, with advanced manual overrides, typed results, read-only health/evidence status, and five-minute balanced model residency. |
 | Software engineering | **Available** | Continue, Aider, and OpenCode support guided setup, repository analysis, planning, review, and carefully scoped changes. |
 | Local image generation | **Limited** | `media.image.create` is available for one bounded profile: Linux ComfyUI/SDXL is validated. Other operating-system and GPU combinations remain gated. |
 | Model and inference selection | **Evidence-gated** | Hardware-aware recommendations are available. Ollama and specific llama.cpp CUDA/HIP profiles have passed; unsupported combinations fail closed. |
@@ -55,7 +55,7 @@ Local providers and supported agent surfaces
 Typed artifacts, validation evidence, and recovery
 ```
 
-The current web process binds only to `127.0.0.1`, serves bundled assets, keeps configuration and text in memory, and admits the evidence-gated `general.chat`, `content.write`, and `content.summarize` Ollama capabilities. The design keeps provider selection, evidence state, permissions, privacy disclosures, and write approval outside model prompts.
+The current web process binds only to `127.0.0.1`, serves bundled assets, keeps configuration and text in memory, and admits the evidence-gated `general.chat`, `content.write`, and `content.summarize` Ollama capabilities. It also shows explicit read-only states for software work and image generation without granting either capability to the browser. The design keeps provider selection, evidence state, permissions, privacy disclosures, and write approval outside model prompts.
 
 ## Evidence Before Features
 
@@ -105,9 +105,9 @@ macOS:
 ./scripts/start-haven42-web.macos.sh
 ```
 
-Haven 42 opens a browser on `http://127.0.0.1:4242`. Its first-run wizard explains the local security boundary, accepts a same-machine or private-network Ollama IP address, and reports capability-specific model readiness. Haven 42 automatically selects only an installed model name with matching committed capability evidence. Unknown installed models remain visibly `unverified` and are available only as an advanced manual choice; a missing recommendation is guidance, never an automatic download.
+Haven 42 opens a browser on `http://127.0.0.1:4242`. Its keyboard-accessible first-run wizard explains the local security boundary, accepts a same-machine or private-network Ollama IP address, and reports capability-specific model readiness. Haven 42 automatically selects only an installed model name with matching committed capability evidence. Unknown installed models remain visibly `unverified` and are available only as an advanced manual choice; a missing recommendation is guidance, never an automatic download.
 
-Configuration and messages are not persisted. The balanced default keeps the active model warm for five idle minutes; advanced settings offer immediate, 15-minute, and 30-minute cleanup. New task, model/provider changes, failures, and shutdown trigger explicit cleanup.
+Configuration and messages are not persisted. Results are rendered from typed chat-message or Markdown-document artifacts with explicit progress/error state and a no-file-written policy. The System view reports provider health, evidence matching, digest-binding limits, and the disabled/no-network update state. The balanced default keeps the active model warm for five idle minutes; advanced settings offer immediate, 15-minute, and 30-minute cleanup. New task, model/provider changes, failures, and shutdown trigger explicit cleanup.
 
 See [`docs/local-web-mvp.md`](docs/local-web-mvp.md) for connection, security, advanced settings, and current-scope details.
 

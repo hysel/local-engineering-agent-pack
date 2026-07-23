@@ -57,6 +57,7 @@ $integrationTests = @(
     "general AI sessions are repository optional and dry-run first",
     "local text capabilities are session bound and typed",
     "local web MVP is loopback-only and unloads models",
+    "local web setup wizard completes in a headless browser",
     "provider discovery and engineering routing preserve policy boundaries",
     "optional LLM routing is advisory and registry gated",
     "local image capability is session bound typed and evidence gated",
@@ -133,7 +134,7 @@ function Write-TestReceipt {
     }
 
     @(
-        "schema=1",
+        "schema=2",
         "commit=$commit",
         "tree=$tree",
         "tier=full",
@@ -307,7 +308,7 @@ Invoke-PackTest "test tiers are timed and exact-tree receipt gated" {
     Assert-True -Condition ($windowsRunner -match 'ValidateSet\("Fast", "Integration", "Full"\)' -and $windowsRunner -match "Stopwatch") -Message "Windows tests should expose timed Fast, Integration, and Full tiers."
     Assert-True -Condition ($sharedRunner -match 'fast\|integration\|full' -and $sharedRunner -match "RUN_STARTED_SECONDS") -Message "Native tests should expose timed Fast, Integration, and Full tiers."
     Assert-True -Condition ($windowsRunner -match "haven-42-test-receipt-v1" -and $sharedRunner -match "haven-42-test-receipt-v1") -Message "Both runners should write the same receipt contract."
-    Assert-True -Condition ($hook -match "Exact-tree full-test receipt found" -and $hook -match "HEAD\^\{tree\}") -Message "Pre-push should require an exact commit/tree receipt."
+    Assert-True -Condition ($hook -match "Exact content-tree full-test receipt found" -and $hook -match "HEAD\^\{tree\}" -and $hook -match "schema=2") -Message "Pre-push should require a schema-v2 exact content-tree receipt."
     Assert-True -Condition ($workflow -match "-Tier Full -NoReceipt" -and $workflow -match "--tier full --no-receipt") -Message "Hosted CI should always run Full without trusting local receipts."
     Assert-True -Condition (([regex]::Matches($workflow, "Run pack validation")).Count -eq 0) -Message "Hosted CI should not run validation separately when Full tests already include it."
     Assert-True -Condition ($doc -match "GitHub Actions always runs Full independently") -Message "Test-tier docs should preserve hosted CI authority."
@@ -4774,7 +4775,16 @@ Invoke-PackTest "core update policy fails closed before cryptographic admission"
     Assert-True -Condition ($null -ne $python) -Message "Python 3 is required for updater hostile tests."
     $hostileOutput = @(& $python.Source (Join-Path $repoRoot "scripts/core-update-policy.py") --self-test 2>&1)
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Core updater hostile self-test should pass."
-    Assert-True -Condition (($hostileOutput -join "`n") -match "passed: 17 cases") -Message "Core updater should execute every hostile manifest regression case."
+    Assert-True -Condition (($hostileOutput -join "`n") -match "passed: 26 cases") -Message "Core updater should execute every hostile manifest and offline release-metadata regression case."
+
+    $releaseMetadataPath = Join-Path $repoRoot "examples/fixtures/github-release-candidate.json"
+    $releaseContractPath = Join-Path $repoRoot "config/core-update-check-contract.json"
+    Assert-True -Condition ((Test-Path -LiteralPath $releaseMetadataPath -PathType Leaf) -and (Test-Path -LiteralPath $releaseContractPath -PathType Leaf)) -Message "Offline release-check contract and fixture should exist."
+    $releaseOutput = @(& $python.Source (Join-Path $repoRoot "scripts/core-update-policy.py") --manifest-path $manifestPath --release-metadata-path $releaseMetadataPath --json 2>&1)
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Pinned local release metadata should pass the offline candidate check."
+    $release = ($releaseOutput -join "`n") | ConvertFrom-Json
+    Assert-Equal -Actual $release.Status -Expected "candidate-verified-offline" -Message "Offline update checks should report candidate status without admission."
+    Assert-True -Condition (-not $release.NetworkUsed -and -not $release.DownloadAllowed -and -not $release.FilesWritten -and -not $release.ActivationAllowed) -Message "Offline update checks must not use the network, download, write, or activate."
 }
 
 Invoke-PackTest "workflow reliability threat model and data lifecycle fail closed" {
@@ -4900,7 +4910,7 @@ Invoke-PackTest "local web text tools are loopback-only and unload models" {
     }
     $result = @(& $python.Source $testPath 2>&1)
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Local-web offline integration test should pass."
-    Assert-True -Condition (($result -join "`n") -match "80 security and behavior checks") -Message "Local-web integration coverage should remain complete."
+    Assert-True -Condition (($result -join "`n") -match "99 security and behavior checks") -Message "Local-web integration coverage should remain complete."
     $policy = Get-Content -LiteralPath $policyPath -Raw | ConvertFrom-Json
     Assert-Equal -Actual $policy.runtimeId -Expected "haven42.local-web" -Message "Local-web runtime identity should be stable."
     Assert-True -Condition ($policy.implementationStatus -eq "text-tools-admitted" -and -not $policy.bind.remoteBindAllowed) -Message "Only the loopback text-tool runtime should be admitted."
@@ -4911,6 +4921,10 @@ Invoke-PackTest "local web text tools are loopback-only and unload models" {
     foreach ($wrapper in @("scripts/start-haven42-web.ps1", "scripts/start-haven42-web.linux.sh", "scripts/start-haven42-web.macos.sh", "scripts/start-haven42-web.shared.sh")) {
         Assert-True -Condition (Test-Path -LiteralPath (Join-Path $repoRoot $wrapper) -PathType Leaf) -Message "Cross-platform local-web launcher should exist: $wrapper"
     }
+    $windowsLauncher = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/start-haven42-web.ps1") -Raw
+    $sharedLauncher = Get-Content -LiteralPath (Join-Path $repoRoot "scripts/start-haven42-web.shared.sh") -Raw
+    Assert-True -Condition ($windowsLauncher -match "Resolve-Python3Command" -and $windowsLauncher -match "sys\.version_info\.major" -and $windowsLauncher -match '@\{ Name = "py"; Prefix = @\("-3"\) \}') -Message "Windows launcher should execute-probe python3, python, and py -3 candidates."
+    Assert-True -Condition ($sharedLauncher -match "python3 -c" -and $sharedLauncher -match "python -c" -and $sharedLauncher -match "py -3 -c" -and $sharedLauncher -match "sys\.version_info\.major") -Message "Shared launcher should reject stale Python command aliases before selection."
     $html = Get-Content -LiteralPath (Join-Path $repoRoot "web/static/index.html") -Raw
     $styles = Get-Content -LiteralPath (Join-Path $repoRoot "web/static/styles.css") -Raw
     $assets = $html + (Get-Content -LiteralPath (Join-Path $repoRoot "web/static/app.js") -Raw)
@@ -4921,6 +4935,18 @@ Invoke-PackTest "local web text tools are loopback-only and unload models" {
     Assert-True -Condition ($styles -match '(?s)\.rail\s*\{.*?position:\s*sticky' -and $styles -match '(?s)\.configuration-column\s*\{.*?position:\s*sticky' -and $styles -notmatch '4\.5rem') -Message "Navigation and configuration should stay visible without the oversized hero."
     Assert-True -Condition ($writingDoc -match 'qwen3\.5:9b' -and $writingDoc -match 'gemma3:12b' -and $writingDoc -match 'mistral-small3\.2' -and $writingDoc -match 'granite4:7b-a1b-h' -and $writingDoc -match 'No candidate.*product default') -Message "Writing-model candidates must remain evidence-gated and unpromoted."
     Assert-True -Condition ($wikiMap -match "docs/local-web-mvp\.md" -and $wikiMap -match "docs/writing-model-evaluation\.md") -Message "Local-web and writing-model guidance should be mapped to the wiki."
+}
+
+if ($IsWindows) {
+    Invoke-PackTest "local web setup wizard completes in a headless browser" {
+        $node = Get-Command node -ErrorAction SilentlyContinue
+        Assert-True -Condition ($null -ne $node) -Message "Node.js is required for the dependency-free Windows browser test."
+        $browserTest = Join-Path $repoRoot "scripts/test-haven42-web-browser.mjs"
+        Assert-True -Condition (Test-Path -LiteralPath $browserTest -PathType Leaf) -Message "Headless browser test should exist."
+        $browserOutput = @(& $node.Source $browserTest 2>&1)
+        Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "The local-web setup wizard should complete in a headless Chromium browser. Output: $($browserOutput -join ' ')"
+        Assert-True -Condition (($browserOutput -join "`n") -match "passed: 19 checks") -Message "The headless browser flow should exercise all 19 checks."
+    }
 }
 
 Invoke-PackTest "media onboarding and quantization foundations fail closed" {

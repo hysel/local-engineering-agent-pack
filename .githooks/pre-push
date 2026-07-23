@@ -6,15 +6,13 @@ repo_root="$(git rev-parse --show-toplevel)"
 printf '%s\n' "Running pre-push pack validation..."
 
 receipt_path="$(git rev-parse --git-dir)/haven-42-test-receipt-v1"
-head_commit="$(git rev-parse HEAD)"
 head_tree="$(git rev-parse 'HEAD^{tree}')"
 if [ -z "$(git status --porcelain=v1)" ] &&
    [ -f "$receipt_path" ] &&
-   grep -Fxq "schema=1" "$receipt_path" &&
-   grep -Fxq "commit=$head_commit" "$receipt_path" &&
+   grep -Fxq "schema=2" "$receipt_path" &&
    grep -Fxq "tree=$head_tree" "$receipt_path" &&
    grep -Fxq "tier=full" "$receipt_path"; then
-  printf '%s\n' "Exact-tree full-test receipt found; skipping duplicate local suite."
+  printf '%s\n' "Exact content-tree full-test receipt found; skipping duplicate local suite."
   exit 0
 fi
 

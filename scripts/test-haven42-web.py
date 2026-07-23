@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import tempfile
 import threading
 import time
 import urllib.error
@@ -22,7 +23,7 @@ SPEC.loader.exec_module(WEB)
 
 
 class FakeState:
-    models = ["qwen3.5:9b", "writer-model:latest"]
+    models = ["qwen3.5:9b", "writer-model:latest", "bad model<script>"]
     loaded: set[str] = set()
     requests: list[tuple[str, dict]] = []
     fail_chat = False
@@ -121,10 +122,29 @@ def main() -> int:
         assert status == 200 and bootstrap["runtime"]["bindScope"] == "loopback-only"
         assert bootstrap["privacy"]["modelResidency"] == "idle-timeout"
         assert bootstrap["privacy"]["idleUnloadSeconds"] == 300
+        assert bootstrap["updates"] == {
+            "mode": "disabled",
+            "networkCheckPerformed": False,
+            "downloadAllowed": False,
+            "activationAllowed": False,
+        }
+        assert [item["id"] for item in bootstrap["capabilities"]] == [
+            "general.chat", "content.write", "content.summarize", "software", "media.image.create"
+        ]
+        software_status = next(item for item in bootstrap["capabilities"] if item["id"] == "software")
+        assert software_status["operationKind"] == "workflow-group"
+        assert software_status["operationId"] is None
+        registry = json.loads((ROOT / "config/capabilities.json").read_text(encoding="utf-8"))
+        registered_capabilities = {item["id"] for item in registry["capabilities"]}
+        assert all(
+            item["operationId"] in registered_capabilities
+            for item in bootstrap["capabilities"]
+            if item["operationKind"] == "capability"
+        )
         assert headers["X-Frame-Options"] == "DENY"
         assert "default-src 'self'" in headers["Content-Security-Policy"]
         token = bootstrap["sessionToken"]
-        checks += 4
+        checks += 6
 
         status, error, _ = request_json(
             origin + "/api/connect",
@@ -171,6 +191,9 @@ def main() -> int:
         assert connected["models"] == ["qwen3.5:9b", "writer-model:latest"]
         assert connected["trustScope"] == "loopback" and connected["idleUnloadSeconds"] == 300
         assert connected["configurationPersisted"] is False
+        assert connected["providerHealth"]["status"] == "healthy"
+        assert connected["evidenceBoundary"]["immutableDigestBound"] is False
+        assert connected["evidenceBoundary"]["unknownModelsGainAuthority"] is False
         assert connected["catalogStatus"] == "ready" and connected["downloadsPerformed"] is False
         assert connected["recommendations"]["general.chat"] == {
             "status": "recommended",
@@ -181,7 +204,7 @@ def main() -> int:
         }
         writer_option = next(item for item in connected["modelOptions"] if item["name"] == "writer-model:latest")
         assert set(writer_option["capabilityStatus"].values()) == {"unverified"}
-        checks += 6
+        checks += 9
 
         cross_capability = WEB.build_model_decisions(
             ["chat-only:1b"],
@@ -208,7 +231,26 @@ def main() -> int:
             ROOT / "config/text-capability-model-recommendations.json",
             ROOT / "config/does-not-exist.tsv",
         ) == {}
-        checks += 5
+        valid_catalog = json.loads(
+            (ROOT / "config/text-capability-model-recommendations.json").read_text(encoding="utf-8")
+        )
+        with tempfile.TemporaryDirectory() as temp_root:
+            hostile_path = Path(temp_root) / "catalog.json"
+            duplicate = json.loads(json.dumps(valid_catalog))
+            duplicate["capabilities"]["general.chat"].append(
+                json.loads(json.dumps(duplicate["capabilities"]["general.chat"][0]))
+            )
+            hostile_path.write_text(json.dumps(duplicate), encoding="utf-8")
+            assert WEB.load_model_recommendations(hostile_path) == {}
+            forged = json.loads(json.dumps(valid_catalog))
+            forged["capabilities"]["content.write"][0]["evidenceOperation"] = "general-chat"
+            hostile_path.write_text(json.dumps(forged), encoding="utf-8")
+            assert WEB.load_model_recommendations(hostile_path) == {}
+            unexpected = json.loads(json.dumps(valid_catalog))
+            unexpected["rendererMayPromote"] = True
+            hostile_path.write_text(json.dumps(unexpected), encoding="utf-8")
+            assert WEB.load_model_recommendations(hostile_path) == {}
+        checks += 8
 
         status, error, _ = request_json(
             origin + "/api/text",
@@ -238,11 +280,16 @@ def main() -> int:
         assert status == 200 and reply["content"] == "LOCAL_WEB_OK"
         assert reply["capabilityId"] == "general.chat" and reply["kind"] == "chat-message"
         assert reply["modelUnloaded"] is False and FakeState.loaded == {"qwen3.5:9b"}
+        assert reply["artifact"]["artifactType"] == "chat-message"
+        assert reply["artifact"]["sourceCapabilityId"] == "general.chat"
+        assert reply["artifact"]["policy"]["fileWrite"] is False
+        assert reply["artifact"]["policy"]["networkAccess"] is False
+        assert [event["type"] for event in reply["events"]] == ["accepted", "result"]
         chat_payload = next(body for path, body in FakeState.requests if path == "/api/chat")
         assert chat_payload["keep_alive"] == "300s" and chat_payload["stream"] is False
         assert chat_payload["messages"][0]["role"] == "system"
         assert not any(path == "/api/generate" for path, _body in FakeState.requests)
-        checks += 6
+        checks += 11
 
         for capability_id, expected_title, prompt_fragment in (
             ("content.write", "Generated Writing", "clean Markdown"),
@@ -452,13 +499,18 @@ def main() -> int:
         assert "trust-scope" not in javascript and "modelSelections" in javascript
         assert "Automatic — no validated model installed" in javascript
         assert "Advanced manual selection" in javascript and "downloadsPerformed" not in javascript
+        assert "renderTypedResult" in javascript and "renderCapabilities" in javascript
+        assert "event.dataset.kind = kind" in javascript
+        assert "innerHTML" not in javascript and "insertAdjacentHTML" not in javascript
         assert html.count('id="connection-panel"') == 1 and html.count('id="status-panel"') == 1
         assert html.count('id="setup-wizard"') == 1 and 'id="wizard-connection-form"' in html
+        assert 'class="skip-link"' in html and 'aria-modal="true"' in html
+        assert 'id="capability-panel"' in html and 'id="evidence-panel"' in html
         assert html.index('id="text-panel"') < html.index('id="connection-panel"')
         assert 'class="interaction-grid"' in html and 'class="configuration-column"' in html
         assert ".rail {" in styles and ".configuration-column {" in styles and "position: sticky" in styles and "4.5rem" not in styles and "2.25rem" in styles
         assert ".wizard-backdrop {" in styles and ".wizard-readiness {" in styles
-        checks += 19
+        checks += 25
     finally:
         app.shutdown()
         app.server_close()

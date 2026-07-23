@@ -1,4 +1,4 @@
-# Test Tiers And Exact-Tree Receipts
+# Test Tiers And Exact Content-Tree Receipts
 
 Haven 42 separates routine checks from integration-heavy validation while keeping the full cross-platform GitHub gate authoritative.
 
@@ -28,7 +28,7 @@ Linux or macOS:
 
 ### Git Bash on Windows
 
-The native-shell runner automatically resolves a locally installed Python 3 when Git Bash exposes it as `python`, `python.exe`, or the Windows `py -3` launcher instead of `python3`. The candidate must successfully identify itself as Python 3 before the runner activates the repository-owned `python3` compatibility launcher for child Bash scripts.
+The native-shell runner automatically resolves a locally installed Python 3 when Git Bash exposes it as `python`, `python.exe`, or the Windows `py -3` launcher instead of `python3`. The local-web Windows and shared launchers apply the same rule: finding a command name is insufficient; the candidate must successfully execute and identify itself as Python 3 before it is selected. This rejects stale Windows Store aliases and broken `py` launchers.
 
 This compatibility step does not install software, download files, use `eval`, or permanently modify `PATH`. If no valid Python 3 command exists, the suite stops once with a clear prerequisite error instead of producing many misleading script failures. Hosted Linux and macOS jobs continue to use their native `python3` command.
 
@@ -38,17 +38,17 @@ The full suite includes repository validation, so callers should not run `valida
 
 Each selected test reports elapsed time. The final summary records the selected tier, executed count, skipped count, and total duration. Use this output to move expensive tests into Integration or remove repeated process and fixture setup; do not weaken assertions merely to reduce time.
 
-## Exact-Tree Receipt
+## Exact Content-Tree Receipt
 
-A successful Full run on a clean Git working tree writes `haven-42-test-receipt-v1` inside the repository's private `.git` directory. It records the exact commit and Git tree, tier, schema, and runner. It is not committed or included in release packages.
+A successful Full run on a clean Git working tree writes schema-v2 `haven-42-test-receipt-v1` inside the repository's private `.git` directory. It records the tested commit for diagnostics and the exact Git content tree for authority, plus tier and runner. It is not committed or included in release packages.
 
 The pre-push hook skips its duplicate local Full run only when:
 
 - the working tree is clean;
 - the receipt schema and tier match;
-- both the receipt commit and tree exactly match `HEAD`.
+- the receipt tree exactly matches `HEAD`.
 
-Any edit, new commit, missing receipt, partial tier, or failed test causes the pre-push hook to run the Full suite. GitHub Actions always runs Full independently and never trusts a local receipt.
+Any content edit, missing receipt, partial tier, or failed test causes the pre-push hook to run the Full suite. A metadata-only commit over an identical tested tree may reuse the local result, avoiding a redundant run after committing already-tested content. GitHub Actions always runs Full independently and never trusts a local receipt.
 
 Use `-NoReceipt` or `--no-receipt` for ephemeral runners and hosted CI.
 

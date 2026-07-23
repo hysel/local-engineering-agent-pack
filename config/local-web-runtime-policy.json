@@ -50,5 +50,14 @@
     "unloadOnModelOrProviderChange": true,
     "unloadOnShutdown": true,
     "maximumResponseBytes": 1048576
+  },
+  "updates": {
+    "displayStatusAllowed": true,
+    "defaultMode": "disabled",
+    "offlineFixtureEvaluationAllowed": true,
+    "networkChecksAllowed": false,
+    "downloadsAllowed": false,
+    "stagingAllowed": false,
+    "activationAllowed": false
   }
 }

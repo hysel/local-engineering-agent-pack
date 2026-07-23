@@ -6,17 +6,26 @@ param(
 
 $ErrorActionPreference = "Stop"
 $serverPath = Join-Path (Split-Path -Parent $PSScriptRoot) "web/server.py"
-$python = Get-Command python3 -ErrorAction SilentlyContinue
-if (-not $python) { $python = Get-Command python -ErrorAction SilentlyContinue }
 $arguments = @($serverPath, "--port", [string]$Port)
 if ($NoOpen) { $arguments += "--no-open" }
 
-if ($python) {
-    & $python.Source @arguments
-    exit $LASTEXITCODE
+function Resolve-Python3Command {
+    foreach ($candidate in @(
+        @{ Name = "python3"; Prefix = @() },
+        @{ Name = "python"; Prefix = @() },
+        @{ Name = "py"; Prefix = @("-3") }
+    )) {
+        $command = Get-Command $candidate.Name -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $command -or -not $command.Source) { continue }
+        & $command.Source @($candidate.Prefix) -c "import sys; raise SystemExit(0 if sys.version_info.major == 3 else 1)" 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            return [pscustomobject]@{ Path = $command.Source; Prefix = @($candidate.Prefix) }
+        }
+    }
+    return $null
 }
-if (Get-Command py -ErrorAction SilentlyContinue) {
-    & py -3 @arguments
-    exit $LASTEXITCODE
-}
-throw "Python 3 is required to run the Haven 42 local web application."
+
+$python = Resolve-Python3Command
+if (-not $python) { throw "A working Python 3 interpreter is required to run the Haven 42 local web application." }
+& $python.Path @($python.Prefix) @arguments
+exit $LASTEXITCODE

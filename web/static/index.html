@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#text-panel">Skip to local AI workspace</a>
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
   <header class="topbar">
@@ -18,17 +19,17 @@
     <div class="privacy-pill"><span class="status-dot"></span> Local session · no telemetry</div>
   </header>
 
-  <section class="wizard-backdrop" id="setup-wizard" role="dialog" aria-modal="true" aria-labelledby="wizard-title">
-    <div class="wizard-card">
+  <section class="wizard-backdrop" id="setup-wizard" role="dialog" aria-modal="true" aria-labelledby="wizard-title" aria-describedby="wizard-description">
+    <div class="wizard-card" tabindex="-1">
       <div class="wizard-progress" aria-label="Setup progress">
-        <span class="active" data-wizard-progress="welcome">1</span>
-        <span data-wizard-progress="provider">2</span>
-        <span data-wizard-progress="ready">3</span>
+        <span class="active" data-wizard-progress="welcome" aria-label="Welcome" aria-current="step">1</span>
+        <span data-wizard-progress="provider" aria-label="Provider">2</span>
+        <span data-wizard-progress="ready" aria-label="Readiness">3</span>
       </div>
       <section class="wizard-step" data-wizard-step="welcome">
         <p class="eyebrow">FIRST-RUN SETUP</p>
         <h1 id="wizard-title">Welcome to Haven 42</h1>
-        <p>Connect a local Ollama provider and Haven 42 will choose the best capability-specific model supported by its validation evidence.</p>
+        <p id="wizard-description">Connect a local Ollama provider and Haven 42 will choose the best capability-specific model supported by its validation evidence.</p>
         <ul class="wizard-promises">
           <li>Haven 42 listens only on this computer.</li>
           <li>Your endpoint, prompts, and responses stay in memory.</li>
@@ -88,8 +89,8 @@
       <button class="nav-item capability-nav" data-capability="general.chat" type="button"><span>✦</span>Chat</button>
       <button class="nav-item capability-nav" data-capability="content.write" type="button"><span>✎</span>Writing</button>
       <button class="nav-item capability-nav" data-capability="content.summarize" type="button"><span>≡</span>Summarize</button>
-      <button class="nav-item muted" type="button" disabled><span>⌘</span>Software <small>Soon</small></button>
-      <button class="nav-item muted" type="button" disabled><span>◫</span>Images <small>Soon</small></button>
+      <button class="nav-item availability-nav" type="button"><span>⌘</span>Software <small>Unavailable</small></button>
+      <button class="nav-item availability-nav" type="button"><span>◫</span>Images <small>Setup needed</small></button>
       <button class="nav-item" id="models-nav" type="button"><span>◉</span>Models</button>
       <button class="nav-item" id="system-nav" type="button"><span>◇</span>System</button>
       <div class="rail-note">
@@ -141,6 +142,7 @@
               </div>
             </article>
           </div>
+          <div class="task-event hidden" id="task-event" role="status" aria-live="polite"></div>
 
           <form class="composer" id="text-form">
             <label class="sr-only" id="prompt-label" for="prompt">Message</label>
@@ -160,7 +162,7 @@
                 <p class="eyebrow">SETUP · PROVIDER</p>
                 <h2>Connect Ollama</h2>
               </div>
-              <span class="badge" id="connection-badge">Not connected</span>
+              <span class="badge" id="connection-badge" aria-live="polite">Not connected</span>
             </div>
             <form id="connection-form">
               <label for="endpoint">Ollama server</label>
@@ -206,6 +208,33 @@
               <div><dt>Host</dt><dd id="host-status">Checking…</dd></div>
               <div><dt>Privacy</dt><dd>Memory only</dd></div>
               <div><dt>Model cleanup</dt><dd class="accent" id="cleanup-status">Unload after 5 minutes idle</dd></div>
+            </dl>
+          </section>
+
+          <section class="panel status-panel" id="capability-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">READINESS</p>
+                <h2>Capabilities</h2>
+              </div>
+              <span class="badge">Read only</span>
+            </div>
+            <div class="capability-list" id="capability-list" aria-live="polite"></div>
+          </section>
+
+          <section class="panel status-panel" id="evidence-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">HEALTH · EVIDENCE</p>
+                <h2>Trust boundary</h2>
+              </div>
+              <span class="badge" id="health-badge">Offline</span>
+            </div>
+            <dl class="status-list">
+              <div><dt>Provider health</dt><dd id="provider-health">Not connected</dd></div>
+              <div><dt>Recommendation</dt><dd id="evidence-status">Awaiting provider</dd></div>
+              <div><dt>Artifact digest</dt><dd id="digest-status">Not yet bound</dd></div>
+              <div><dt>Update checks</dt><dd id="update-status">Disabled · no network</dd></div>
             </dl>
           </section>
         </aside>

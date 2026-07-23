@@ -114,7 +114,7 @@ write_test_receipt() {
     *) git_dir="$REPO_ROOT/$git_dir" ;;
   esac
   {
-    printf 'schema=1\n'
+    printf 'schema=2\n'
     printf 'commit=%s\n' "$commit"
     printf 'tree=%s\n' "$tree"
     printf 'tier=full\n'
@@ -299,7 +299,8 @@ test_test_tier_contract() {
     grep -q 'RUN_STARTED_SECONDS' "$REPO_ROOT/scripts/test-pack.shared.sh" &&
     grep -q 'haven-42-test-receipt-v1' "$REPO_ROOT/scripts/test-pack.ps1" &&
     grep -q 'haven-42-test-receipt-v1' "$REPO_ROOT/scripts/test-pack.shared.sh" &&
-    grep -q 'Exact-tree full-test receipt found' "$REPO_ROOT/.githooks/pre-push" &&
+    grep -q 'Exact content-tree full-test receipt found' "$REPO_ROOT/.githooks/pre-push" &&
+    grep -q 'schema=2' "$REPO_ROOT/.githooks/pre-push" &&
     grep -q -- '-Tier Full -NoReceipt' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&
     grep -q -- '--tier full --no-receipt' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&
     ! grep -q 'Run pack validation' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&
@@ -2173,7 +2174,22 @@ assert value["FilesWritten"] is False and value["UserDataTouched"] is False
 PY
   ! "$policy" --manifest-path "$manifest" --host-os linux --host-architecture x64 --target-triple x86_64-unknown-linux-gnu --current-version 0.3.0 --updater-version 0.3.0 --json >/dev/null 2>&1 || return 1
   hostile_output="$(python3 "$REPO_ROOT/scripts/core-update-policy.py" --self-test 2>&1)" || return 1
-  printf ''%s\n'' "$hostile_output" | grep -q "passed: 17 cases"
+  printf ''%s\n'' "$hostile_output" | grep -q "passed: 26 cases" || return 1
+  release_output="$(python3 "$REPO_ROOT/scripts/core-update-policy.py" \
+    --manifest-path "$manifest" \
+    --release-metadata-path "$REPO_ROOT/examples/fixtures/github-release-candidate.json" \
+    --json)" || return 1
+  python3 - "$release_output" "$REPO_ROOT" <<'PY'
+import json, pathlib, sys
+value = json.loads(sys.argv[1])
+root = pathlib.Path(sys.argv[2])
+assert (root / "config/core-update-check-contract.json").is_file()
+assert value["Status"] == "candidate-verified-offline"
+assert value["NetworkUsed"] is False
+assert value["DownloadAllowed"] is False
+assert value["FilesWritten"] is False
+assert value["ActivationAllowed"] is False
+PY
 }
 
 test_workflow_reliability_and_data_lifecycle() {
@@ -2299,7 +2315,13 @@ PY
 }
 
 test_local_web_mvp() {
-  python3 "$REPO_ROOT/scripts/test-haven42-web.py" | grep -q "80 security and behavior checks" || return 1
+  python3 "$REPO_ROOT/scripts/test-haven42-web.py" | grep -q "99 security and behavior checks" || return 1
+  [ -f "$REPO_ROOT/scripts/test-haven42-web-browser.mjs" ] || return 1
+  grep -q "Resolve-Python3Command" "$REPO_ROOT/scripts/start-haven42-web.ps1" || return 1
+  grep -q "sys.version_info.major" "$REPO_ROOT/scripts/start-haven42-web.ps1" || return 1
+  grep -q "python3 -c" "$REPO_ROOT/scripts/start-haven42-web.shared.sh" || return 1
+  grep -q "python -c" "$REPO_ROOT/scripts/start-haven42-web.shared.sh" || return 1
+  grep -q "py -3 -c" "$REPO_ROOT/scripts/start-haven42-web.shared.sh" || return 1
   python3 - "$REPO_ROOT" <<'PY'
 import json, pathlib, sys
 root = pathlib.Path(sys.argv[1])

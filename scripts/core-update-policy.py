@@ -45,6 +45,53 @@ def _version_tuple(value: str) -> tuple[int, int, int]:
     return tuple(int(part) for part in core.split("."))
 
 
+def evaluate_release_metadata(metadata: dict, manifest: dict) -> dict:
+    contract = json.loads((ROOT / "config/core-update-check-contract.json").read_text(encoding="utf-8"))
+    _strict(metadata, contract["requiredReleaseFields"], "release-metadata")
+    if metadata["schemaVersion"] != 1 or metadata["repository"] != contract["stablePolicy"]["repository"]:
+        raise UpdatePolicyError("release-source-rejected")
+    if metadata["draft"] is not False or metadata["prerelease"] is not False or metadata["immutable"] is not True:
+        raise UpdatePolicyError("release-not-immutable-stable")
+    _https(metadata["releaseUrl"], "release")
+    if metadata["tagName"] != manifest.get("releaseTag"):
+        raise UpdatePolicyError("release-tag-manifest-mismatch")
+    expected_release_url = f"https://github.com/{contract['stablePolicy']['repository']}/releases/tag/{metadata['tagName']}"
+    if metadata["releaseUrl"] != expected_release_url:
+        raise UpdatePolicyError("release-url-identity-mismatch")
+    assets = metadata["assets"]
+    if not isinstance(assets, list) or len(assets) > contract["maximumAssets"]:
+        raise UpdatePolicyError("invalid-release-assets")
+    manifest_assets = []
+    for asset in assets:
+        _strict(asset, contract["requiredAssetFields"], "release-asset")
+        _https(asset["url"], "release-asset")
+        if isinstance(asset["sizeBytes"], bool) or not isinstance(asset["sizeBytes"], int) or asset["sizeBytes"] <= 0:
+            raise UpdatePolicyError("invalid-release-asset-size")
+        if asset["name"] == contract["stablePolicy"]["manifestAssetName"]:
+            manifest_assets.append(asset)
+    if len(manifest_assets) != 1:
+        raise UpdatePolicyError("exactly-one-update-manifest-required")
+    expected_manifest_url = (
+        f"https://github.com/{contract['stablePolicy']['repository']}/releases/download/"
+        f"{metadata['tagName']}/{contract['stablePolicy']['manifestAssetName']}"
+    )
+    if manifest_assets[0]["url"] != expected_manifest_url:
+        raise UpdatePolicyError("manifest-url-identity-mismatch")
+    return {
+        "SchemaVersion": 1,
+        "Kind": "offline-core-update-check",
+        "Status": "candidate-verified-offline",
+        "ReleaseTag": metadata["tagName"],
+        "ReleaseVersion": manifest["releaseVersion"],
+        "ManifestAsset": manifest_assets[0]["name"],
+        "NetworkUsed": False,
+        "DownloadAllowed": False,
+        "FilesWritten": False,
+        "ActivationAllowed": False,
+        "NextGate": "explicit network consent and trusted signature verification are required",
+    }
+
+
 def evaluate(manifest: dict, host: dict, package_path: Path | None = None) -> dict:
     contract = json.loads((ROOT / "config/core-update-manifest-contract.json").read_text(encoding="utf-8"))
     _strict(manifest, contract["manifest"]["required"], "manifest")
@@ -128,6 +175,7 @@ def evaluate(manifest: dict, host: dict, package_path: Path | None = None) -> di
 def run_self_tests() -> int:
     """Exercise hostile manifests without network, staging, or activation."""
     manifest = json.loads((ROOT / "examples/fixtures/core-update-manifest.json").read_text(encoding="utf-8"))
+    release_metadata = json.loads((ROOT / "examples/fixtures/github-release-candidate.json").read_text(encoding="utf-8"))
     package_path = ROOT / "examples/fixtures/core-update-package.bin"
     host = {
         "os": "windows", "architecture": "x64", "targetTriple": "x86_64-pc-windows-msvc",
@@ -161,6 +209,9 @@ def run_self_tests() -> int:
 
     allow(copy.deepcopy(manifest))
     allow(copy.deepcopy(manifest), package_path)
+    release_result = evaluate_release_metadata(copy.deepcopy(release_metadata), copy.deepcopy(manifest))
+    assert release_result["NetworkUsed"] is False and release_result["DownloadAllowed"] is False
+    passed += 1
     deny(lambda value: value.update(releaseVersion="0.3.0"), "not-a-newer-release")
     deny(lambda value: value["assets"].append(copy.deepcopy(value["assets"][0])), "exactly-one-host-asset-required")
     deny(lambda value: value.update(releaseCommit="main"), "invalid-release-commit")
@@ -176,6 +227,26 @@ def run_self_tests() -> int:
     deny(lambda value: value["compatibility"].update(desktopIpcSchemaVersions=[2]), "schema-incompatible")
     deny(lambda value: value["assets"][0].update(targetTriple="x86_64-unknown-linux-gnu"), "exactly-one-host-asset-required")
     deny(lambda value: value["assets"][0].update(sha256="0" * 64), "package-hash-mismatch", package=package_path)
+    for mutator, expected in (
+        (lambda value: value.update(draft=True), "release-not-immutable-stable"),
+        (lambda value: value.update(immutable=False), "release-not-immutable-stable"),
+        (lambda value: value.update(repository="someone/fork"), "release-source-rejected"),
+        (lambda value: value.update(tagName="v9.9.9"), "release-tag-manifest-mismatch"),
+        (lambda value: value.update(assets=[]), "exactly-one-update-manifest-required"),
+        (lambda value: value.update(releaseUrl="https://github.com/someone/fork/releases/tag/v0.4.0"), "release-url-identity-mismatch"),
+        (lambda value: value["assets"][0].update(url="https://github.com/someone/fork/releases/download/v0.4.0/haven-42-core-update-manifest.json"), "manifest-url-identity-mismatch"),
+        (lambda value: value["assets"][0].update(sizeBytes=True), "invalid-release-asset-size"),
+    ):
+        candidate = copy.deepcopy(release_metadata)
+        mutator(candidate)
+        try:
+            evaluate_release_metadata(candidate, copy.deepcopy(manifest))
+        except UpdatePolicyError as error:
+            if str(error) != expected:
+                raise AssertionError(f"expected {expected}, received {error}") from error
+            passed += 1
+        else:
+            raise AssertionError(f"expected {expected}")
     print(f"Core update hostile self-test passed: {passed} cases.")
     return 0
 
@@ -184,6 +255,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Plan or verify immutable core-update inputs without downloading, staging, or activating code.")
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--manifest-path")
+    parser.add_argument("--release-metadata-path")
     parser.add_argument("--package-path")
     parser.add_argument("--host-os", choices=["windows", "linux", "macos"])
     parser.add_argument("--host-architecture", choices=["x64", "arm64", "intel64"])
@@ -195,9 +267,11 @@ def main() -> int:
     args = parser.parse_args()
     if args.self_test:
         return run_self_tests()
-    required = (args.manifest_path, args.host_os, args.host_architecture, args.target_triple, args.current_version, args.updater_version)
-    if any(value is None for value in required):
-        parser.error("manifest and host arguments are required unless --self-test is used")
+    if args.manifest_path is None:
+        parser.error("manifest is required unless --self-test is used")
+    host_required = (args.host_os, args.host_architecture, args.target_triple, args.current_version, args.updater_version)
+    if not args.release_metadata_path and any(value is None for value in host_required):
+        parser.error("host arguments are required for asset policy evaluation")
     host = {
         "os": args.host_os, "architecture": args.host_architecture, "targetTriple": args.target_triple,
         "currentVersion": args.current_version, "updaterVersion": args.updater_version, "channel": args.channel,
@@ -206,7 +280,14 @@ def main() -> int:
     }
     try:
         manifest = json.loads(Path(args.manifest_path).read_text(encoding="utf-8"))
-        result = evaluate(manifest, host, Path(args.package_path) if args.package_path else None)
+        result = (
+            evaluate_release_metadata(
+                json.loads(Path(args.release_metadata_path).read_text(encoding="utf-8")),
+                manifest,
+            )
+            if args.release_metadata_path
+            else evaluate(manifest, host, Path(args.package_path) if args.package_path else None)
+        )
     except (OSError, json.JSONDecodeError, UpdatePolicyError) as error:
         print(f"Core update policy rejected input: {error}", file=sys.stderr)
         return 2

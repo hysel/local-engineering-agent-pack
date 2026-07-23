@@ -41,6 +41,8 @@ const state = {
   modelSelections: {},
   recommendations: {},
   modelOptions: [],
+  capabilities: [],
+  lastFocusBeforeWizard: null,
 };
 
 const byId = (id) => document.getElementById(id);
@@ -53,6 +55,45 @@ function showError(message) {
 
 function clearError() {
   byId("connection-error").classList.add("hidden");
+}
+
+function setTaskEvent(message, kind = "progress") {
+  const event = byId("task-event");
+  event.textContent = message;
+  if (message) event.dataset.kind = kind;
+  else delete event.dataset.kind;
+  event.classList.toggle("error", kind === "error");
+  event.classList.toggle("hidden", !message);
+}
+
+function renderCapabilities() {
+  const container = byId("capability-list");
+  container.replaceChildren();
+  const labels = {
+    available: "Available",
+    "configuration-required": "Connect provider",
+    "not-admitted-in-web": "Not admitted",
+    "provider-profile-required": "Provider required",
+  };
+  for (const capability of state.capabilities) {
+    const row = document.createElement("div");
+    row.className = "capability-item";
+    const detail = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = capability.label;
+    const execution = document.createElement("small");
+    execution.textContent = capability.execution === "local"
+      ? "Local execution"
+      : "Unavailable in this web runtime";
+    detail.append(title, execution);
+    const status = document.createElement("small");
+    status.className = `capability-state ${
+      capability.state === "available" ? "" : capability.state.includes("required") ? "required" : "unavailable"
+    }`;
+    status.textContent = labels[capability.state] || "Unavailable";
+    row.append(detail, status);
+    container.append(row);
+  }
 }
 
 function setTaskControlsDisabled(disabled) {
@@ -104,7 +145,12 @@ function showWizardStep(step) {
   });
   document.querySelectorAll("[data-wizard-progress]").forEach((marker) => {
     marker.classList.toggle("active", marker.dataset.wizardProgress === step);
+    if (marker.dataset.wizardProgress === step) marker.setAttribute("aria-current", "step");
+    else marker.removeAttribute("aria-current");
   });
+  const panel = document.querySelector(`[data-wizard-step="${step}"]`);
+  const focusTarget = panel.querySelector("input, button, select, summary, [tabindex]");
+  (focusTarget || byId("setup-wizard").querySelector(".wizard-card")).focus();
 }
 
 function selectedModel(capabilityId) {
@@ -214,6 +260,23 @@ function renderWizardReadiness() {
   byId("wizard-finish").disabled = !usable;
 }
 
+function renderTypedResult(result, capability) {
+  if (
+    !result.artifact
+    || result.artifact.schemaVersion !== 1
+    || result.artifact.sourceCapabilityId !== state.capabilityId
+    || result.artifact.status !== "succeeded"
+    || !Array.isArray(result.events)
+  ) {
+    throw new Error("invalid-typed-artifact");
+  }
+  if (!result.events.some((event) => event.type === "result")) {
+    throw new Error("missing-result-event");
+  }
+  setTaskEvent(`${capability.resultLabel} ready · typed ${result.artifact.artifactType} · no file written`);
+  addMessage("assistant", result.artifact.content.text, capability.resultLabel);
+}
+
 function addMessage(role, content, label) {
   const article = document.createElement("article");
   article.className = `message ${role}`;
@@ -267,6 +330,12 @@ async function connectProvider(endpoint, timeoutSeconds, idleUnloadSeconds) {
   state.connected = true;
   state.recommendations = result.recommendations || {};
   state.modelOptions = result.modelOptions || [];
+  state.capabilities = state.capabilities.map((capability) => (
+    Object.hasOwn(CAPABILITIES, capability.id)
+      ? { ...capability, state: "available" }
+      : capability
+  ));
+  renderCapabilities();
   for (const capabilityId of Object.keys(CAPABILITIES)) {
     const selection = state.modelSelections[capabilityId];
     if (!selection || (
@@ -295,6 +364,15 @@ async function connectProvider(endpoint, timeoutSeconds, idleUnloadSeconds) {
   byId("cleanup-status").textContent = result.idleUnloadSeconds === 0
     ? "Unload after every response"
     : `Unload after ${result.idleUnloadSeconds / 60} minutes idle`;
+  byId("health-badge").textContent = "Healthy";
+  byId("health-badge").classList.add("good");
+  byId("provider-health").textContent = `${result.providerHealth.status} · ${result.providerHealth.trustScope}`;
+  byId("evidence-status").textContent = result.evidenceBoundary.catalogStatus === "ready"
+    ? "Capability evidence matched"
+    : "Catalog unavailable";
+  byId("digest-status").textContent = result.evidenceBoundary.immutableDigestBound
+    ? "Bound"
+    : "Not yet bound";
   return result;
 }
 
@@ -306,6 +384,13 @@ async function bootstrap() {
     state.token = result.sessionToken;
     byId("app-version").textContent = `v${result.version}`;
     byId("host-status").textContent = `${result.runtime.platform} · ${result.runtime.architecture}`;
+    state.capabilities = result.capabilities || [];
+    renderCapabilities();
+    byId("update-status").textContent = result.updates?.mode === "disabled"
+      ? "Disabled · no network"
+      : "Unknown";
+    state.lastFocusBeforeWizard = document.activeElement;
+    byId("setup-wizard").querySelector(".wizard-card").focus();
   } catch (_error) {
     showError("Haven 42 could not initialize its secure local session.");
   }
@@ -362,6 +447,7 @@ byId("text-form").addEventListener("submit", async (event) => {
   if (capabilityId === "general.chat") state.messages = requestMessages;
   addMessage("user", content, capabilityId === "content.summarize" ? "Source" : "You");
   byId("text-status").textContent = capability.busy;
+  setTaskEvent("Accepted · bounded local request in progress");
   try {
     const model = selectedModel(capabilityId);
     if (!model) throw new Error("no-model-selected");
@@ -373,12 +459,13 @@ byId("text-form").addEventListener("submit", async (event) => {
     if (capabilityId === "general.chat") {
       state.messages.push({ role: "assistant", content: result.content });
     }
-    addMessage("assistant", result.content, capability.resultLabel);
+    renderTypedResult(result, capability);
     byId("text-status").textContent = result.modelUnloaded
       ? `${result.model} · response complete · model unloaded`
       : `${result.model} · response complete · kept warm until idle timeout`;
   } catch (error) {
     showError(humanError(error));
+    setTaskEvent(humanError(error), "error");
     byId("text-status").textContent = "Text request failed";
   } finally {
     send.disabled = false;
@@ -419,6 +506,7 @@ byId("new-task-button").addEventListener("click", async () => {
     showError(humanError(error));
   } finally {
     resetTask();
+    setTaskEvent("");
     if (cleanupStatus) byId("text-status").textContent = cleanupStatus;
     setTaskControlsDisabled(false);
   }
@@ -433,6 +521,11 @@ byId("models-nav").addEventListener("click", () => {
 });
 byId("system-nav").addEventListener("click", () => {
   byId("status-panel").scrollIntoView({ behavior: "smooth" });
+});
+document.querySelectorAll(".availability-nav").forEach((button) => {
+  button.addEventListener("click", () => {
+    byId("capability-panel").scrollIntoView({ behavior: "smooth" });
+  });
 });
 
 byId("wizard-start").addEventListener("click", () => {
@@ -468,6 +561,22 @@ byId("wizard-back").addEventListener("click", () => showWizardStep("provider"));
 byId("wizard-finish").addEventListener("click", () => {
   byId("setup-wizard").classList.add("hidden");
   byId("prompt").focus();
+});
+byId("setup-wizard").addEventListener("keydown", (event) => {
+  if (event.key !== "Tab") return;
+  const focusable = [...byId("setup-wizard").querySelectorAll(
+    'button:not([disabled]), input:not([disabled]), select:not([disabled]), summary, [tabindex]:not([tabindex="-1"])',
+  )].filter((item) => !item.closest(".hidden"));
+  if (focusable.length === 0) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 });
 
 bootstrap();
