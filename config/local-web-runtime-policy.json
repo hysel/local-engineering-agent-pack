@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "runtimeId": "haven42.local-web",
+  "implementationStatus": "mvp-admitted",
+  "bind": {
+    "allowedAddresses": ["127.0.0.1"],
+    "defaultPort": 4242,
+    "remoteBindAllowed": false
+  },
+  "browser": {
+    "bundledAssetsOnly": true,
+    "remoteAssetsAllowed": false,
+    "telemetryAllowed": false,
+    "crossOriginRequestsAllowed": false,
+    "hostHeaderValidationRequired": true,
+    "csrfTokenRequiredForEffects": true,
+    "contentSecurityPolicyRequired": true
+  },
+  "providerConnections": {
+    "configuredInMemoryOnly": true,
+    "allowedTrustScopes": ["loopback", "trusted-lan"],
+    "ipLiteralRequired": true,
+    "credentialsInUrlAllowed": false,
+    "redirectsAllowed": false,
+    "modelDiscoveryRequiredBeforeChat": true
+  },
+  "chat": {
+    "capabilityId": "general.chat",
+    "providerId": "ollama.local-text",
+    "repositoryAccess": false,
+    "fileWrites": false,
+    "messagePersistence": false,
+    "endpointPersistence": false,
+    "modelDownloads": false,
+    "maximumRequestBytes": 65536,
+    "maximumMessageBytes": 32768,
+    "maximumConversationMessages": 20,
+    "modelResidency": "unload-after-response",
+    "unloadOnFailure": true,
+    "unloadOnShutdown": true,
+    "maximumResponseBytes": 1048576
+  }
+}

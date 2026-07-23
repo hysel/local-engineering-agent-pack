@@ -29,7 +29,23 @@ tested workflow engines -> sanitized reports, local-only config, validation evid
 
 The long-term architecture should keep prompts, rules, templates, validation scripts, and evidence formats portable enough to evaluate with other local-first coding-agent surfaces.
 
-The accepted Milestone 22 desktop architecture adds a Tauri 2 shell without replacing these contracts:
+Milestone 22A adds a runnable local web slice without replacing these contracts:
+
+```text
+Bundled HTML/CSS/JavaScript on 127.0.0.1
+        |
+Host + Origin + session-token enforcement
+        |
+Python standard-library local server
+        |
+shared endpoint security -> Ollama discovery and general.chat
+        |
+unload and process-list verification after every response
+```
+
+The process persists no endpoint or messages, exposes no repository or filesystem API, permits no remote UI assets, and cannot bind to a LAN interface. Its admitted machine-readable boundary is `config/local-web-runtime-policy.json`.
+
+The optional Milestone 22B desktop architecture adds a Tauri 2 shell without replacing these contracts:
 
 ```text
 Bundled React/TypeScript UI
@@ -47,9 +63,9 @@ packaged Haven 42 engine sidecar
 capability registry -> workflow registry -> existing tested engines
 ```
 
-The desktop path loads no remote UI code, exposes no generic shell bridge, and listens on no TCP port. A hardened loopback mode is a separate headless Linux, SSH, development, and diagnostics boundary and cannot inherit desktop evidence. Windows, Linux, and macOS launchers, webviews, sidecars, packages, signing, updates, and uninstall behavior are promoted independently.
+The optional desktop path loads no remote UI code, exposes no generic shell bridge, and listens on no TCP port. It cannot inherit local-web evidence. Windows, Linux, and macOS launchers, webviews, sidecars, packages, signing, updates, and uninstall behavior are promoted independently.
 
-The first product slice is defined by `config/ui-navigation-contract.json` and rendered as framework-neutral state by `scripts/build-ui-view-model.py`. The model joins only registered capabilities, providers, UI-ready workflows, and optional runtime availability evidence. It exposes no executable path, endpoint, approval token, or execution authority; `runtimeAdmitted` and `executionEnabled` stay false until the native bridge passes its separate gates. See `docs/product-ui-first-slice.md`.
+The broader product-navigation slice is defined by `config/ui-navigation-contract.json` and rendered as framework-neutral state by `scripts/build-ui-view-model.py`. That full-navigation model still exposes no executable path, endpoint, approval token, or execution authority; its `runtimeAdmitted` and `executionEnabled` values remain false. The smaller admitted local-web chat runtime is governed independently by `config/local-web-runtime-policy.json`.
 
 The future native-owned authority is separately modeled by `config/native-bridge-boundary-contract.json` and `scripts/native-bridge-boundary-policy.py`. Its 55 offline cases cover canonical path grants, protected roots, external-link allowlisting, approval replay, sidecar lifecycle, environment filtering, cancellation ownership, and privilege rejection. This policy starts no process and grants no authority; it complements the 46 engine-side IPC cases but is not native implementation evidence. See `docs/native-bridge-boundary-evidence.md`.
 

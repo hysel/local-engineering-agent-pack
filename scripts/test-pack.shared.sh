@@ -74,6 +74,7 @@ run_test() {
     "capability registry and deterministic routing enforce policy boundaries"|\
     "general AI sessions are repository optional and dry-run first"|\
     "local text capabilities are session bound and typed"|\
+    "local web MVP is loopback-only and unloads models"|\
     "provider discovery and engineering routing preserve policy boundaries"|\
     "optional LLM routing is advisory and registry gated"|\
     "local image capability is session bound typed and evidence gated"|\
@@ -1817,7 +1818,7 @@ test_solution_architecture_review_doc() {
     grep -q "25: Local Video Generation" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "26: Hardware-Adaptive Model Quantization" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "21: General-Purpose AI Assistant And Intent Routing | Complete | Complete for the promoted provider set" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "22: Unified Product UI And Task Composition | In progress | First slice and policy boundary complete; native runtime dependency-gated" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "22: Unified Product UI And Task Composition | In progress; 22A runnable | Local web chat MVP admitted; broader UI and native packaging gated" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "21: General-Purpose AI Assistant And Intent Routing | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "22: Unified Product UI And Task Composition | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "automated status-consistency checks" "$REPO_ROOT/docs/solution-architecture-review.md" &&
@@ -2297,6 +2298,29 @@ assert profile["target"]["workloadLane"] == "tool-use"
 PY
 }
 
+test_local_web_mvp() {
+  python3 "$REPO_ROOT/scripts/test-haven42-web.py" | grep -q "25 security and behavior checks" || return 1
+  python3 - "$REPO_ROOT" <<'PY'
+import json, pathlib, sys
+root = pathlib.Path(sys.argv[1])
+policy = json.loads((root / "config/local-web-runtime-policy.json").read_text(encoding="utf-8"))
+assert policy["runtimeId"] == "haven42.local-web"
+assert policy["implementationStatus"] == "mvp-admitted"
+assert policy["bind"]["remoteBindAllowed"] is False
+assert policy["browser"]["remoteAssetsAllowed"] is False
+assert policy["browser"]["telemetryAllowed"] is False
+assert policy["browser"]["csrfTokenRequiredForEffects"] is True
+assert policy["chat"]["modelResidency"] == "unload-after-response"
+assert policy["chat"]["unloadOnFailure"] is True and policy["chat"]["unloadOnShutdown"] is True
+assets = (root / "web/static/index.html").read_text(encoding="utf-8") + (root / "web/static/app.js").read_text(encoding="utf-8")
+lowered = assets.lower()
+for forbidden in ('src="http://', "src='http://", 'href="http://', "href='http://", 'src="https://', "src='https://", 'href="https://', "href='https://", 'fetch("http://', "fetch('http://", 'fetch("https://', "fetch('https://"):
+    assert forbidden not in lowered
+assert "innerHTML" not in assets
+assert "docs/local-web-mvp.md" in (root / "config/wiki-sync.tsv").read_text(encoding="utf-8")
+PY
+}
+
 test_product_ui_first_slice() {
   python3 "$REPO_ROOT/scripts/build-ui-view-model.py" --self-test | grep -q "5 cases" || return 1
   python3 "$REPO_ROOT/scripts/evaluate-onboarding-configuration.py" --self-test | grep -q "11 cases" || return 1
@@ -2428,6 +2452,7 @@ run_test "native bridge authority model rejects hostile boundaries" test_native_
 run_test "core update policy fails closed before cryptographic admission" test_core_update_policy
 run_test "workflow reliability threat model and data lifecycle fail closed" test_workflow_reliability_and_data_lifecycle
 run_test "provider performance evidence and capacity preflight fail closed" test_provider_evidence_and_capacity
+run_test "local web MVP is loopback-only and unloads models" test_local_web_mvp
 run_test "product UI first slice is registry-backed and fail closed" test_product_ui_first_slice
 run_test "media onboarding and quantization foundations fail closed" test_media_onboarding_and_quantization_foundations
 

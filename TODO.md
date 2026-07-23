@@ -411,7 +411,9 @@
 - [ ] Verify downloaded engine assets with checksums and a release signature or attestation before staging or activation.
 - [x] Keep engine binaries separate from user configuration, workspaces, models, provider data, generated artifacts, and evidence in the versioned storage and update contracts.
 - [ ] Add compatibility preflight, atomic activation, post-update health checks, automatic rollback, retained-version cleanup, offline behavior, and a disabled-update mode.
-- [ ] Implement the unified UI over the Milestone 20 workflow foundation and Milestone 21 capability registry.
+- [x] Implement Milestone 22A as a zero-new-dependency, loopback-only local web MVP over the Milestone 21 `general.chat` capability: sanitized system status, explicit Ollama endpoint validation, installed-model discovery, model selection, bounded chat, and verified unload after success, failure, and shutdown.
+- [ ] Expand the local web UI over the Milestone 20 workflow foundation and remaining evidence-gated Milestone 21 capabilities without duplicating business logic.
+- [ ] Keep Tauri as optional Milestone 22B native packaging after its published dependency, bridge, signing, package, and platform gates pass; the local web product must not wait on it.
 - [x] Define the first product slice, first-run flow, Home/Chat/Software/Images/Models/System navigation, approval review, wireframes, and renderer-safe registry-backed view model without admitting a desktop runtime.
 - [x] Define one product-wide progressive onboarding pattern with guided setup, existing-setup connection, not-now, advanced controls on both active paths, and engine-derived validated/customized/unverified/blocked states.
 - [x] Define eight capability-specific advanced-setting schemas and an offline default-deny evaluator that rejects renderer authority, raw sensitive values, evidence forgery, and cross-domain admission without machine effects.

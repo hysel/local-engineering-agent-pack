@@ -1,6 +1,8 @@
 # Haven 42 Menu
 
 The Haven 42 menu is the primary human-facing navigation layer over the workflow registry and the agent surface solution catalog.
+For general local chat, launch the runnable local web application described in `docs/local-web-mvp.md`. The workflow menu below remains the primary navigation layer for setup, engineering, validation, evidence, cleanup, and release operations.
+
 
 It groups the repository's scripts into a short list of intents:
 

@@ -50,4 +50,4 @@ Capability-specific settings use enums, bounded integers, booleans, or opaque `r
 
 ## Current Boundary
 
-The current product slice may render these choices and their derived state, but `runtimeAdmitted` remains false. No desktop runtime, provider installer, download, connection, or machine change is admitted by this contract.
+The full onboarding contract may render these choices and their derived state, but its `runtimeAdmitted` value remains false. The separately admitted local-web MVP permits only session-memory Ollama connection and chat under `config/local-web-runtime-policy.json`; no installer, download, repository access, persistence, or broader machine change is admitted.
