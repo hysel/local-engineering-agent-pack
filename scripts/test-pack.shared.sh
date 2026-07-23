@@ -2299,7 +2299,7 @@ PY
 }
 
 test_local_web_mvp() {
-  python3 "$REPO_ROOT/scripts/test-haven42-web.py" | grep -q "63 security and behavior checks" || return 1
+  python3 "$REPO_ROOT/scripts/test-haven42-web.py" | grep -q "80 security and behavior checks" || return 1
   python3 - "$REPO_ROOT" <<'PY'
 import json, pathlib, sys
 root = pathlib.Path(sys.argv[1])
