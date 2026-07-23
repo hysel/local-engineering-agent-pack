@@ -3,6 +3,11 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# shellcheck source=ensure-test-python3.shared.sh
+source "$SCRIPT_DIR/ensure-test-python3.shared.sh"
+ensure_test_python3 || exit 1
+
 FAILED=0
 TEST_COUNT=0
 SKIPPED_COUNT=0
@@ -245,6 +250,29 @@ test_shell_scripts_executable() {
     mode="$(printf '%s' "$row" | awk '{ print $1 }')"
     [ "$mode" = "100755" ] || return 1
   done < <(git -C "$REPO_ROOT" ls-files -s 'scripts/*.sh' '.githooks/pre-push')
+}
+
+test_native_shell_python3_resolution() {
+  helper="$REPO_ROOT/scripts/ensure-test-python3.shared.sh"
+  temp_root="$(mktemp -d)"
+  mkdir -p "$temp_root/bin"
+  cp "$REPO_ROOT/tests/fixtures/mock-python3-command.sh" "$temp_root/bin/python"
+  chmod +x "$temp_root/bin/python"
+
+  PATH="$temp_root/bin" HAVEN42_PYTHON_HELPER="$helper" "$BASH" --noprofile --norc -c '
+    unset -f python3 2>/dev/null || true
+    source "$HAVEN42_PYTHON_HELPER"
+    ensure_test_python3 >/dev/null
+    command -v python3 >/dev/null
+    python3 -c "import sys" >/dev/null
+    "$BASH" --noprofile --norc -c \
+      "command -v python3 >/dev/null && python3 -c \"import sys\" >/dev/null"
+  '
+  result=$?
+  rm -rf "$temp_root"
+  [ "$result" -eq 0 ] &&
+    ! grep -Eq '\beval\b|curl|wget|Invoke-WebRequest' \
+      "$helper" "$REPO_ROOT/scripts/test-shims/python3"
 }
 
 test_github_actions_dependencies() {
@@ -2336,6 +2364,7 @@ run_test "model recommendation catalog has valid schema" test_catalog_schema
 run_test "committed config uses starter sample model" test_committed_config_uses_starter_model
 run_test "MLX model recommendation catalog has valid schema" test_mlx_catalog_schema
 run_test "shell wrapper scripts and hooks are executable in git" test_shell_scripts_executable
+run_test "native shell resolves and propagates a validated Python 3 command" test_native_shell_python3_resolution
 run_test "GitHub Actions dependencies are current and monitored" test_github_actions_dependencies
 run_test "test tiers are timed and exact-tree receipt gated" test_test_tier_contract
 run_test "commands and workflows are OS aware" test_os_aware_command_contract

@@ -26,6 +26,12 @@ Linux or macOS:
 ./scripts/test-pack.linux.sh --tier full
 ```
 
+### Git Bash on Windows
+
+The native-shell runner automatically resolves a locally installed Python 3 when Git Bash exposes it as `python`, `python.exe`, or the Windows `py -3` launcher instead of `python3`. The candidate must successfully identify itself as Python 3 before the runner activates the repository-owned `python3` compatibility launcher for child Bash scripts.
+
+This compatibility step does not install software, download files, use `eval`, or permanently modify `PATH`. If no valid Python 3 command exists, the suite stops once with a clear prerequisite error instead of producing many misleading script failures. Hosted Linux and macOS jobs continue to use their native `python3` command.
+
 The full suite includes repository validation, so callers should not run `validate-pack` immediately before `test-pack` unless they intentionally want an isolated validation result.
 
 ## Timing
