@@ -29,7 +29,7 @@ The approved first product slice, navigation map, interaction flow, and low-fide
 | Request and result contract | `config/workflow-envelope-contract.json` and `docs/workflow-envelope-contract.md` |
 | Evidence dashboard | `scripts/generate-evidence-dashboard.*`, `config/evidence-catalog.tsv`, `config/agent-surface-capabilities.json`, `config/agent-surface-solutions.json` |
 | Beginner setup | `scripts/get-beginner-setup-plan.*`, `docs/beginner-setup-mode.md` |
-| Progressive onboarding | `config/progressive-onboarding-contract.json`, `docs/progressive-onboarding.md` |
+| Progressive onboarding | `config/progressive-onboarding-contract.json`, `config/onboarding-setting-schemas.json`, `docs/progressive-onboarding.md`, `docs/onboarding-setting-security.md` |
 | Model choice | `scripts/recommend-local-agent-config.*`, `docs/hardware-aware-recommendations.md` |
 | Install/configure/test by surface | `config/agent-surface-solutions.json`, `docs/agent-surface-solutions.md` |
 | Script appendix | `docs/script-reference-appendix.md` |
@@ -52,7 +52,7 @@ Every model, workflow, agent surface, and installer profile shown in the UI must
 
 Every configurable product area offers **Set it up for me**, **Connect or use my existing setup**, and **Not now**. The first two paths both expose collapsed **Customize advanced settings** controls. This applies to text providers, engineering agent surfaces, images, audio, video, models, quantization, inference engines, local or remote connections, storage, retention, updates, rollback, and cleanup.
 
-The engine derives the user-facing configuration state: `validated`, `customized`, `unverified`, or `blocked`. Advanced settings can narrow or remove validation but cannot create it, and the renderer cannot select the state. Advanced mode never bypasses consent, checksum verification, credential protection, network exposure, exact hardware/provider admission, or preservation of existing user data. See `docs/progressive-onboarding.md`.
+The engine derives the user-facing configuration state: `validated`, `customized`, `unverified`, or `blocked`. Advanced settings can narrow or remove validation but cannot create it, and the renderer cannot select the state. Eight capability-domain schemas accept only structured values and opaque references; the effect-free evaluator rejects raw endpoints, paths, credentials, commands, approvals, and evidence claims. Advanced mode never bypasses consent, checksum verification, credential protection, network exposure, exact hardware/provider admission, or preservation of existing user data. See `docs/progressive-onboarding.md` and `docs/onboarding-setting-security.md`.
 
 ## Safety Model
 

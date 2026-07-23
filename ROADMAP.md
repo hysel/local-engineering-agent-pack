@@ -660,7 +660,7 @@ Exit criteria:
 - A beginner can complete the common local-AI setup path without selecting scripts or manually editing configuration.
 - A general AI user can complete repository-free chat, writing, summarization, or an available image task and locate the typed result artifact.
 - A software user can enter the existing engineering workflow system without the UI bypassing evidence or approved-write gates.
-- Every configurable capability offers guided setup, existing-setup connection, and not-now; both active paths expose structured advanced settings without weakening non-overridable safety controls.
+- Every configurable capability offers guided setup, existing-setup connection, and not-now; both active paths expose structured advanced settings without weakening non-overridable safety controls. Eight capability-domain schemas and an effect-free default-deny evaluator now define this boundary.
 - The engine visibly derives validated, customized, unverified, or blocked after every advanced change; renderer input cannot promote evidence.
 - Unavailable, blocked, failed, and recommendation-only capabilities are visibly distinct and cannot be presented as validated.
 - Every material read, write, network call, model download, and external-provider action is disclosed before execution.
@@ -673,7 +673,7 @@ Exit criteria:
 1. Select the local UI runtime and package boundary without introducing a hosted-service dependency. Done with Tauri 2, bundled React/TypeScript/Vite assets, a packaged engine sidecar, and private typed stdin/stdout IPC.
 2. Define and statically validate the Tauri capability allowlist, IPC schema, native path-selection boundary, local-only content policy, and headless loopback separation. Done for the versioned contracts, 46 engine-side hostile cases, and 55 native-authority policy cases; actual native bridge enforcement and adversarial runtime tests remain promotion gates.
 3. Validate pinned dependency and license choices, then scaffold the smallest Windows, Linux, and macOS package slice. Direct candidates are reviewed; disposable Windows npm and PyInstaller graphs passed, while five Windows-reachable unmaintained Rust crates, unaudited native build prerequisites, and separate Linux findings block admission.
-4. Implement first-run navigation and capability availability views over the Milestone 21 registry. The framework-neutral navigation contract, product-wide progressive onboarding contract, wireframes, and deterministic view-model builder are done; the native renderer remains gated.
+4. Implement first-run navigation and capability availability views over the Milestone 21 registry. The framework-neutral navigation contract, product-wide progressive onboarding contract, eight capability-setting schemas, effect-free policy evaluator, wireframes, and deterministic view-model builder are done; the native renderer remains gated.
 5. Render typed artifacts and workflow progress/error envelopes.
 6. Connect setup, health, model choice, engineering workflows, and evidence views from Milestone 20.
 7. Add repository-free text and image flows only for providers promoted in Milestone 21 or Milestone 23.

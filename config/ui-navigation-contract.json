@@ -138,6 +138,7 @@
     "desktopIpc": "config/desktop-ipc-contract.json",
     "desktopAuthority": "config/desktop-capability-policy.json",
     "progressiveOnboarding": "config/progressive-onboarding-contract.json",
+    "onboardingSettingSchemas": "config/onboarding-setting-schemas.json",
     "typedArtifacts": "config/typed-artifact-contract.json"
   }
 }

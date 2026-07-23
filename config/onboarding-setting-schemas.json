@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "contractId": "capability-onboarding-setting-schemas",
+  "description": "Security-first structured advanced-setting schemas consumed by engine policy. These schemas admit no runtime, provider connection, download, installation, or machine effect.",
+  "runtimeAdmitted": false,
+  "defaultDecision": "blocked",
+  "rendererInputPolicy": {
+    "unknownFieldsAllowed": false,
+    "rawEndpointsAllowed": false,
+    "rawFilesystemPathsAllowed": false,
+    "plaintextCredentialsAllowed": false,
+    "commandsExecutablesArgumentsOrEnvironmentAllowed": false,
+    "rendererSuppliedEvidenceOrApprovalAllowed": false,
+    "opaqueReferencesResolvedOnlyByNativeOrEngineAuthority": true
+  },
+  "referenceFormats": {
+    "opaque-reference": "^ref:[A-Za-z0-9][A-Za-z0-9._-]{0,95}$",
+    "path-grant-reference": "^grant:[A-Za-z0-9][A-Za-z0-9._-]{0,95}$",
+    "secret-reference": "^secret:[A-Za-z0-9][A-Za-z0-9._-]{0,95}$"
+  },
+  "domains": [
+    {
+      "id": "text-providers",
+      "capabilityIds": ["general.chat", "content.write", "content.summarize"],
+      "guidedSettings": [
+        {"id":"provider-profile","type":"opaque-reference"},
+        {"id":"model","type":"opaque-reference"},
+        {"id":"context-tokens","type":"integer","minimum":1024,"maximum":131072,"validatedMinimum":2048,"validatedMaximum":32768},
+        {"id":"concurrency","type":"integer","minimum":1,"maximum":4,"validatedMinimum":1,"validatedMaximum":1},
+        {"id":"conversation-retention","type":"enum","allowedValues":["off","session","user-managed"],"validatedValues":["off","session"]}
+      ],
+      "existingSettings": [
+        {"id":"connection-scope","type":"enum","allowedValues":["loopback","trusted-remote"],"validatedValues":["loopback"]},
+        {"id":"endpoint-reference","type":"opaque-reference"},
+        {"id":"credential-reference","type":"secret-reference"},
+        {"id":"model","type":"opaque-reference"},
+        {"id":"timeout-seconds","type":"integer","minimum":5,"maximum":600,"validatedMinimum":30,"validatedMaximum":300}
+      ]
+    },
+    {
+      "id": "engineering-agent-surfaces",
+      "capabilityIds": ["engineering.software-work"],
+      "guidedSettings": [
+        {"id":"surface","type":"enum","allowedValues":["continue","aider","opencode"],"validatedValues":["continue","aider","opencode"]},
+        {"id":"repository-grant","type":"path-grant-reference"},
+        {"id":"access-mode","type":"enum","allowedValues":["read-only","plan","approved-write"],"validatedValues":["read-only","plan","approved-write"]},
+        {"id":"model-lane","type":"enum","allowedValues":["write-safe","plan-only","deep-review"],"validatedValues":["write-safe","plan-only","deep-review"]},
+        {"id":"timeout-seconds","type":"integer","minimum":30,"maximum":3600,"validatedMinimum":60,"validatedMaximum":1800}
+      ],
+      "existingSettings": [
+        {"id":"surface","type":"enum","allowedValues":["continue","aider","opencode"],"validatedValues":["continue","aider","opencode"]},
+        {"id":"configuration-reference","type":"opaque-reference"},
+        {"id":"repository-grant","type":"path-grant-reference"},
+        {"id":"access-mode","type":"enum","allowedValues":["read-only","plan","approved-write"],"validatedValues":["read-only","plan"]},
+        {"id":"preserve-existing-configuration","type":"boolean","validatedValues":[true]}
+      ]
+    },
+    {
+      "id": "image-generation",
+      "capabilityIds": ["media.image.create"],
+      "guidedSettings": [
+        {"id":"provider-profile","type":"opaque-reference"},
+        {"id":"checkpoint","type":"opaque-reference"},
+        {"id":"quality-preset","type":"enum","allowedValues":["fast","balanced","quality"],"validatedValues":["fast","balanced"]},
+        {"id":"dimension","type":"enum","allowedValues":[512,768,1024,1536,2048],"validatedValues":[512,1024]},
+        {"id":"steps","type":"integer","minimum":1,"maximum":100,"validatedMinimum":4,"validatedMaximum":30},
+        {"id":"concurrency","type":"integer","minimum":1,"maximum":4,"validatedMinimum":1,"validatedMaximum":1},
+        {"id":"idle-shutdown-minutes","type":"integer","minimum":1,"maximum":120,"validatedMinimum":5,"validatedMaximum":30}
+      ],
+      "existingSettings": [
+        {"id":"connection-scope","type":"enum","allowedValues":["loopback","trusted-remote"],"validatedValues":["loopback"]},
+        {"id":"endpoint-reference","type":"opaque-reference"},
+        {"id":"credential-reference","type":"secret-reference"},
+        {"id":"checkpoint","type":"opaque-reference"},
+        {"id":"workflow-template","type":"opaque-reference"},
+        {"id":"provider-output-cleanup","type":"boolean","validatedValues":[true]},
+        {"id":"timeout-seconds","type":"integer","minimum":30,"maximum":1800,"validatedMinimum":120,"validatedMaximum":600}
+      ]
+    },
+    {
+      "id": "audio-generation",
+      "capabilityIds": [],
+      "guidedSettings": [
+        {"id":"provider-profile","type":"opaque-reference"},
+        {"id":"model","type":"opaque-reference"},
+        {"id":"duration-seconds","type":"integer","minimum":1,"maximum":600,"validatedMinimum":1,"validatedMaximum":60},
+        {"id":"vocals","type":"boolean","validatedValues":[false]},
+        {"id":"reference-media-grant","type":"path-grant-reference"}
+      ],
+      "existingSettings": [
+        {"id":"connection-scope","type":"enum","allowedValues":["loopback","trusted-remote"],"validatedValues":["loopback"]},
+        {"id":"endpoint-reference","type":"opaque-reference"},
+        {"id":"credential-reference","type":"secret-reference"},
+        {"id":"model","type":"opaque-reference"},
+        {"id":"reference-media-grant","type":"path-grant-reference"}
+      ]
+    },
+    {
+      "id": "video-generation",
+      "capabilityIds": [],
+      "guidedSettings": [
+        {"id":"provider-profile","type":"opaque-reference"},
+        {"id":"model","type":"opaque-reference"},
+        {"id":"duration-seconds","type":"integer","minimum":1,"maximum":60,"validatedMinimum":1,"validatedMaximum":10},
+        {"id":"resolution","type":"enum","allowedValues":["480p","720p","1080p"],"validatedValues":["480p","720p"]},
+        {"id":"reference-media-grant","type":"path-grant-reference"}
+      ],
+      "existingSettings": [
+        {"id":"connection-scope","type":"enum","allowedValues":["loopback","trusted-remote"],"validatedValues":["loopback"]},
+        {"id":"endpoint-reference","type":"opaque-reference"},
+        {"id":"credential-reference","type":"secret-reference"},
+        {"id":"model","type":"opaque-reference"},
+        {"id":"reference-media-grant","type":"path-grant-reference"}
+      ]
+    },
+    {
+      "id": "model-management",
+      "capabilityIds": ["setup.local-ai"],
+      "guidedSettings": [
+        {"id":"artifact","type":"opaque-reference"},
+        {"id":"quantization-format","type":"enum","allowedValues":["gguf","mlx","awq","gptq","fp8","int4"],"validatedValues":["gguf","mlx"]},
+        {"id":"context-tokens","type":"integer","minimum":1024,"maximum":262144,"validatedMinimum":4096,"validatedMaximum":32768},
+        {"id":"model-storage-grant","type":"path-grant-reference"},
+        {"id":"local-conversion","type":"boolean","validatedValues":[false]}
+      ],
+      "existingSettings": [
+        {"id":"artifact","type":"opaque-reference"},
+        {"id":"runtime-profile","type":"opaque-reference"},
+        {"id":"model-storage-grant","type":"path-grant-reference"},
+        {"id":"verify-immutable-identity","type":"boolean","validatedValues":[true]},
+        {"id":"preserve-previous-known-good","type":"boolean","validatedValues":[true]}
+      ]
+    },
+    {
+      "id": "inference-engines",
+      "capabilityIds": ["setup.local-ai"],
+      "guidedSettings": [
+        {"id":"engine-profile","type":"opaque-reference"},
+        {"id":"backend","type":"enum","allowedValues":["cuda","hip","mlx","sycl","openvino","cpu"],"validatedValues":["cuda","hip","mlx"]},
+        {"id":"concurrency","type":"integer","minimum":1,"maximum":8,"validatedMinimum":1,"validatedMaximum":1},
+        {"id":"idle-shutdown-minutes","type":"integer","minimum":1,"maximum":120,"validatedMinimum":5,"validatedMaximum":30}
+      ],
+      "existingSettings": [
+        {"id":"engine-profile","type":"opaque-reference"},
+        {"id":"connection-scope","type":"enum","allowedValues":["loopback","trusted-remote"],"validatedValues":["loopback"]},
+        {"id":"endpoint-reference","type":"opaque-reference"},
+        {"id":"credential-reference","type":"secret-reference"},
+        {"id":"backend","type":"enum","allowedValues":["cuda","hip","mlx","sycl","openvino","cpu"],"validatedValues":["cuda","hip","mlx"]}
+      ]
+    },
+    {
+      "id": "storage-updates",
+      "capabilityIds": ["setup.local-ai"],
+      "guidedSettings": [
+        {"id":"artifact-storage-grant","type":"path-grant-reference"},
+        {"id":"model-storage-grant","type":"path-grant-reference"},
+        {"id":"artifact-retention","type":"enum","allowedValues":["session","manual","bounded"],"validatedValues":["manual","bounded"]},
+        {"id":"update-mode","type":"enum","allowedValues":["manual","notify","automatic"],"validatedValues":["manual","notify"]},
+        {"id":"preserve-user-models","type":"boolean","validatedValues":[true]},
+        {"id":"cleanup-run-owned-data","type":"boolean","validatedValues":[true]}
+      ],
+      "existingSettings": [
+        {"id":"artifact-storage-grant","type":"path-grant-reference"},
+        {"id":"model-storage-grant","type":"path-grant-reference"},
+        {"id":"preserve-existing-data","type":"boolean","validatedValues":[true]},
+        {"id":"update-mode","type":"enum","allowedValues":["manual","notify"],"validatedValues":["manual","notify"]},
+        {"id":"cleanup-run-owned-data","type":"boolean","validatedValues":[true]}
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Progressive Onboarding
 
-Haven 42 uses one progressive onboarding pattern for ordinary and advanced users. The machine-readable source is `config/progressive-onboarding-contract.json`. This is a presentation and policy contract, not an installer, provider runtime, or permission to execute.
+Haven 42 uses one progressive onboarding pattern for ordinary and advanced users. The machine-readable sources are `config/progressive-onboarding-contract.json` and the capability-specific `config/onboarding-setting-schemas.json`. This is a presentation and policy contract, not an installer, provider runtime, or permission to execute.
 
 ## The Three Choices
 
@@ -38,11 +38,15 @@ The engine, not the renderer, derives one visible state:
 
 Changing an advanced value always reevaluates the state. Evidence never transfers between operating systems, accelerators, engines, providers, models, operations, or untested setting ranges.
 
+`scripts/evaluate-onboarding-configuration.py` performs this renderer-independent decision without machine effects. It combines renderer-supplied structured settings with a separately trusted admission, returns setting IDs rather than values, and never resolves or returns provider, path-grant, or secret references. See `docs/onboarding-setting-security.md`.
+
 ## Safety Boundary
 
 Advanced mode is control, not a bypass. It cannot disable effect-bound consent, immutable download identity and checksum checks, credential protection, network-exposure controls, exact hardware/provider selection, or preservation of preexisting user data. It cannot silently enable custom nodes, plugins, external API nodes, public binding, CPU fallback, or provider fallback.
 
 Connecting an existing setup is read-only by default. Haven 42 clearly distinguishes application-managed and user-managed files, requires a separate trust and privacy review for remote connections, stores credentials through native secret references, and does not overwrite an advanced user's installation or configuration without a separately reviewed action.
+
+Capability-specific settings use enums, bounded integers, booleans, or opaque `ref:`, `grant:`, and `secret:` identifiers. Raw endpoints, filesystem paths, credentials, commands, executables, arguments, environment variables, approvals, and evidence states are not renderer inputs. Unknown fields fail closed.
 
 ## Current Boundary
 

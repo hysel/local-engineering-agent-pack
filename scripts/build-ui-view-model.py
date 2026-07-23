@@ -66,7 +66,36 @@ def validate_onboarding(onboarding: dict[str, Any]) -> None:
         raise UiModelError("Advanced onboarding cannot expose arbitrary commands or flags.")
 
 
-def validate_contracts(ui: dict[str, Any], onboarding: dict[str, Any], capabilities: dict[str, Any], workflows: dict[str, Any]) -> None:
+def validate_setting_schemas(schemas: dict[str, Any], capability_ids: set[str]) -> None:
+    if schemas.get("schemaVersion") != 1 or schemas.get("runtimeAdmitted") is not False or schemas.get("defaultDecision") != "blocked":
+        raise UiModelError("Onboarding setting schemas must be v1, runtime-disabled, and default-deny.")
+    policy = schemas.get("rendererInputPolicy", {})
+    required_false = {
+        "unknownFieldsAllowed", "rawEndpointsAllowed", "rawFilesystemPathsAllowed",
+        "plaintextCredentialsAllowed", "commandsExecutablesArgumentsOrEnvironmentAllowed",
+        "rendererSuppliedEvidenceOrApprovalAllowed",
+    }
+    if any(policy.get(key) is not False for key in required_false):
+        raise UiModelError("Onboarding setting schemas cannot grant renderer authority.")
+    expected_domains = {
+        "text-providers", "engineering-agent-surfaces", "image-generation", "audio-generation",
+        "video-generation", "model-management", "inference-engines", "storage-updates",
+    }
+    domains = schemas.get("domains", [])
+    if {item.get("id") for item in domains} != expected_domains or len(domains) != len(expected_domains):
+        raise UiModelError("Onboarding setting domains are incomplete or duplicated.")
+    allowed_types = {"enum", "integer", "boolean", "opaque-reference", "path-grant-reference", "secret-reference"}
+    for domain in domains:
+        if not set(domain.get("capabilityIds", [])) <= capability_ids:
+            raise UiModelError(f"Onboarding domain references an unknown capability: {domain.get('id')}")
+        for collection in ("guidedSettings", "existingSettings"):
+            settings = domain.get(collection, [])
+            ids = [item.get("id") for item in settings]
+            if len(ids) != len(set(ids)) or any(item.get("type") not in allowed_types for item in settings):
+                raise UiModelError(f"Onboarding settings are invalid: {domain.get('id')}/{collection}")
+
+
+def validate_contracts(ui: dict[str, Any], onboarding: dict[str, Any], setting_schemas: dict[str, Any], capabilities: dict[str, Any], workflows: dict[str, Any]) -> None:
     if ui.get("schemaVersion") != 1 or ui.get("runtimeAdmitted") is not False:
         raise UiModelError("UI contract must be schema v1 and runtime-admission false.")
     capability_ids = {item["id"] for item in capabilities.get("capabilities", [])}
@@ -79,6 +108,9 @@ def validate_contracts(ui: dict[str, Any], onboarding: dict[str, Any], capabilit
     if ui.get("principles", {}).get("rendererIsExecutionAuthority") is not False:
         raise UiModelError("Renderer cannot be execution authority.")
     validate_onboarding(onboarding)
+    validate_setting_schemas(setting_schemas, capability_ids)
+    if onboarding.get("settingSchemas") != "config/onboarding-setting-schemas.json":
+        raise UiModelError("Progressive onboarding must reference the shared setting schemas.")
     experience = ui.get("onboardingExperience", {})
     if experience.get("choiceIds") != ["guided-setup", "existing-setup", "not-now"]:
         raise UiModelError("UI onboarding choices must preserve the shared contract order.")
@@ -110,10 +142,11 @@ def build(platform: str, first_run_complete: bool, availability: dict[str, Any] 
         raise UiModelError(f"Unsupported platform: {platform}")
     ui = load_json(ROOT / "config/ui-navigation-contract.json")
     onboarding = load_json(ROOT / "config/progressive-onboarding-contract.json")
+    setting_schemas = load_json(ROOT / "config/onboarding-setting-schemas.json")
     capabilities = load_json(ROOT / "config/capabilities.json")
     workflows = load_json(ROOT / "config/workflows.json")
     providers = load_json(ROOT / "config/providers.json")
-    validate_contracts(ui, onboarding, capabilities, workflows)
+    validate_contracts(ui, onboarding, setting_schemas, capabilities, workflows)
 
     capability_by_id = {item["id"]: item for item in capabilities["capabilities"]}
     workflow_by_id = {item["id"]: item for item in workflows["workflows"]}
@@ -181,6 +214,12 @@ def build(platform: str, first_run_complete: bool, availability: dict[str, Any] 
             "advancedSettings": onboarding["advancedSettings"],
             "configurationStates": onboarding["configurationStates"],
             "presentation": onboarding["presentation"],
+            "settingDomains": [{
+                "id": domain["id"],
+                "capabilityIds": domain["capabilityIds"],
+                "guidedSettings": domain["guidedSettings"],
+                "existingSettings": domain["existingSettings"],
+            } for domain in setting_schemas["domains"]],
         },
         "homeActions": actions,
         "routeWorkflows": route_workflows,
@@ -214,7 +253,7 @@ def self_test() -> None:
     hostile = json.loads(json.dumps(load_json(ROOT / "config/ui-navigation-contract.json")))
     hostile["homeActions"][0]["operationId"] = "arbitrary.command"
     try:
-        validate_contracts(hostile, load_json(ROOT / "config/progressive-onboarding-contract.json"), load_json(ROOT / "config/capabilities.json"), load_json(ROOT / "config/workflows.json"))
+        validate_contracts(hostile, load_json(ROOT / "config/progressive-onboarding-contract.json"), load_json(ROOT / "config/onboarding-setting-schemas.json"), load_json(ROOT / "config/capabilities.json"), load_json(ROOT / "config/workflows.json"))
     except UiModelError:
         pass
     else:
@@ -227,7 +266,15 @@ def self_test() -> None:
         pass
     else:
         raise AssertionError("Renderer-selected evidence state must fail closed.")
-    print("UI view-model self-test passed: 4 cases")
+    hostile_schemas = json.loads(json.dumps(load_json(ROOT / "config/onboarding-setting-schemas.json")))
+    hostile_schemas["rendererInputPolicy"]["plaintextCredentialsAllowed"] = True
+    try:
+        validate_setting_schemas(hostile_schemas, {item["id"] for item in load_json(ROOT / "config/capabilities.json")["capabilities"]})
+    except UiModelError:
+        pass
+    else:
+        raise AssertionError("Renderer credential authority must fail closed.")
+    print("UI view-model self-test passed: 5 cases")
 
 
 def main() -> int:

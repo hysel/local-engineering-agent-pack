@@ -13,10 +13,13 @@ Haven 42 protects user repositories, local files, prompts, responses, models, cr
 - A malicious or stale update manifest causes downgrade, target confusion, duplicate-asset ambiguity, checksum bypass, unsigned activation, or user-data replacement.
 - Retry, resume, timeout, or crash handling repeats a write or leaves an orphan process.
 - Cleanup deletes preexisting models, provider data, or user artifacts.
+- A renderer forges a validated state, approval, or evidence; supplies a raw endpoint, path, credential, command, or environment; requests public binding; or reuses evidence across capability domains.
 
 ## Controls
 
 Policy selects registered operations; prompts never grant authority. IPC is typed, size-bounded, schema-strict, session-bound, and default-deny. Filesystem access requires native canonicalization and narrow expiring grants. Writes require an approval bound to the exact operation and effects. Updates use immutable releases, exact target selection, hashes, provenance, side-by-side staging, health checks, and rollback; the current offline policy cannot activate anything. Reliability rules prevent silent write retries and unrelated process termination. Evidence is sanitized and local data deletion is explicit and ownership-aware.
+
+Onboarding settings are schema-bounded and default-deny. The renderer cannot supply state, evidence, approval, commands, raw endpoints, raw paths, or plaintext credentials. It receives and submits opaque references only; the evaluator never resolves or returns them. Existing setups require independent validation, cross-domain admission is rejected, public binding is absent, and settings outside exact passed evidence become unverified rather than inheriting trust.
 
 ## Residual risk and promotion gates
 

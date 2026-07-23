@@ -78,7 +78,8 @@ screen with honest configuration-required states and remediation actions.
 ## Shared Setup Wireframe
 
 Every configurable area uses the same progressive pattern from
-`config/progressive-onboarding-contract.json`. Labels may say provider, agent,
+`config/progressive-onboarding-contract.json`, with capability-specific controls
+from `config/onboarding-setting-schemas.json`. Labels may say provider, agent,
 engine, model, or storage, but the choices and evidence rules do not fork.
 
 ```text
@@ -103,6 +104,9 @@ engine, model, or storage, but the choices and evidence rules do not fork.
 The engine derives `validated`, `customized`, `unverified`, or `blocked`.
 The renderer cannot select or promote that state. Advanced controls are
 collapsed by default and never expose arbitrary command or flag entry.
+`scripts/evaluate-onboarding-configuration.py` derives the state offline from
+structured renderer input plus a trusted engine admission. It has no provider,
+filesystem, secret, process, download, or approval authority.
 
 ## Home Wireframe
 
@@ -212,6 +216,7 @@ allowed to reinterpret evidence states or bypass the desktop policy.
 - First run works without a repository, provider, download, or network probe.
 - Guided setup, existing setup, and not-now use one shared contract across capabilities.
 - Guided and existing paths both expose structured advanced settings and state-impact review.
+- Unknown advanced fields, raw endpoints, raw paths, plaintext credentials, commands, and renderer-supplied evidence fail closed.
 - Deterministic navigation is always available without an LLM.
 - Every home action resolves to a registered capability or UI-ready workflow.
 - Provider discovery may reduce or improve availability but cannot promote an

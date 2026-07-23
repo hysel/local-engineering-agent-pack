@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "onboarding-settings-request",
+  "domainId": "image-generation",
+  "choiceId": "guided-setup",
+  "settings": {
+    "quality-preset": "balanced",
+    "dimension": 1024,
+    "steps": 20,
+    "concurrency": 1
+  }
+}

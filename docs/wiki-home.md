@@ -20,6 +20,7 @@ Failed or retired integrations do not ship scripts, harnesses, wrappers, configu
 - Review local image support: [[Local Image Capability|Local-Image-Capability]]
 - Install the validated Linux image provider: [[ComfyUI Image Provider Setup|ComfyUI-Image-Provider-Setup]]
 - Review consumer-local image onboarding: [[Local Image Provider Onboarding|Local-Image-Provider-Onboarding]]
+- Review advanced onboarding security: [[Onboarding Setting Security|Onboarding-Setting-Security]]
 - Review audio candidates and consent: [[Local Audio Provider Candidates|Local-Audio-Provider-Candidates]] and [[Generative Media Consent Policy|Generative-Media-Consent-Policy]]
 - Review video candidates: [[Local Video Provider Candidates|Local-Video-Provider-Candidates]]
 - Plan hardware-adaptive quantization: [[Hardware-Adaptive Quantization|Hardware-Adaptive-Quantization]]

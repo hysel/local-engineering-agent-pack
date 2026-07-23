@@ -4,6 +4,7 @@
   "description": "Product-wide progressive onboarding for ordinary and advanced Haven 42 users without duplicating provider or workflow business logic in the renderer.",
   "implementationStatus": "contract-and-view-model-only",
   "runtimeAdmitted": false,
+  "settingSchemas": "config/onboarding-setting-schemas.json",
   "defaultChoiceId": "guided-setup",
   "choices": [
     {

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "trusted-onboarding-admission",
+  "domainId": "image-generation",
+  "allowedChoiceIds": ["guided-setup", "existing-setup", "not-now"],
+  "baseState": "validated",
+  "profileId": "fixture-exact-image-profile",
+  "existingProfileIndependentlyValidated": false
+}
