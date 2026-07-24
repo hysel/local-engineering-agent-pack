@@ -28,9 +28,13 @@ The `Validate Pack` workflow must complete these jobs successfully:
 - `Windows PowerShell validation`
 - `Linux script smoke tests`
 - `macOS script smoke tests`
+- `Windows portable package`
+- `Linux portable package`
+- `macOS portable package`
 
 The verifier rejects a successful-looking run if it belongs to another commit
-or omits one of these jobs.
+or omits one of these jobs. `CodeQL Python analysis` is separately required by
+branch protection.
 
 ## Prerequisites
 
@@ -85,5 +89,7 @@ Every push report must include:
 - The exact commit SHA.
 - The GitHub Actions run URL.
 - The final state.
-- Confirmation that all three required jobs succeeded, or the failed job and
+- Confirmation that all seven `Validate Pack` jobs succeeded, or the failed job and
   relevant failure signal.
+- Confirmation that branch protection also reports `CodeQL Python analysis`
+  successful before merge.

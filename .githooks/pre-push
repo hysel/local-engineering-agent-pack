@@ -9,7 +9,7 @@ receipt_path="$(git rev-parse --git-dir)/haven-42-test-receipt-v1"
 head_tree="$(git rev-parse 'HEAD^{tree}')"
 if [ -z "$(git status --porcelain=v1)" ] &&
    [ -f "$receipt_path" ] &&
-   grep -Fxq "schema=2" "$receipt_path" &&
+   grep -Fxq "schema=3" "$receipt_path" &&
    grep -Fxq "tree=$head_tree" "$receipt_path" &&
    grep -Fxq "tier=full" "$receipt_path"; then
   printf '%s\n' "Exact content-tree full-test receipt found; skipping duplicate local suite."

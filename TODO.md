@@ -510,5 +510,8 @@
 - [x] Prevent quantization request metadata from being logged by requiring an exclusive local plan output file.
 - [x] Block mutable third-party installation and macOS curl-to-shell bootstrap paths.
 - [x] Enforce explicit provider endpoint trust scopes, redirect denial, bounded responses, private prompt channels, and exclusive no-follow artifact creation.
-- [ ] Require pull requests and successful checks on `main`, enable dependency security updates, and verify private vulnerability reporting in GitHub settings.
+- [x] Require pull requests and successful checks on `main`, enable dependency security updates, and verify private vulnerability reporting in GitHub settings.
+- [x] Align committed CI, staged-tree receipts, wiki retry, portable-package
+  checks, merge methods, Actions SHA enforcement, and live GitHub settings
+  under one verifiable repository policy.
 - [ ] Add signed release tags and artifact provenance before admitting the automatic updater or native installers.

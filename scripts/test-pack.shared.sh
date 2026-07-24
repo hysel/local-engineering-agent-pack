@@ -102,21 +102,25 @@ run_test() {
 write_test_receipt() {
   [ "$NO_RECEIPT" = false ] || return 0
   [ "$TEST_TIER" = "full" ] || return 0
-  [ -z "$(git -C "$REPO_ROOT" status --porcelain=v1 2>/dev/null)" ] || {
-    printf 'Receipt not written: the working tree is not clean.\n'
+  git -C "$REPO_ROOT" diff --quiet -- 2>/dev/null &&
+    [ -z "$(git -C "$REPO_ROOT" ls-files --others --exclude-standard 2>/dev/null)" ] || {
+    printf 'Receipt not written: stage every intended file and remove unstaged or untracked changes.\n'
     return 0
   }
   commit="$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null)" || return 0
-  tree="$(git -C "$REPO_ROOT" rev-parse 'HEAD^{tree}' 2>/dev/null)" || return 0
+  tree="$(git -C "$REPO_ROOT" write-tree 2>/dev/null)" || return 0
+  head_tree="$(git -C "$REPO_ROOT" rev-parse 'HEAD^{tree}' 2>/dev/null)" || return 0
   git_dir="$(git -C "$REPO_ROOT" rev-parse --git-dir 2>/dev/null)" || return 0
+  [ "$tree" = "$head_tree" ] && source_kind="head" || source_kind="index"
   case "$git_dir" in
     /*|[A-Za-z]:*) ;;
     *) git_dir="$REPO_ROOT/$git_dir" ;;
   esac
   {
-    printf 'schema=2\n'
+    printf 'schema=3\n'
     printf 'commit=%s\n' "$commit"
     printf 'tree=%s\n' "$tree"
+    printf 'source=%s\n' "$source_kind"
     printf 'tier=full\n'
     printf 'runner=native-shell\n'
   } > "$git_dir/haven-42-test-receipt-v1"
@@ -286,12 +290,13 @@ test_github_actions_dependencies() {
   credential_count="$(printf '%s' "$action_sources" | grep -Ec 'persist-credentials:[[:space:]]*false')"
 
   ! printf '%s' "$action_sources" | grep -Eq 'actions/checkout@(v[0-9]+|main|master)([^0-9]|$)' &&
-    [ "$checkout_count" -eq 6 ] &&
-    [ "$credential_count" -eq 6 ] &&
+    [ "$checkout_count" -eq 7 ] &&
+    [ "$credential_count" -eq 7 ] &&
     grep -Eq '^concurrency:' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&
     grep -q 'timeout-minutes:' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&
     grep -Eq 'package-ecosystem:[[:space:]]*github-actions' "$REPO_ROOT/.github/dependabot.yml" &&
-    grep -Eq 'interval:[[:space:]]*weekly' "$REPO_ROOT/.github/dependabot.yml"
+    grep -Eq 'interval:[[:space:]]*weekly' "$REPO_ROOT/.github/dependabot.yml" &&
+    python3 "$REPO_ROOT/scripts/verify-github-repository-policy.py"
 }
 
 test_test_tier_contract() {
@@ -300,7 +305,7 @@ test_test_tier_contract() {
     grep -q 'haven-42-test-receipt-v1' "$REPO_ROOT/scripts/test-pack.ps1" &&
     grep -q 'haven-42-test-receipt-v1' "$REPO_ROOT/scripts/test-pack.shared.sh" &&
     grep -q 'Exact content-tree full-test receipt found' "$REPO_ROOT/.githooks/pre-push" &&
-    grep -q 'schema=2' "$REPO_ROOT/.githooks/pre-push" &&
+    grep -q 'schema=3' "$REPO_ROOT/.githooks/pre-push" &&
     grep -q -- '-Tier Full -NoReceipt' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&
     grep -q -- '--tier full --no-receipt' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&
     ! grep -q 'Run pack validation' "$REPO_ROOT/.github/workflows/validate-pack.yml" &&

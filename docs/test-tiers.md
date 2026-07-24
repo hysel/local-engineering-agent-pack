@@ -40,7 +40,7 @@ Each selected test reports elapsed time. The final summary records the selected 
 
 ## Exact Content-Tree Receipt
 
-A successful Full run on a clean Git working tree writes schema-v2 `haven-42-test-receipt-v1` inside the repository's private `.git` directory. It records the tested commit for diagnostics and the exact Git content tree for authority, plus tier and runner. It is not committed or included in release packages.
+A successful Full run with no unstaged or untracked files writes schema-v3 `haven-42-test-receipt-v1` inside the repository's private `.git` directory. The tested content may be the clean `HEAD` tree or the exact staged index tree. The receipt records the current commit for diagnostics, the authoritative tested tree, its `head` or `index` source, tier, and runner. It is not committed or included in release packages.
 
 The pre-push hook skips its duplicate local Full run only when:
 
@@ -48,7 +48,7 @@ The pre-push hook skips its duplicate local Full run only when:
 - the receipt schema and tier match;
 - the receipt tree exactly matches `HEAD`.
 
-Any content edit, missing receipt, partial tier, or failed test causes the pre-push hook to run the Full suite. A metadata-only commit over an identical tested tree may reuse the local result, avoiding a redundant run after committing already-tested content. GitHub Actions always runs Full independently and never trusts a local receipt.
+For the efficient safe path, stage the complete change, confirm there are no unstaged or untracked files, run Full without `-NoReceipt`, and then commit without editing the content. The resulting commit has the staged tree that was tested, so pre-push reuses the receipt. Any later content edit, partial staging, untracked file, missing receipt, partial tier, or failed test causes the pre-push hook to run Full. GitHub Actions always runs Full independently and never trusts a local receipt.
 
 Use `-NoReceipt` or `--no-receipt` for ephemeral runners and hosted CI.
 

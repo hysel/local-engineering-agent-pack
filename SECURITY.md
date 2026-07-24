@@ -30,3 +30,10 @@ No bounty is currently offered. Good-faith research that avoids privacy violatio
 Security fixes use a new commit and release tag; published tags are not rewritten. A compromised release, signing identity, dependency, model artifact, or provider profile is blocked, documented, and superseded. Required response actions include revoking affected credentials or signing material, disabling automatic acquisition, preserving sanitized evidence, publishing an advisory, and validating a new immutable artifact through the normal promotion gates.
 
 Never send secrets through issue comments, logs, test fixtures, or committed evidence.
+
+Repository governance is fail-closed and recorded in
+`config/github-repository-policy.json`. `main` requires the complete
+cross-platform validation/package gate plus CodeQL, full-SHA GitHub-owned
+Actions, read-only default workflow permissions, linear history, conversation
+resolution, and administrator enforcement. See
+`docs/github-repository-policy.md`.

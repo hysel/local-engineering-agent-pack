@@ -37,6 +37,7 @@ Choose the path that matches what you want to accomplish today.
 - **Generate a hardware-aware model/config recommendation:** [Hardware-aware recommendations](docs/hardware-aware-recommendations.md) and the [local model guide](docs/local-model-selection.md)
 - **Image generation:** [Validated ComfyUI setup](docs/comfyui-image-provider-setup.md) and [provider support boundaries](docs/local-image-provider-onboarding.md)
 - **Security and privacy:** [Security threat model](docs/security-threat-model.md), [data lifecycle](docs/local-data-lifecycle.md), and [security policy](SECURITY.md)
+- **Repository and CI policy:** [GitHub repository policy](docs/github-repository-policy.md) and [hosted CI verification](docs/hosted-ci-verification.md)
 - **Project status:** [Roadmap](ROADMAP.md), [current tasks](TODO.md), and [solution architecture review](docs/solution-architecture-review.md)
 
 For the complete command and document catalog, see [Workflow Docs](#workflow-docs) and the [script reference appendix](docs/script-reference-appendix.md).
