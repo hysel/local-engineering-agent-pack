@@ -29,8 +29,11 @@ foreach ($entry in $entries) {
         throw "Mapped wiki source does not exist: $($entry.source)"
     }
     $sourceBytes = [System.IO.File]::ReadAllBytes($sourcePath)
-    $matches = (Test-Path -LiteralPath $destinationPath -PathType Leaf) -and
-        [System.Linq.Enumerable]::SequenceEqual($sourceBytes, [System.IO.File]::ReadAllBytes($destinationPath))
+    $sourceText = ([System.IO.File]::ReadAllText($sourcePath) -replace "`r`n", "`n")
+    $destinationText = if (Test-Path -LiteralPath $destinationPath -PathType Leaf) {
+        ([System.IO.File]::ReadAllText($destinationPath) -replace "`r`n", "`n")
+    } else { $null }
+    $matches = $null -ne $destinationText -and $sourceText -ceq $destinationText
     if (-not $matches) {
         $differences.Add($entry.page)
         if (-not $Check) {
