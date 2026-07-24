@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "repository": "hysel/haven-42",
+  "defaultBranch": "main",
+  "mergePolicy": {
+    "allowMergeCommit": false,
+    "allowSquashMerge": true,
+    "allowRebaseMerge": true,
+    "deleteBranchOnMerge": true,
+    "requiredLinearHistory": true
+  },
+  "branchProtection": {
+    "strictStatusChecks": true,
+    "requiredChecks": [
+      "Wiki synchronization",
+      "Windows PowerShell validation",
+      "Linux script smoke tests",
+      "macOS script smoke tests",
+      "Windows portable package",
+      "Linux portable package",
+      "macOS portable package",
+      "CodeQL Python analysis"
+    ],
+    "dismissStaleReviews": true,
+    "requiredApprovingReviewCount": 0,
+    "requireCodeOwnerReviews": false,
+    "enforceAdmins": true,
+    "requireConversationResolution": true,
+    "allowForcePushes": false,
+    "allowDeletions": false
+  },
+  "actions": {
+    "enabled": true,
+    "allowedActions": "selected",
+    "githubOwnedAllowed": true,
+    "verifiedAllowed": false,
+    "patternsAllowed": [],
+    "shaPinningRequired": true,
+    "defaultWorkflowPermissions": "read",
+    "canApprovePullRequestReviews": false
+  }
+}

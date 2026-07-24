@@ -105,7 +105,10 @@ failed=0
 required_jobs='Wiki synchronization
 Windows PowerShell validation
 Linux script smoke tests
-macOS script smoke tests'
+macOS script smoke tests
+Windows portable package
+Linux portable package
+macOS portable package'
 while IFS= read -r required_job; do
   [ -n "$required_job" ] || continue
   if ! printf '%s\n' "$jobs" | awk -F '\t' -v name="$required_job" '$1 == name && $2 == "completed" && $3 == "success" { found=1 } END { exit(found ? 0 : 1) }'; then

@@ -78,7 +78,9 @@ For Continue-specific changes, also inspect:
 
 ## Validation
 
-Run the Fast tier while editing and Full before pushing:
+Run the Fast tier while editing. For the final local gate, stage the complete
+change first, ensure there are no unstaged or untracked files, and run Full
+without `-NoReceipt`:
 
 ```powershell
 .\scripts\test-pack.ps1 -Tier Fast
@@ -86,10 +88,14 @@ Run the Fast tier while editing and Full before pushing:
 ```
 
 Use `docs/test-tiers.md` for Integration-only runs, timing output, and the
-exact-tree receipt used to avoid duplicate pre-push work. GitHub Actions always
-runs Full independently.
+schema-v3 staged-tree receipt used to avoid duplicate pre-push work. Commit
+without editing after Full; the pre-push hook then reuses the exact tested tree.
+GitHub Actions always runs Full independently.
 
-When mapped documentation changes, synchronize and commit the separate GitHub wiki before pushing the main repository. Follow `docs/wiki-maintenance.md`; hosted CI rejects stale mapped wiki pages.
+When mapped documentation changes, synchronize and push the separate GitHub
+wiki before opening or pushing the main-repository PR. Follow
+`docs/wiki-maintenance.md`; hosted CI performs bounded retry for propagation
+delay but rejects persistent drift.
 
 Also review:
 
@@ -118,4 +124,9 @@ required hosted jobs report success. See `docs/hosted-ci-verification.md`.
 
 ## Security changes
 
-Report vulnerabilities privately as described in `SECURITY.md`. Changes to provider boundaries, workflow dispatch, installers, updates, releases, permissions, or CI must complete the pull-request security checklist and receive CODEOWNERS review. Do not weaken a fail-closed gate to make a test pass.
+Report vulnerabilities privately as described in `SECURITY.md`. Changes to
+provider boundaries, workflow dispatch, installers, updates, releases,
+permissions, or CI must complete the pull-request security checklist. Obtain
+CODEOWNERS review when another eligible maintainer is available. Solo-maintainer
+changes rely on the enforced eight-check branch gate because GitHub does not
+count self-approval. Do not weaken a fail-closed gate to make a test pass.

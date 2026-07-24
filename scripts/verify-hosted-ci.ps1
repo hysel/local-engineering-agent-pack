@@ -13,7 +13,10 @@ $requiredJobs = @(
     "Wiki synchronization",
     "Windows PowerShell validation",
     "Linux script smoke tests",
-    "macOS script smoke tests"
+    "macOS script smoke tests",
+    "Windows portable package",
+    "Linux portable package",
+    "macOS portable package"
 )
 
 function Resolve-GhCommand {

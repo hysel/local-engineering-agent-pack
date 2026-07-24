@@ -120,24 +120,29 @@ function Invoke-PackTest {
 function Write-TestReceipt {
     if ($NoReceipt -or $Tier -ne "Full") { return }
 
-    $status = @(& git -C $repoRoot status --porcelain=v1 2>$null)
-    if ($LASTEXITCODE -ne 0 -or $status.Count -gt 0) {
-        Write-Host "Receipt not written: the working tree is not clean." -ForegroundColor Yellow
+    & git -C $repoRoot diff --quiet -- 2>$null
+    $unstagedExitCode = $LASTEXITCODE
+    $untracked = @(& git -C $repoRoot ls-files --others --exclude-standard 2>$null)
+    if ($unstagedExitCode -ne 0 -or $LASTEXITCODE -ne 0 -or $untracked.Count -gt 0) {
+        Write-Host "Receipt not written: stage every intended file and remove unstaged or untracked changes." -ForegroundColor Yellow
         return
     }
 
     $commit = (& git -C $repoRoot rev-parse HEAD 2>$null | Select-Object -First 1).Trim()
-    $tree = (& git -C $repoRoot rev-parse 'HEAD^{tree}' 2>$null | Select-Object -First 1).Trim()
+    $tree = (& git -C $repoRoot write-tree 2>$null | Select-Object -First 1).Trim()
+    $headTree = (& git -C $repoRoot rev-parse 'HEAD^{tree}' 2>$null | Select-Object -First 1).Trim()
     $gitDirectory = (& git -C $repoRoot rev-parse --git-dir 2>$null | Select-Object -First 1).Trim()
-    if ($LASTEXITCODE -ne 0 -or -not $commit -or -not $tree -or -not $gitDirectory) { return }
+    if ($LASTEXITCODE -ne 0 -or -not $commit -or -not $tree -or -not $headTree -or -not $gitDirectory) { return }
     if (-not [System.IO.Path]::IsPathRooted($gitDirectory)) {
         $gitDirectory = Join-Path $repoRoot $gitDirectory
     }
+    $source = if ($tree -eq $headTree) { "head" } else { "index" }
 
     @(
-        "schema=2",
+        "schema=3",
         "commit=$commit",
         "tree=$tree",
+        "source=$source",
         "tier=full",
         "runner=windows"
     ) | Set-Content -LiteralPath (Join-Path $gitDirectory "haven-42-test-receipt-v1") -Encoding UTF8
@@ -292,12 +297,17 @@ Invoke-PackTest "GitHub Actions dependencies are current and monitored" {
 
     $checkoutSha = "3d3c42e5aac5ba805825da76410c181273ba90b1"
     Assert-True -Condition ($actionSources -notmatch "actions/checkout@(v\d+|main|master)\b") -Message "Checkout references must not use mutable tags or branches."
-    Assert-Equal -Actual ([regex]::Matches($actionSources, "actions/checkout@$checkoutSha\b").Count) -Expected 6 -Message "All live and generated workflows should pin the reviewed checkout v7.0.1 commit."
-    Assert-Equal -Actual ([regex]::Matches($actionSources, "persist-credentials:\s*false").Count) -Expected 6 -Message "Every checkout should disable persisted credentials."
+    Assert-Equal -Actual ([regex]::Matches($actionSources, "actions/checkout@$checkoutSha\b").Count) -Expected 7 -Message "All live and generated workflows should pin the reviewed checkout v7.0.1 commit."
+    Assert-Equal -Actual ([regex]::Matches($actionSources, "persist-credentials:\s*false").Count) -Expected 7 -Message "Every checkout should disable persisted credentials."
     $workflow = Get-Content -LiteralPath $workflowPath -Raw
     Assert-True -Condition ($workflow -match "(?m)^concurrency:" -and $workflow -match "timeout-minutes:") -Message "Validation workflow should bound concurrency and job duration."
     Assert-True -Condition ($dependabot -match "package-ecosystem:\s*github-actions") -Message "Dependabot should monitor GitHub Actions dependencies."
     Assert-True -Condition ($dependabot -match "interval:\s*weekly") -Message "GitHub Actions dependency checks should run weekly."
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $python) { $python = Get-Command python3 -ErrorAction SilentlyContinue }
+    Assert-True -Condition ($null -ne $python) -Message "Python 3 should be available for repository policy verification."
+    $policyOutput = @(& $python.Source (Join-Path $repoRoot "scripts/verify-github-repository-policy.py") 2>&1)
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Committed workflow and GitHub repository policy should remain aligned: $($policyOutput -join [Environment]::NewLine)"
 }
 
 Invoke-PackTest "test tiers are timed and exact-tree receipt gated" {
@@ -309,7 +319,7 @@ Invoke-PackTest "test tiers are timed and exact-tree receipt gated" {
     Assert-True -Condition ($windowsRunner -match 'ValidateSet\("Fast", "Integration", "Full"\)' -and $windowsRunner -match "Stopwatch") -Message "Windows tests should expose timed Fast, Integration, and Full tiers."
     Assert-True -Condition ($sharedRunner -match 'fast\|integration\|full' -and $sharedRunner -match "RUN_STARTED_SECONDS") -Message "Native tests should expose timed Fast, Integration, and Full tiers."
     Assert-True -Condition ($windowsRunner -match "haven-42-test-receipt-v1" -and $sharedRunner -match "haven-42-test-receipt-v1") -Message "Both runners should write the same receipt contract."
-    Assert-True -Condition ($hook -match "Exact content-tree full-test receipt found" -and $hook -match "HEAD\^\{tree\}" -and $hook -match "schema=2") -Message "Pre-push should require a schema-v2 exact content-tree receipt."
+    Assert-True -Condition ($hook -match "Exact content-tree full-test receipt found" -and $hook -match "HEAD\^\{tree\}" -and $hook -match "schema=3") -Message "Pre-push should require a schema-v3 exact content-tree receipt."
     Assert-True -Condition ($workflow -match "-Tier Full -NoReceipt" -and $workflow -match "--tier full --no-receipt") -Message "Hosted CI should always run Full without trusting local receipts."
     Assert-True -Condition (([regex]::Matches($workflow, "Run pack validation")).Count -eq 0) -Message "Hosted CI should not run validation separately when Full tests already include it."
     Assert-True -Condition ($doc -match "GitHub Actions always runs Full independently") -Message "Test-tier docs should preserve hosted CI authority."

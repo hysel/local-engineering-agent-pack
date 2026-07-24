@@ -38,16 +38,21 @@ Use `-Check` on Windows or `--check` on Linux and macOS to fail when the wiki di
 ./scripts/sync-wiki.linux.sh --wiki-path ../haven-42.wiki --check
 ```
 
-Hosted CI clones the public wiki and runs this check. The exact-SHA verifier requires the `Wiki synchronization` job in addition to the Windows, Linux, and macOS repository jobs.
+Hosted CI clones the public wiki and runs this check. It retries three times
+with a fast-forward pull to tolerate short GitHub propagation delay, but never
+updates or accepts drift. The exact-SHA verifier requires the
+`Wiki synchronization` job in addition to the Windows, Linux, macOS, and
+portable-package jobs.
 
 ## Change Order
 
 1. Update authoritative repository documentation and the wiki map when needed.
 2. Run the platform synchronization script.
 3. Review the wiki diff and confirm it contains no private endpoints, paths, tokens, transcripts, or customer data.
-4. Commit and push the wiki repository.
+4. Commit and push the wiki repository; wait for the push to complete.
 5. Run repository validation and tests.
-6. Commit and push the main repository.
+6. Stage the complete main-repository change, run Full to create the exact
+   staged-tree receipt, then commit and push without further content edits.
 7. Verify exact-SHA hosted CI, including the wiki synchronization job.
 
 If the wiki cannot be updated, do not present the main documentation change as complete. Record the synchronization blocker and finish both repositories before release.
