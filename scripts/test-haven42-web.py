@@ -338,7 +338,10 @@ def main() -> int:
             origin,
         )
         assert status == 400 and error["error"] == "model-not-discovered"
-        checks += 1
+        assert [event["type"] for event in error["events"]] == ["error"]
+        assert error["recovery"]["retryAllowed"] is False
+        assert error["recovery"]["automaticRetryAttempted"] is False
+        checks += 4
 
         status, reply, _ = request_json(
             origin + "/api/text",
@@ -358,7 +361,8 @@ def main() -> int:
         assert reply["artifact"]["sourceCapabilityId"] == "general.chat"
         assert reply["artifact"]["policy"]["fileWrite"] is False
         assert reply["artifact"]["policy"]["networkAccess"] is False
-        assert [event["type"] for event in reply["events"]] == ["accepted", "result"]
+        assert [event["type"] for event in reply["events"]] == ["accepted", "progress", "result"]
+        assert [event["sequence"] for event in reply["events"]] == [1, 2, 3]
         chat_payload = next(body for path, body in FakeState.requests if path == "/api/chat")
         assert chat_payload["keep_alive"] == "300s" and chat_payload["stream"] is False
         assert chat_payload["messages"][0]["role"] == "system"
@@ -401,7 +405,11 @@ def main() -> int:
         assert status == 200 and switched["model"] == "writer-model:latest"
         assert FakeState.loaded == {"writer-model:latest"}
         assert any(path == "/api/generate" and body["model"] == "qwen3.5:9b" for path, body in FakeState.requests)
-        checks += 3
+        assert [event["type"] for event in switched["events"]] == [
+            "accepted", "progress", "warning", "result"
+        ]
+        assert switched["events"][2]["code"] == "MODEL_SELECTION_UNVERIFIED_FOR_CAPABILITY"
+        checks += 5
 
         status, unloaded, _ = request_json(origin + "/api/unload", "POST", {}, token, origin)
         assert status == 200 and unloaded["modelUnloaded"] is True and not FakeState.loaded
@@ -488,8 +496,16 @@ def main() -> int:
             origin,
         )
         assert status == 502 and error["error"] == "ollama-chat-failed"
+        assert error["kind"] == "text-execution-error" and error["status"] == "failed"
+        assert [event["type"] for event in error["events"]] == ["accepted", "error"]
+        assert error["recovery"] == {
+            "automaticRetryAttempted": False,
+            "retryAllowed": True,
+            "retryRequiresNewRequest": True,
+            "inputMayBeRestored": True,
+        }
         assert not FakeState.loaded
-        checks += 2
+        checks += 5
 
         FakeState.fail_chat = False
         FakeState.empty_chat = True
@@ -501,8 +517,10 @@ def main() -> int:
             origin,
         )
         assert status == 502 and error["error"] == "empty-model-response"
+        assert error["events"][-1]["type"] == "error"
+        assert error["recovery"]["retryAllowed"] is True
         assert not FakeState.loaded
-        checks += 2
+        checks += 4
 
         FakeState.empty_chat = False
         FakeState.fail_connect = True
@@ -564,6 +582,10 @@ def main() -> int:
         ]
         assert policy["text"]["automaticUnknownModelSelectionAllowed"] is False
         assert policy["text"]["missingModelDownloadsAllowed"] is False
+        assert policy["executionEvents"]["automaticRetryAllowed"] is False
+        assert policy["executionEvents"]["retryRequiresNewRequest"] is True
+        assert policy["executionEvents"]["failedInputPersistenceAllowed"] is False
+        assert policy["executionEvents"]["unverifiedModelWarningRequired"] is True
         assert policy["browser"]["remoteAssetsAllowed"] is False
         javascript = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
         html = (ROOT / "web/static/index.html").read_text(encoding="utf-8")
@@ -574,6 +596,10 @@ def main() -> int:
         assert "Automatic — no validated model installed" in javascript
         assert "Advanced manual selection" in javascript and "downloadsPerformed" not in javascript
         assert "renderTypedResult" in javascript and "renderCapabilities" in javascript
+        assert "validateExecutionEvents" in javascript and "event-after-terminal" in javascript
+        assert "validateRecovery" in javascript and "invalid-recovery-envelope" in javascript
+        assert "missing-accepted-event" in javascript
+        assert "retry creates a new request" in javascript
         assert "event.dataset.kind = kind" in javascript
         assert "innerHTML" not in javascript and "insertAdjacentHTML" not in javascript
         assert html.count('id="connection-panel"') == 1 and html.count('id="status-panel"') == 1
@@ -589,7 +615,7 @@ def main() -> int:
         assert ".rail {" in styles and ".configuration-column {" in styles and "position: sticky" in styles and "4.5rem" not in styles and "2.25rem" in styles
         assert ".wizard-backdrop {" in styles and ".wizard-readiness {" in styles
         assert ".wizard-choices {" in styles and ".readiness-dashboard" in styles
-        checks += 25
+        checks += 33
     finally:
         app.shutdown()
         app.server_close()

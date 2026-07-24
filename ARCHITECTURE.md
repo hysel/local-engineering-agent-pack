@@ -43,7 +43,7 @@ shared endpoint security -> Ollama discovery and general.chat
 unload and process-list verification after every response
 ```
 
-The process persists no endpoint or messages, exposes no repository or filesystem API, permits no remote UI assets, and cannot bind to a LAN interface. Its admitted machine-readable boundary is `config/local-web-runtime-policy.json`.
+The process persists no endpoint or messages, exposes no repository or filesystem API, permits no remote UI assets, and cannot bind to a LAN interface. Text execution uses the shared schema-v1 event vocabulary. The browser rejects malformed, non-monotonic, multiple-terminal, or post-terminal event streams before rendering an artifact. Unverified manual models add a warning event; provider failures return a typed error and memory-only recovery declaration. No automatic retry occurs, and a retry is always a new request. Its admitted machine-readable boundary is `config/local-web-runtime-policy.json`.
 
 The initial native distribution path freezes that same process and UI into a PyInstaller one-folder package. PyInstaller supplies only a local launcher/runtime boundary: it does not add browser authority, an installer, privileged service, global dependency, or native UI framework. Frozen startup verifies a strict embedded path/size/SHA-256 resource manifest before serving. Native package tests compare source and frozen behavior and require token-protected model-cleanup-first shutdown. `config/portable-development-package-contract.json` is the machine-readable boundary; Tauri/Rust remains unadmitted.
 

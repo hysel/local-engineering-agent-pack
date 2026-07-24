@@ -93,7 +93,9 @@ The MVP:
 
 The renderer never receives a shell, executable, arbitrary process, filesystem, model-download, installation, elevation, or repository-access surface. Readiness scanning is a CSRF-protected POST because even read-only subprocess work consumes local resources.
 
-Text responses include a schema-v1 typed artifact and ordered accepted/result events. Browser JavaScript validates the capability, artifact type, source capability, terminal status, and event sequence before rendering content. The UI reports typed progress/result/error state and explicitly says that no file was written. Workflow warning/retry/recovery envelopes remain future integration work.
+Text responses include a schema-v1 typed artifact and ordered accepted/progress/warning/result events. Browser JavaScript validates the capability, artifact type, source capability, terminal status, strict event shape, contiguous sequence, exactly one terminal event, and absence of post-terminal events before rendering content. An advanced manual model without exact evidence for the selected capability adds a visible warning without granting that model more authority.
+
+Text failures return a typed error envelope and an explicit recovery declaration. Haven 42 never retries automatically. When safe browser-memory restoration is declared, the failed input is restored to the composer, removed from chat history, and can be edited or submitted as a new request. Nothing is persisted and no approval or request identity is reused. Broader dispatcher workflow rendering remains future integration work.
 
 The machine-readable boundaries are `config/local-web-runtime-policy.json`, `config/system-readiness-contract.json`, `config/setup-plan-contract.json`, and `config/installation-broker-contract.json`. The strict component inventory is `config/install-component-registry.json`, and the evidence-gated text recommendation input is `config/text-capability-model-recommendations.json`. Offline security coverage lives in `scripts/test-system-readiness.py` and `scripts/test-haven42-web.py`; the dependency-free real-browser wizard/chat flow is `scripts/test-haven42-web-browser.mjs`.
 

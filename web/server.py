@@ -657,6 +657,10 @@ class HavenState:
                 residency = f"warm-for-{idle_unload_seconds}-seconds"
                 self._schedule_idle_unload(target, idle_unload_seconds)
         artifact_kind = "chat-message" if capability_id == "general.chat" else "markdown-document"
+        model_is_evidenced = any(
+            record["model"] == model
+            for record in self.model_recommendations.get(capability_id, ())
+        )
         now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         artifact = {
             "schemaVersion": 1,
@@ -685,6 +689,21 @@ class HavenState:
                 "approvalRequired": False,
             },
         }
+        events = [
+            {"sequence": 1, "type": "accepted", "code": "TEXT_REQUEST_ACCEPTED"},
+            {"sequence": 2, "type": "progress", "code": "TEXT_PROVIDER_COMPLETED"},
+        ]
+        if not model_is_evidenced:
+            events.append({
+                "sequence": 3,
+                "type": "warning",
+                "code": "MODEL_SELECTION_UNVERIFIED_FOR_CAPABILITY",
+            })
+        events.append({
+            "sequence": len(events) + 1,
+            "type": "result",
+            "code": "TEXT_ARTIFACT_READY",
+        })
         return {
             "schemaVersion": 1,
             "kind": artifact_kind,
@@ -704,10 +723,7 @@ class HavenState:
             "modelResidency": residency,
             "promptPersisted": False,
             "endpointPersisted": False,
-            "events": [
-                {"sequence": 1, "type": "accepted", "code": "TEXT_REQUEST_ACCEPTED"},
-                {"sequence": 2, "type": "result", "code": "TEXT_ARTIFACT_READY"},
-            ],
+            "events": events,
             "artifact": artifact,
         }
 
@@ -772,7 +788,39 @@ class HavenRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def _send_error_json(self, error: WebRequestError) -> None:
-        self._send_json(error.status, {"error": error.code})
+        value: dict[str, Any] = {"error": error.code}
+        if self.path == "/api/text":
+            retryable = error.code in {"ollama-chat-failed", "empty-model-response"}
+            accepted = error.code in {
+                "ollama-chat-failed",
+                "empty-model-response",
+                "previous-model-unload-failed",
+            }
+            events = []
+            if accepted:
+                events.append({
+                    "sequence": 1,
+                    "type": "accepted",
+                    "code": "TEXT_REQUEST_ACCEPTED",
+                })
+            events.append({
+                "sequence": len(events) + 1,
+                "type": "error",
+                "code": error.code.upper().replace("-", "_"),
+            })
+            value.update({
+                "schemaVersion": 1,
+                "kind": "text-execution-error",
+                "status": "failed",
+                "events": events,
+                "recovery": {
+                    "automaticRetryAttempted": False,
+                    "retryAllowed": retryable,
+                    "retryRequiresNewRequest": True,
+                    "inputMayBeRestored": True,
+                },
+            })
+        self._send_json(error.status, value)
 
     def _require_local_request(self) -> None:
         if not self._valid_host():

@@ -10,6 +10,7 @@ const CAPABILITIES = {
     welcome: "Ask a question and continue the conversation. Context stays in memory until you start a new task or close Haven 42.",
     resultLabel: "Haven 42",
     modelLabel: "Chat model",
+    artifactType: "chat-message",
   },
   "content.write": {
     eyebrow: "03 · WRITING",
@@ -20,6 +21,7 @@ const CAPABILITIES = {
     welcome: "Describe the audience, purpose, tone, and key points. Haven 42 returns a Markdown draft without writing files.",
     resultLabel: "Draft",
     modelLabel: "Writing model",
+    artifactType: "markdown-document",
   },
   "content.summarize": {
     eyebrow: "03 · SUMMARY",
@@ -30,6 +32,7 @@ const CAPABILITIES = {
     welcome: "Paste source material below. The model is instructed to summarize only what you provide and preserve uncertainty.",
     resultLabel: "Summary",
     modelLabel: "Summarization model",
+    artifactType: "markdown-document",
   },
 };
 
@@ -123,7 +126,9 @@ async function api(path, body) {
   });
   const result = await response.json().catch(() => ({ error: "invalid-server-response" }));
   if (!response.ok) {
-    throw new Error(result.error || `request-failed-${response.status}`);
+    const error = new Error(result.error || `request-failed-${response.status}`);
+    error.details = result;
+    throw error;
   }
   return result;
 }
@@ -343,20 +348,82 @@ function renderWizardReadiness() {
   byId("wizard-finish").disabled = !usable;
 }
 
+function validateExecutionEvents(events, expectedTerminal) {
+  const allowedTypes = new Set(["accepted", "progress", "warning", "result", "error"]);
+  if (!Array.isArray(events) || events.length === 0) throw new Error("invalid-execution-events");
+  let terminalCount = 0;
+  let terminalType = "";
+  events.forEach((event, index) => {
+    if (
+      !event
+      || typeof event !== "object"
+      || Array.isArray(event)
+      || Object.keys(event).sort().join(",") !== "code,sequence,type"
+      || event.sequence !== index + 1
+      || !allowedTypes.has(event.type)
+      || typeof event.code !== "string"
+      || !/^[A-Z][A-Z0-9_]{0,127}$/.test(event.code)
+    ) {
+      throw new Error("invalid-execution-events");
+    }
+    if (terminalCount > 0) throw new Error("event-after-terminal");
+    if (event.type === "result" || event.type === "error") {
+      terminalCount += 1;
+      terminalType = event.type;
+    }
+  });
+  if (terminalCount !== 1 || terminalType !== expectedTerminal) {
+    throw new Error("invalid-terminal-event");
+  }
+  if (expectedTerminal === "result" && events[0].type !== "accepted") {
+    throw new Error("missing-accepted-event");
+  }
+  return events.filter((event) => event.type === "warning");
+}
+
+function validateRecovery(recovery) {
+  if (
+    !recovery
+    || typeof recovery !== "object"
+    || Array.isArray(recovery)
+    || Object.keys(recovery).sort().join(",") !== "automaticRetryAttempted,inputMayBeRestored,retryAllowed,retryRequiresNewRequest"
+    || recovery.automaticRetryAttempted !== false
+    || typeof recovery.retryAllowed !== "boolean"
+    || recovery.retryRequiresNewRequest !== true
+    || recovery.inputMayBeRestored !== true
+  ) {
+    throw new Error("invalid-recovery-envelope");
+  }
+  return recovery;
+}
+
 function renderTypedResult(result, capability) {
   if (
     !result.artifact
     || result.artifact.schemaVersion !== 1
     || result.artifact.sourceCapabilityId !== state.capabilityId
     || result.artifact.status !== "succeeded"
+    || result.artifact.artifactType !== capability.artifactType
+    || result.kind !== capability.artifactType
+    || result.capabilityId !== state.capabilityId
+    || typeof result.artifact.content?.text !== "string"
+    || !result.artifact.content.text.trim()
+    || result.artifact.policy?.fileWrite !== false
+    || result.artifact.policy?.repositoryRead !== false
+    || result.artifact.policy?.networkAccess !== false
+    || result.artifact.policy?.modelDownload !== false
+    || result.artifact.policy?.externalProvider !== false
     || !Array.isArray(result.events)
   ) {
     throw new Error("invalid-typed-artifact");
   }
-  if (!result.events.some((event) => event.type === "result")) {
-    throw new Error("missing-result-event");
+  const warnings = validateExecutionEvents(result.events, "result");
+  const summary = `${capability.resultLabel} ready · typed ${result.artifact.artifactType} · no file written`;
+  if (warnings.some((event) => event.code === "MODEL_SELECTION_UNVERIFIED_FOR_CAPABILITY")) {
+    setTaskEvent(`Warning · model evidence is unverified for this capability · ${summary}`, "warning");
+  } else {
+    setTaskEvent(summary, "result");
   }
-  setTaskEvent(`${capability.resultLabel} ready · typed ${result.artifact.artifactType} · no file written`);
   addMessage("assistant", result.artifact.content.text, capability.resultLabel);
 }
 
@@ -375,6 +442,7 @@ function addMessage(role, content, label) {
   article.append(avatar, body);
   byId("messages").append(article);
   article.scrollIntoView({ behavior: "smooth", block: "end" });
+  return article;
 }
 
 function resetTask() {
@@ -527,8 +595,9 @@ byId("text-form").addEventListener("submit", async (event) => {
   const requestMessages = capabilityId === "general.chat"
     ? [...state.messages, { role: "user", content }].slice(-20)
     : [{ role: "user", content }];
+  const previousMessages = [...state.messages];
   if (capabilityId === "general.chat") state.messages = requestMessages;
-  addMessage("user", content, capabilityId === "content.summarize" ? "Source" : "You");
+  const userMessage = addMessage("user", content, capabilityId === "content.summarize" ? "Source" : "You");
   byId("text-status").textContent = capability.busy;
   setTaskEvent("Accepted · bounded local request in progress");
   try {
@@ -547,8 +616,24 @@ byId("text-form").addEventListener("submit", async (event) => {
       ? `${result.model} · response complete · model unloaded`
       : `${result.model} · response complete · kept warm until idle timeout`;
   } catch (error) {
-    showError(humanError(error));
-    setTaskEvent(humanError(error), "error");
+    let displayedError = error;
+    let recovery = null;
+    if (error.details?.events || error.details?.recovery) {
+      try {
+        validateExecutionEvents(error.details.events, "error");
+        recovery = validateRecovery(error.details.recovery);
+      } catch {
+        displayedError = new Error("invalid-server-response");
+      }
+    }
+    if (capabilityId === "general.chat") state.messages = previousMessages;
+    userMessage.remove();
+    prompt.value = content;
+    showError(humanError(displayedError));
+    const retry = recovery?.retryAllowed === true
+      ? " · input restored; retry creates a new request"
+      : " · input restored for review";
+    setTaskEvent(`${humanError(displayedError)}${retry}`, "error");
     byId("text-status").textContent = "Text request failed";
   } finally {
     send.disabled = false;
