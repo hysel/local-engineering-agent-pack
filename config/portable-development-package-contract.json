@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "packageId": "haven42.portable-development",
+  "status": "unsigned-development-only",
+  "format": "pyinstaller-one-folder",
+  "platforms": ["windows", "linux", "macos"],
+  "runtime": {
+    "browserUiSharedWithSource": true,
+    "bindAddresses": ["127.0.0.1"],
+    "globalPythonRequired": false,
+    "administratorAccessRequired": false,
+    "systemServiceAllowed": false,
+    "installerAllowed": false,
+    "tauriOrRustAdmitted": false
+  },
+  "security": {
+    "strictBundledResourceAllowlist": true,
+    "resourceDigestAlgorithm": "sha256",
+    "unexpectedRequestPathsRejected": true,
+    "browserUrlIsEngineConstructedLoopbackOnly": true,
+    "arbitraryProcessLaunchAllowed": false,
+    "shutdownRequiresOriginAndSessionToken": true,
+    "modelCleanupRequiredBeforeShutdown": true
+  },
+  "supplyChainEvidence": [
+    "SHA256SUMS",
+    "dependency-inventory.json",
+    "THIRD-PARTY-NOTICES.txt",
+    "haven42.cdx.json"
+  ],
+  "distribution": {
+    "signed": false,
+    "notarized": false,
+    "githubReleasePublicationAllowed": false,
+    "productionReadinessClaimAllowed": false
+  },
+  "installerFoundation": {
+    "mode": "simulation-only",
+    "machineModificationAllowed": false
+  },
+  "updaterFoundation": {
+    "mode": "offline-policy-only",
+    "networkActivationAllowed": false,
+    "downloadAllowed": false,
+    "stagingAllowed": false,
+    "activationAllowed": false
+  }
+}

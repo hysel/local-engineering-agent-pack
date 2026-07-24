@@ -68,5 +68,12 @@
     "downloadsAllowed": false,
     "stagingAllowed": false,
     "activationAllowed": false
+  },
+  "portableDevelopmentPackage": {
+    "contract": "config/portable-development-package-contract.json",
+    "sharedBrowserUi": true,
+    "resourceIntegrityRequiredWhenFrozen": true,
+    "shutdownRequiresSessionAuthority": true,
+    "unsignedDevelopmentOnly": true
   }
 }
