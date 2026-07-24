@@ -49,6 +49,16 @@ The initial native distribution path freezes that same process and UI into a PyI
 
 The portable supply-chain boundary has two layers. Build inputs are exact-version and wheel-hash locked, while evidence collection admits only the expected platform-specific tool set. Build outputs bind the complete one-folder tree to a file inventory and archive checksums, then independently validate safe member names, regular-file shape, SBOM/runtime identity, notices, and exact source/environment provenance. This provenance makes no signature or attestation claim.
 
+The update boundary remains outside the portable runtime. Strict offline
+policies validate immutable release metadata, manifest and package identity,
+then separately simulate compatibility, staged/post health, interrupted
+activation recovery, rollback, retention, and disabled mode. The lifecycle
+schema accepts no raw path, URL, executable, argument, environment, approval,
+or renderer evidence. Its transitions are counterfactual review output and
+every network, filesystem, process, installation, activation, cleanup, and
+machine-effect flag remains false. No portable or browser route invokes these
+policies.
+
 The optional Milestone 22B desktop architecture adds a Tauri 2 shell without replacing these contracts:
 
 ```text

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`config/desktop-storage-contract.json` defines where each class of Haven 42 data belongs on Windows, Linux, and macOS. `config/core-update-manifest-contract.json` defines the future immutable core-engine update boundary, and `config/core-update-check-contract.json` defines the narrower offline GitHub Release candidate check. `scripts/core-update-policy.py` can validate those inputs offline, but it is not a network client, downloader, installer, activator, or admitted desktop runtime.
+`config/desktop-storage-contract.json` defines where each class of Haven 42 data belongs on Windows, Linux, and macOS. `config/core-update-manifest-contract.json` defines the future immutable core-engine update boundary, `config/core-update-check-contract.json` defines the narrower offline GitHub Release candidate check, and `config/core-update-lifecycle-contract.json` defines an effect-free lifecycle simulation. The policy scripts can validate and model these inputs offline, but they are not network clients, downloaders, installers, activators, cleanup tools, or admitted desktop runtimes.
 
 The central rule is simple: an application update may replace the versioned engine, but it must not own or silently change the user's configuration, repositories, generated artifacts, models, provider data, or credentials.
 
@@ -68,6 +68,39 @@ The result always reports manifest-signature verification, asset-attestation ver
 
 The separate offline release-candidate path consumes committed fixture data shaped like an official GitHub Release response. It accepts only the exact `hysel/haven-42` repository, a stable non-draft/non-prerelease release explicitly marked immutable, exact repository/tag-bound GitHub release and manifest URLs, a tag that matches the update manifest, a bounded asset list, and exactly one named manifest asset with a positive non-boolean size. Hostile source, tag, URL identity, immutability, and asset cases fail closed. Its output always sets network use, download, writes, and activation to false. Live GitHub querying remains unimplemented and requires explicit network consent plus a separately reviewed acquisition boundary.
 
+## Effect-Free Lifecycle Simulation
+
+`scripts/core-update-lifecycle.py` and the Windows, Linux, and macOS wrappers
+consume only a caller-selected local JSON scenario. The schema exposes no raw
+path, URL, executable, argument, environment, approval, or renderer-evidence
+field. It can model three operations:
+
+- a healthy update plan through evidence, compatibility, staging, health,
+  atomic-selection, and retention transitions;
+- deterministic rollback planning after post-activation health failure or an
+  interrupted activation journal;
+- retention inspection that protects the active and previous known-good
+  versions while identifying older versions that a future admitted runtime
+  could remove.
+
+Disabled mode returns no transitions and retains every version. Before a
+staging plan is produced, the scenario must assert byte, manifest-signature,
+asset-attestation, provenance, SBOM, notices, operating-system, schema, storage,
+and reversible-migration preconditions. These booleans are untrusted simulation
+inputs and do not verify or create evidence; only a future trusted native
+verifier could supply authoritative results. Staged-health failure stops before
+an activation transition. Post-activation failure always produces rollback
+transitions.
+
+All output is counterfactual: `WouldRetainVersions` and
+`WouldRemoveVersions` are review data, not filesystem authority. The result
+always denies activation and machine modification and reports network, writes,
+download, staging, activation, rollback, cleanup, installation, elevation,
+service, driver, firewall, process, and user-data effects as false. The hostile
+self-test covers 41 healthy, failed-health, interrupted, disabled, retention,
+replay, downgrade, malformed-state, missing-evidence, and renderer-authority
+cases without accessing a machine update directory.
+
 ## Current Admission State
 
-No updater, update service, Tauri plugin, manifest publisher, background task, runtime scaffold, or installer is admitted. The offline policy is preparatory evidence only. Implementation still requires a trusted native signature/attestation verifier, negative tests, native package evidence, disabled-update behavior, lifecycle checks, atomic activation, health checks, rollback, and exact-SHA hosted CI.
+No updater, update service, Tauri plugin, manifest publisher, background task, runtime scaffold, or installer is admitted. The offline policies and lifecycle simulation are preparatory evidence only. Implementation still requires a trusted native signature/attestation verifier, native package evidence, actual canonical-path and privilege tests, real side-by-side staging, atomic activation, health execution, rollback execution, cleanup execution, and exact-SHA hosted CI before any machine effect can be considered.

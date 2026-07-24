@@ -70,7 +70,7 @@ Evidence states distinguish `tested-passed`, `tested-partial`, `failed`, `recomm
 | --- | --- | --- |
 | Milestone 20: Hardware-Aware Model And Config Automation | Complete | Stable workflow, recommendation, dispatch, onboarding, and release foundation. |
 | Milestone 21: General-Purpose AI Assistant And Intent Routing | Complete | Repository-optional sessions, provider-neutral local text, local images, capability discovery, routing, and typed artifacts. |
-| Milestone 22: Unified Product UI And Task Composition | In progress; runnable 22A text tools | Local web system status, Ollama connection/model discovery, chat, writing, summarization, and verified unload are implemented; software workflows, images, composition, and optional native packaging remain open. |
+| Milestone 22: Unified Product UI And Task Composition | In progress; runnable 22A text tools and portable development packaging | Local web system status, Ollama connection/model discovery, chat, writing, summarization, verified unload, hardened PyInstaller packages, and effect-free update-lifecycle simulation are implemented; software workflows, images, composition, real update effects, and optional Tauri packaging remain open. |
 | Milestone 23: Native Local Image Generation | In progress | Linux ComfyUI/SDXL is validated; Windows AMD has a partial native pass, while remaining consumer-local gates stay open. |
 | Milestone 24: Local Music And Audio Generation | Live feasibility in progress | ACE-Step has a partial Linux CUDA instrumental pass; no audio provider is promoted. |
 | Milestone 25: Local Video Generation | Research in progress | HunyuanVideo, Wan2.2, and LTX-2.3 are recorded without executable integration. |
@@ -115,6 +115,14 @@ After Ollama connects, Haven 42 reports capability-specific model readiness and 
 Configuration and messages are not persisted. Results are rendered from typed chat-message or Markdown-document artifacts with explicit progress/error state and a no-file-written policy. The System view reports provider health, evidence matching, digest-binding limits, and the disabled/no-network update state. The balanced default keeps the active model warm for five idle minutes; advanced settings offer immediate, 15-minute, and 30-minute cleanup. New task, model/provider changes, failures, and shutdown trigger explicit cleanup.
 
 See [`docs/local-web-mvp.md`](docs/local-web-mvp.md) for connection, security, advanced settings, and current-scope details.
+
+Maintainers can exercise the effect-free update lifecycle with
+`scripts/core-update-lifecycle.ps1` or its Linux/macOS wrappers. It models
+compatibility preflight, staged and post-activation health, interrupted
+activation recovery, rollback, retention cleanup, and disabled mode while
+keeping every network, filesystem, process, installation, activation, and
+machine-effect flag false. See
+[`docs/desktop-storage-and-updates.md`](docs/desktop-storage-and-updates.md).
 
 ## Quick Start
 

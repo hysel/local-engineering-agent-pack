@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "operation": "simulate-update",
+  "updateMode": "opt-in-stable",
+  "channel": "stable",
+  "currentVersion": "0.3.0",
+  "currentDigest": "1111111111111111111111111111111111111111111111111111111111111111",
+  "candidateVersion": "0.4.0",
+  "candidateDigest": "2222222222222222222222222222222222222222222222222222222222222222",
+  "previousKnownGoodVersion": "0.3.0",
+  "packageEvidence": {
+    "bytesVerified": true,
+    "manifestSignatureVerified": true,
+    "assetAttestationVerified": true,
+    "provenanceVerified": true,
+    "sbomPresent": true,
+    "thirdPartyNoticesPresent": true
+  },
+  "compatibility": {
+    "schemasCompatible": true,
+    "operatingSystemCompatible": true,
+    "sufficientStorage": true,
+    "migrationRequired": false,
+    "migrationReversibleOrForwardCompatible": true
+  },
+  "health": {
+    "stagedPreflightPassed": true,
+    "postActivationPassed": true
+  },
+  "activationJournal": {
+    "phase": "idle",
+    "activationId": null,
+    "activeVersion": "0.3.0",
+    "candidateVersion": null,
+    "previousVersion": null
+  },
+  "retainedVersions": [
+    {
+      "version": "0.3.0",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "knownGood": true
+    },
+    {
+      "version": "0.2.0",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "knownGood": true
+    }
+  ]
+}

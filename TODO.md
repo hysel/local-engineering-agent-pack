@@ -412,6 +412,12 @@
 - [ ] Verify downloaded engine assets with checksums and a release signature or attestation before staging or activation.
 - [x] Keep engine binaries separate from user configuration, workspaces, models, provider data, generated artifacts, and evidence in the versioned storage and update contracts.
 - [ ] Add compatibility preflight, atomic activation, post-update health checks, automatic rollback, retained-version cleanup, offline behavior, and a disabled-update mode.
+  - [x] Add a cross-platform effect-free lifecycle simulator for healthy,
+    failed-health, interrupted, rollback, retention, and disabled paths with 41
+    hostile cases and every machine-effect flag denied.
+  - [ ] Implement those lifecycle operations only after trusted cryptographic,
+    native-path, packaging, privilege, and platform evidence permits real
+    machine effects.
 - [x] Implement Milestone 22A as a zero-new-dependency, loopback-only local web MVP over the Milestone 21 `general.chat` capability: sanitized system status, explicit Ollama endpoint validation, installed-model discovery, model selection, bounded chat, and verified unload after success, failure, and shutdown.
 - [x] Expand Milestone 22A with repository-free `content.write` and `content.summarize` modes, typed chat/Markdown results, in-memory task reset, and the same bounded provider and unload policy.
 - [x] Infer loopback versus private-LAN connection scope from the validated IP literal, remember separate chat/writing/summarization model choices, and replace response-by-response unload with a five-minute balanced idle policy plus advanced cleanup choices.

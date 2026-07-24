@@ -4045,7 +4045,7 @@ Invoke-PackTest "solution architecture review tracks milestone gaps" {
         Assert-True -Condition ($doc -match [regex]::Escape($milestone)) -Message "Solution architecture review should cover milestone $milestone."
     }
     Assert-True -Condition ($doc -match "21: General-Purpose AI Assistant And Intent Routing \| Complete \| Complete for the promoted provider set") -Message "Solution audit should keep completed Milestone 21 aligned with the roadmap."
-    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress; 22A text tools runnable \| Local web chat, writing, and summarization admitted; broader UI and native packaging gated") -Message "Solution audit should report the admitted local-web text tools without broadening native runtime claims."
+    Assert-True -Condition ($doc -match "22: Unified Product UI And Task Composition \| In progress; 22A text tools runnable \| Local web chat, writing, summarization, portable development packaging, and offline update-lifecycle simulation implemented") -Message "Solution audit should report the admitted local-web and portable development scope without broadening real update or optional desktop runtime claims."
     Assert-True -Condition ($doc -notmatch "21: General-Purpose AI Assistant And Intent Routing \| Planned" -and $doc -notmatch "22: Unified Product UI And Task Composition \| Planned") -Message "Solution audit must not retain stale Milestone 21 or 22 status."
     Assert-True -Condition ($roadmap -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $roadmap -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "Roadmap should align with the architecture audit for Milestones 21 and 22."
     Assert-True -Condition ($readme -match "Milestone 21: General-Purpose AI Assistant And Intent Routing \| Complete" -and $readme -match "Milestone 22: Unified Product UI And Task Composition \| In progress") -Message "README should align with the architecture audit for Milestones 21 and 22."
@@ -4774,6 +4774,14 @@ Invoke-PackTest "core update policy fails closed before cryptographic admission"
     $scriptPath = Join-Path $repoRoot "scripts/core-update-policy.ps1"
     $manifestPath = Join-Path $repoRoot "examples/fixtures/core-update-manifest.json"
     $packagePath = Join-Path $repoRoot "examples/fixtures/core-update-package.bin"
+    $lifecycleScriptPath = Join-Path $repoRoot "scripts/core-update-lifecycle.ps1"
+    $lifecycleFixturePath = Join-Path $repoRoot "examples/fixtures/core-update-lifecycle-request.json"
+    $lifecycleContractPath = Join-Path $repoRoot "config/core-update-lifecycle-contract.json"
+    $lifecycleWrapperPaths = @(
+        (Join-Path $repoRoot "scripts/core-update-lifecycle.shared.sh"),
+        (Join-Path $repoRoot "scripts/core-update-lifecycle.linux.sh"),
+        (Join-Path $repoRoot "scripts/core-update-lifecycle.macos.sh")
+    )
     $result = (Invoke-CommandCapture -FilePath $scriptPath -Arguments @("-ManifestPath", $manifestPath, "-PackagePath", $packagePath, "-HostOs", "windows", "-HostArchitecture", "x64", "-TargetTriple", "x86_64-pc-windows-msvc", "-CurrentVersion", "0.3.0", "-UpdaterVersion", "0.3.0", "-AsJson")).Output | ConvertFrom-Json
     Assert-Equal -Actual $result.Status -Expected "verified-bytes-awaiting-cryptographic-attestation" -Message "Exact fixture bytes should pass local verification only."
     Assert-True -Condition ($result.BytesVerified -and -not $result.ManifestSignatureVerified -and -not $result.AssetAttestationVerified) -Message "Byte verification must not claim cryptographic admission."
@@ -4796,6 +4804,22 @@ Invoke-PackTest "core update policy fails closed before cryptographic admission"
     $release = ($releaseOutput -join "`n") | ConvertFrom-Json
     Assert-Equal -Actual $release.Status -Expected "candidate-verified-offline" -Message "Offline update checks should report candidate status without admission."
     Assert-True -Condition (-not $release.NetworkUsed -and -not $release.DownloadAllowed -and -not $release.FilesWritten -and -not $release.ActivationAllowed) -Message "Offline update checks must not use the network, download, write, or activate."
+
+    foreach ($path in @($lifecycleScriptPath, $lifecycleFixturePath, $lifecycleContractPath) + $lifecycleWrapperPaths) {
+        Assert-True -Condition (Test-Path -LiteralPath $path -PathType Leaf) -Message "Offline lifecycle simulation asset should exist: $path"
+    }
+    $lifecycleContract = Get-Content -LiteralPath $lifecycleContractPath -Raw | ConvertFrom-Json
+    Assert-True -Condition (-not $lifecycleContract.runtimeAdmitted -and -not $lifecycleContract.request.rawPathsAllowed -and -not $lifecycleContract.request.rawUrlsAllowed -and -not $lifecycleContract.request.commandsArgumentsOrEnvironmentAllowed -and -not $lifecycleContract.packageEvidence.scenarioInputsAreAuthoritativeEvidence) -Message "Lifecycle simulation must remain unadmitted, expose no raw authority, and never treat scenario booleans as evidence."
+    $lifecycle = (Invoke-CommandCapture -FilePath $lifecycleScriptPath -Arguments @("-ScenarioPath", $lifecycleFixturePath, "-AsJson")).Output | ConvertFrom-Json
+    Assert-Equal -Actual $lifecycle.Status -Expected "successful-update-plan" -Message "The valid fixture should produce a successful plan without activation."
+    Assert-True -Condition (($lifecycle.WouldRetainVersions -join ",") -eq "0.4.0,0.3.0" -and ($lifecycle.WouldRemoveVersions -join ",") -eq "0.2.0") -Message "Retention planning should preserve the candidate and previous known-good version only."
+    Assert-True -Condition (($lifecycle.Transitions -join ",") -match "compatibility-preflight-passed.*staged-health-passed.*post-health-passed.*cleanup-planned") -Message "Lifecycle simulation should model the complete healthy path."
+    foreach ($property in @("ActivationAllowed", "MachineModificationAllowed", "NetworkUsed", "FilesWritten", "DownloadPerformed", "StagingPerformed", "ActivationPerformed", "RollbackPerformed", "CleanupPerformed", "InstallationPerformed", "ElevationRequested", "ServicesChanged", "DriversChanged", "FirewallChanged", "ProcessesTerminated", "UserDataTouched")) {
+        Assert-True -Condition (-not $lifecycle.$property) -Message "Lifecycle simulation must keep $property false."
+    }
+    $lifecycleSelfTest = @(& $python.Source (Join-Path $repoRoot "scripts/core-update-lifecycle.py") --self-test 2>&1)
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Core update lifecycle hostile self-test should pass."
+    Assert-True -Condition (($lifecycleSelfTest -join "`n") -match "passed: 41 cases") -Message "Lifecycle policy should execute all healthy, rollback, recovery, retention, disabled-mode, and hostile cases."
 }
 
 Invoke-PackTest "workflow reliability threat model and data lifecycle fail closed" {

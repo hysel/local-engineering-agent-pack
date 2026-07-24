@@ -1824,7 +1824,7 @@ test_solution_architecture_review_doc() {
     grep -q "25: Local Video Generation" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "26: Hardware-Adaptive Model Quantization" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "21: General-Purpose AI Assistant And Intent Routing | Complete | Complete for the promoted provider set" "$REPO_ROOT/docs/solution-architecture-review.md" &&
-    grep -q "22: Unified Product UI And Task Composition | In progress; 22A text tools runnable | Local web chat, writing, and summarization admitted; broader UI and native packaging gated" "$REPO_ROOT/docs/solution-architecture-review.md" &&
+    grep -q "22: Unified Product UI And Task Composition | In progress; 22A text tools runnable | Local web chat, writing, summarization, portable development packaging, and offline update-lifecycle simulation implemented" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "21: General-Purpose AI Assistant And Intent Routing | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     ! grep -q "22: Unified Product UI And Task Composition | Planned" "$REPO_ROOT/docs/solution-architecture-review.md" &&
     grep -q "automated status-consistency checks" "$REPO_ROOT/docs/solution-architecture-review.md" &&
@@ -2165,6 +2165,10 @@ test_core_update_policy() {
   policy="$REPO_ROOT/scripts/core-update-policy.shared.sh"
   manifest="$REPO_ROOT/examples/fixtures/core-update-manifest.json"
   package="$REPO_ROOT/examples/fixtures/core-update-package.bin"
+  lifecycle_policy="$REPO_ROOT/scripts/core-update-lifecycle.shared.sh"
+  lifecycle_fixture="$REPO_ROOT/examples/fixtures/core-update-lifecycle-request.json"
+  [ -x "$REPO_ROOT/scripts/core-update-lifecycle.linux.sh" ] &&
+    [ -x "$REPO_ROOT/scripts/core-update-lifecycle.macos.sh" ] || return 1
   output="$($policy --manifest-path "$manifest" --package-path "$package" --host-os windows --host-architecture x64 --target-triple x86_64-pc-windows-msvc --current-version 0.3.0 --updater-version 0.3.0 --json)" || return 1
   python3 - "$output" <<'PY' || return 1
 import json, sys
@@ -2195,6 +2199,31 @@ assert value["DownloadAllowed"] is False
 assert value["FilesWritten"] is False
 assert value["ActivationAllowed"] is False
 PY
+  lifecycle_output="$("$lifecycle_policy" --scenario-path "$lifecycle_fixture" --json)" || return 1
+  python3 - "$lifecycle_output" "$REPO_ROOT" <<'PY' || return 1
+import json, pathlib, sys
+value = json.loads(sys.argv[1])
+root = pathlib.Path(sys.argv[2])
+contract = json.loads((root / "config/core-update-lifecycle-contract.json").read_text(encoding="utf-8"))
+assert contract["runtimeAdmitted"] is False
+assert contract["request"]["rawPathsAllowed"] is False
+assert contract["request"]["rawUrlsAllowed"] is False
+assert contract["request"]["commandsArgumentsOrEnvironmentAllowed"] is False
+assert contract["packageEvidence"]["scenarioInputsAreAuthoritativeEvidence"] is False
+assert value["Status"] == "successful-update-plan"
+assert value["WouldRetainVersions"] == ["0.4.0", "0.3.0"]
+assert value["WouldRemoveVersions"] == ["0.2.0"]
+assert value["Transitions"][-1] == "cleanup-planned"
+for field in (
+    "ActivationAllowed", "MachineModificationAllowed", "NetworkUsed", "FilesWritten",
+    "DownloadPerformed", "StagingPerformed", "ActivationPerformed", "RollbackPerformed",
+    "CleanupPerformed", "InstallationPerformed", "ElevationRequested", "ServicesChanged",
+    "DriversChanged", "FirewallChanged", "ProcessesTerminated", "UserDataTouched",
+):
+    assert value[field] is False
+PY
+  lifecycle_hostile_output="$(python3 "$REPO_ROOT/scripts/core-update-lifecycle.py" --self-test 2>&1)" || return 1
+  printf '%s\n' "$lifecycle_hostile_output" | grep -q "passed: 41 cases"
 }
 
 test_workflow_reliability_and_data_lifecycle() {

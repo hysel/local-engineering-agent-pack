@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "contractId": "haven42.core-update-lifecycle",
+  "implementationStatus": "simulation-only",
+  "runtimeAdmitted": false,
+  "operations": [
+    "simulate-update",
+    "recover-interrupted",
+    "plan-retention"
+  ],
+  "request": {
+    "required": [
+      "schemaVersion",
+      "operation",
+      "updateMode",
+      "channel",
+      "currentVersion",
+      "currentDigest",
+      "candidateVersion",
+      "candidateDigest",
+      "previousKnownGoodVersion",
+      "packageEvidence",
+      "compatibility",
+      "health",
+      "activationJournal",
+      "retainedVersions"
+    ],
+    "additionalProperties": false,
+    "rawPathsAllowed": false,
+    "rawUrlsAllowed": false,
+    "commandsArgumentsOrEnvironmentAllowed": false
+  },
+  "updateModes": [
+    "disabled",
+    "opt-in-stable",
+    "opt-in-beta"
+  ],
+  "channels": [
+    "stable",
+    "beta"
+  ],
+  "packageEvidence": {
+    "required": [
+      "bytesVerified",
+      "manifestSignatureVerified",
+      "assetAttestationVerified",
+      "provenanceVerified",
+      "sbomPresent",
+      "thirdPartyNoticesPresent"
+    ],
+    "allRequiredBeforeStaging": true,
+    "scenarioInputsAreAuthoritativeEvidence": false
+  },
+  "compatibility": {
+    "required": [
+      "schemasCompatible",
+      "operatingSystemCompatible",
+      "sufficientStorage",
+      "migrationRequired",
+      "migrationReversibleOrForwardCompatible"
+    ],
+    "unknownDecision": "deny",
+    "irreversibleMigrationAllowed": false
+  },
+  "health": {
+    "required": [
+      "stagedPreflightPassed",
+      "postActivationPassed"
+    ],
+    "stagedFailureMayActivate": false,
+    "postActivationFailureRequiresRollback": true
+  },
+  "activationJournal": {
+    "required": [
+      "phase",
+      "activationId",
+      "activeVersion",
+      "candidateVersion",
+      "previousVersion"
+    ],
+    "phases": [
+      "idle",
+      "activating",
+      "post-health",
+      "rollback-required"
+    ],
+    "replayAllowed": false,
+    "activeSelectionWriteAllowed": false
+  },
+  "retainedVersion": {
+    "required": [
+      "version",
+      "sha256",
+      "knownGood"
+    ],
+    "maximumAfterSuccessfulUpdate": 2,
+    "activeVersionRemovalAllowed": false,
+    "previousKnownGoodRemovalAllowed": false,
+    "cleanupIsPlanOnly": true
+  },
+  "mustPreserve": [
+    "user-configuration",
+    "user-content",
+    "provider-data",
+    "models",
+    "credentials",
+    "generated-artifacts",
+    "evidence"
+  ],
+  "simulationEffects": {
+    "networkUsed": false,
+    "filesWritten": false,
+    "downloadPerformed": false,
+    "stagingPerformed": false,
+    "activationPerformed": false,
+    "rollbackPerformed": false,
+    "cleanupPerformed": false,
+    "installationPerformed": false,
+    "elevationRequested": false,
+    "servicesChanged": false,
+    "driversChanged": false,
+    "firewallChanged": false,
+    "processesTerminated": false,
+    "userDataTouched": false
+  }
+}

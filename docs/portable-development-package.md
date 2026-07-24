@@ -45,6 +45,6 @@ The build dependency file pins every admitted wheel by SHA-256 for the hosted Wi
 
 ## Installer And Updater Foundations
 
-The existing installation broker remains simulation-only and now explicitly rejects renderer-supplied package paths and hashes as unknown authority. The existing updater policy remains offline-only: its hostile suite includes same-size mutation and truncated-package rejection, but it cannot query a release, download, stage, activate, roll back, or modify a machine. The portable package adds no call path to either foundation.
+The existing installation broker remains simulation-only and explicitly rejects renderer-supplied package paths and hashes as unknown authority. The updater remains offline-only: byte-policy tests include same-size mutation and truncated-package rejection, while the separate lifecycle simulator covers compatibility, healthy and failed health checks, interrupted recovery, rollback, retention, disabled mode, and hostile journals. Neither policy can query a release, download, write, stage, activate, roll back, clean, install, terminate a process, or modify a machine. The portable package adds no call path to either foundation.
 
 Signing, notarization, installer creation, public release publication, automatic updates, and production-readiness claims remain explicit stop gates.
