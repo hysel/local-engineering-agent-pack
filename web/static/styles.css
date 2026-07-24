@@ -249,6 +249,7 @@ summary { cursor: pointer; font-size: 12px; }
 .hidden { display: none; }
 .task-event { margin: 0 24px 10px; padding: 9px 11px; border-left: 3px solid var(--accent); color: var(--muted); background: rgba(98, 230, 198, 0.06); font-size: 11px; }
 .task-event.error { border-left-color: var(--danger); color: var(--danger); }
+.task-event[data-kind="warning"] { border-left-color: #f3cf79; color: #f3cf79; }
 
 .status-list { margin: 0; }
 .status-list div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(132, 190, 180, 0.09); }

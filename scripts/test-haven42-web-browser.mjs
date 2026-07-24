@@ -32,6 +32,9 @@ const fake = createServer((request, response) => {
     const payload = body ? JSON.parse(body) : {};
     if (request.url === "/api/chat") {
       loaded.add(payload.model);
+      if (payload.messages?.at(-1)?.content === "force browser failure") {
+        return json(response, 502, { error: "forced-browser-provider-failure" });
+      }
       return json(response, 200, { message: { role: "assistant", content: "LOCAL_BROWSER_OK" } });
     }
     if (request.url === "/api/generate" && payload.keep_alive === 0) {
@@ -315,14 +318,62 @@ try {
   const result = await cdp.evaluate(`({
     output: [...document.querySelectorAll('.message p')].some((item) => item.textContent === 'LOCAL_BROWSER_OK'),
     typed: document.querySelector('#task-event').textContent,
+    kind: document.querySelector('#task-event').dataset.kind,
     status: document.querySelector('#text-status').textContent,
     error: document.querySelector('#connection-error').textContent
   })`);
-  if (!result.output || !result.typed.includes("no file written")) {
+  if (
+    !result.output
+    || !result.typed.includes("no file written")
+    || !result.typed.includes("model evidence is unverified")
+    || result.kind !== "warning"
+  ) {
     throw new Error(`typed-result-rendering:${JSON.stringify(result)}`);
   }
-  checks += 2;
+  checks += 4;
   trace("typed-result-verified");
+
+  const hostileEvents = await cdp.evaluate(`(() => {
+    const cases = [
+      [],
+      [{sequence: 2, type: 'result', code: 'TEXT_ARTIFACT_READY'}],
+      [{sequence: 1, type: 'result', code: 'TEXT_ARTIFACT_READY'}],
+      [{sequence: 1, type: 'result', code: 'TEXT_ARTIFACT_READY'}, {sequence: 2, type: 'progress', code: 'LATE'}],
+      [{sequence: 1, type: 'result', code: 'TEXT_ARTIFACT_READY'}, {sequence: 2, type: 'error', code: 'SECOND_TERMINAL'}],
+      [{sequence: 1, type: 'result', code: 'lowercase'}]
+    ];
+    return cases.every((events) => {
+      try {
+        validateExecutionEvents(events, 'result');
+        return false;
+      } catch {
+        return true;
+      }
+    });
+  })()`);
+  if (!hostileEvents) throw new Error("hostile-event-envelope-accepted");
+  checks += 6;
+  trace("hostile-events-rejected");
+
+  await cdp.evaluate(`(() => {
+    document.querySelector('#prompt').value = 'force browser failure';
+    document.querySelector('#text-form').requestSubmit();
+  })()`);
+  await waitFor(() => cdp.evaluate("document.querySelector('#task-event').dataset.kind === 'error'"));
+  const recovery = await cdp.evaluate(`({
+    prompt: document.querySelector('#prompt').value,
+    task: document.querySelector('#task-event').textContent,
+    failedUserMessageVisible: [...document.querySelectorAll('.message.user p')]
+      .some((item) => item.textContent === 'force browser failure')
+  })`);
+  if (
+    recovery.prompt !== "force browser failure"
+    || !recovery.task.includes("retry creates a new request")
+    || recovery.failedUserMessageVisible
+    || loaded.size !== 0
+  ) throw new Error(`failure-recovery:${JSON.stringify(recovery)}`);
+  checks += 4;
+  trace("failure-recovery-verified");
   console.log(`Haven 42 headless browser flow passed: ${checks} checks.`);
 } finally {
   trace("cleanup-started");

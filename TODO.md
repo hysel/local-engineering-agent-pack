@@ -437,8 +437,8 @@
 - [x] Add a versioned, read-only model catalog assembler that combines discovery, exact artifact identity, per-artifact license policy, hardware fit, and revision-bound evidence into one fail-closed beginner/advanced decision.
 - [x] Add first-run intent navigation, capability availability, evidence states, and policy disclosures to the admitted local-web slice.
   - Chat, Writing, and Summarization become available only after provider validation; Software remains not admitted and Images remains provider-profile-required. Native renderer integration remains separately gated.
-- [ ] Render typed artifacts plus versioned progress, warning, result, and error envelopes.
-- [x] Render local-web typed chat-message/Markdown artifacts and typed progress/result/error state without file writes; warning envelopes and broader workflow rendering remain open under the parent task.
+- [ ] Render typed artifacts plus versioned progress, warning, result, and error envelopes across all admitted workflows.
+- [x] Render local-web typed chat-message/Markdown artifacts with strict accepted/progress/warning/result/error ordering, visible unverified-model warnings, typed failure recovery, no automatic retry, and no file writes; broader workflow rendering remains open under the parent task.
 - [ ] Connect setup, health, model choice, software workflows, validation, cleanup, and evidence views without duplicating business logic.
 - [x] Connect local-web setup, provider health, model choice, cleanup status, evidence boundary, and disabled-update state; software workflow execution and broader validation evidence remain open under the parent task.
 - [x] Add repository-free text flows only for evidence-gated Milestone 21 providers.

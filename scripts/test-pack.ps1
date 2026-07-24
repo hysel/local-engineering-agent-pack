@@ -4945,7 +4945,7 @@ Invoke-PackTest "local web text tools are loopback-only and unload models" {
     }
     $result = @(& $python.Source $testPath 2>&1)
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "Local-web offline integration test should pass."
-    Assert-True -Condition (($result -join "`n") -match "108 security and behavior checks") -Message "Local-web integration coverage should remain complete."
+    Assert-True -Condition (($result -join "`n") -match "126 security and behavior checks") -Message "Local-web integration coverage should remain complete."
     $policy = Get-Content -LiteralPath $policyPath -Raw | ConvertFrom-Json
     Assert-Equal -Actual $policy.runtimeId -Expected "haven42.local-web" -Message "Local-web runtime identity should be stable."
     Assert-True -Condition ($policy.implementationStatus -eq "text-tools-admitted" -and -not $policy.bind.remoteBindAllowed) -Message "Only the loopback text-tool runtime should be admitted."
@@ -5007,7 +5007,7 @@ if ($IsWindows) {
         Assert-True -Condition (Test-Path -LiteralPath $browserTest -PathType Leaf) -Message "Headless browser test should exist."
         $browserOutput = @(& $node.Source $browserTest 2>&1)
         Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message "The local-web setup wizard should complete in a headless Chromium browser. Output: $($browserOutput -join ' ')"
-        Assert-True -Condition (($browserOutput -join "`n") -match "passed: 23 checks") -Message "The headless browser flow should exercise all 23 checks."
+        Assert-True -Condition (($browserOutput -join "`n") -match "passed: 35 checks") -Message "The headless browser flow should exercise all 35 checks."
     }
 }
 

@@ -60,6 +60,18 @@
     "unloadOnShutdown": true,
     "maximumResponseBytes": 1048576
   },
+  "executionEvents": {
+    "contract": "config/workflow-envelope-contract.json",
+    "reliabilityContract": "config/workflow-reliability-contract.json",
+    "monotonicSequenceRequired": true,
+    "exactlyOneTerminalEvent": true,
+    "eventsAfterTerminalAllowed": false,
+    "automaticRetryAllowed": false,
+    "retryRequiresNewRequest": true,
+    "failedInputPersistenceAllowed": false,
+    "failedInputBrowserRestorationAllowed": true,
+    "unverifiedModelWarningRequired": true
+  },
   "updates": {
     "displayStatusAllowed": true,
     "defaultMode": "disabled",
