@@ -2,7 +2,7 @@
 
 Haven 42 has a runnable local product experience for Windows, Linux, and macOS. It opens a local browser page, reports sanitized host readiness, connects to an explicitly selected Ollama endpoint, discovers installed models, and provides repository-free chat, writing, and summarization.
 
-This is a local application, not a hosted website. It does not require Node.js, Rust, Tauri, a cloud account, executable signing, or a public deployment.
+This is a local application, not a hosted website. Source execution does not require Node.js, Rust, Tauri, a cloud account, executable signing, or a public deployment. Unsigned PyInstaller one-folder development packages also remove the global Python requirement; see `docs/portable-development-package.md`.
 
 ## First-Run Wizard
 
@@ -99,7 +99,7 @@ The machine-readable boundaries are `config/local-web-runtime-policy.json`, `con
 
 ## Current Runtime Boundary
 
-The admitted application includes explicit read-only system scanning, zero-effect setup planning, system status, read-only capability/health/evidence views, Ollama connection, installed-model selection, chat, writing, and summarization. Software installation, drivers, services, model downloads, software workflows, images, model management, persistence, multi-user access, remote browser access, automatic updates, and native packaging remain unavailable until their separate runtime and security gates pass.
+The admitted application includes explicit read-only system scanning, zero-effect setup planning, system status, read-only capability/health/evidence views, Ollama connection, installed-model selection, chat, writing, summarization, and unsigned one-folder development packaging. Software installation, drivers, services, model downloads, software workflows, images, model management, persistence, multi-user access, remote browser access, automatic updates, signed/notarized distribution, installers, and production release publication remain unavailable until their separate runtime and security gates pass.
 
 Tauri remains an optional later packaging path. It is not required to run or validate this local-web slice.
 

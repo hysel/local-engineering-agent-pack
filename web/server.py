@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import csv
 from datetime import datetime, timezone
+import hashlib
 import json
 import platform
 import re
@@ -26,8 +27,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 
-ROOT = Path(__file__).resolve().parent.parent
-STATIC_ROOT = Path(__file__).resolve().parent / "static"
+SOURCE_ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(getattr(sys, "_MEIPASS", SOURCE_ROOT))
+STATIC_ROOT = ROOT / "web" / "static"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from provider_security import (  # noqa: E402
@@ -45,6 +47,7 @@ from system_readiness import (  # noqa: E402
 
 
 APP_VERSION = "0.3.0"
+INTEGRITY_MANIFEST_PATH = ROOT / "package" / "resource-integrity.json"
 MAX_REQUEST_BYTES = 64 * 1024
 MAX_MESSAGE_BYTES = 32 * 1024
 MAX_CHAT_RESPONSE_BYTES = 1024 * 1024
@@ -101,6 +104,49 @@ class WebRequestError(ValueError):
         super().__init__(code)
         self.code = code
         self.status = status
+
+
+def verify_packaged_resources(path: Path = INTEGRITY_MANIFEST_PATH) -> dict[str, Any]:
+    """Verify the strict, build-generated resource allowlist in frozen packages."""
+    if not getattr(sys, "frozen", False):
+        return {"required": False, "verified": False, "resourceCount": 0}
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            not isinstance(manifest, dict)
+            or set(manifest) != {"schemaVersion", "algorithm", "resources"}
+            or manifest["schemaVersion"] != 1
+            or manifest["algorithm"] != "sha256"
+            or not isinstance(manifest["resources"], list)
+        ):
+            raise ValueError("invalid-manifest")
+        seen: set[str] = set()
+        for record in manifest["resources"]:
+            if not isinstance(record, dict) or set(record) != {"path", "sha256", "sizeBytes"}:
+                raise ValueError("invalid-record")
+            relative = Path(str(record["path"]))
+            if (
+                relative.is_absolute()
+                or ".." in relative.parts
+                or relative.as_posix() in seen
+                or not re.fullmatch(r"[0-9a-f]{64}", str(record["sha256"]))
+                or isinstance(record["sizeBytes"], bool)
+                or not isinstance(record["sizeBytes"], int)
+                or record["sizeBytes"] < 0
+            ):
+                raise ValueError("unsafe-record")
+            seen.add(relative.as_posix())
+            target = ROOT / relative
+            data = target.read_bytes()
+            if len(data) != record["sizeBytes"]:
+                raise ValueError("size-mismatch")
+            if not secrets.compare_digest(hashlib.sha256(data).hexdigest(), record["sha256"]):
+                raise ValueError("digest-mismatch")
+        if not seen:
+            raise ValueError("empty-manifest")
+        return {"required": True, "verified": True, "resourceCount": len(seen)}
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RuntimeError("Packaged resource integrity verification failed.") from error
 
 
 def load_model_recommendations(
@@ -291,6 +337,7 @@ class HavenState:
         self.readiness_snapshot: dict[str, Any] | None = None
         self.readiness_created = 0.0
         self.model_recommendations = load_model_recommendations(recommendation_path)
+        self.package_integrity = verify_packaged_resources()
 
     def public_status(self) -> dict[str, Any]:
         with self.lock:
@@ -330,6 +377,7 @@ class HavenState:
                     "downloadAllowed": False,
                     "activationAllowed": False,
                 },
+                "package": self.package_integrity,
                 "readiness": {
                     "scanAvailable": True,
                     "scanPerformed": self.readiness_snapshot is not None,
@@ -813,6 +861,18 @@ class HavenRequestHandler(BaseHTTPRequestHandler):
                     "modelResidency": "unloaded" if unloaded else "cleanup-failed",
                 })
                 return
+            if self.path == "/api/shutdown":
+                if body:
+                    raise WebRequestError("invalid-shutdown-fields")
+                unloaded = self.server.state.unload_used_models()
+                if not unloaded:
+                    raise WebRequestError("model-cleanup-failed", HTTPStatus.BAD_GATEWAY)
+                self._send_json(HTTPStatus.OK, {
+                    "shutdownAccepted": True,
+                    "modelCleanupVerified": True,
+                })
+                threading.Thread(target=self.server.shutdown, daemon=True).start()
+                return
             if self.path == "/api/text":
                 if (
                     set(body) != {"capabilityId", "model", "messages"}
@@ -857,10 +917,13 @@ def main() -> int:
         print(f"Could not start Haven 42 local web server: {error}", file=sys.stderr)
         return 1
     url = server.expected_origin
-    print(f"Haven 42 is available at {url}")
-    print("The server is loopback-only. Configuration and text content are not persisted.")
+    print(f"Haven 42 is available at {url}", flush=True)
+    print(
+        "The server is loopback-only. Configuration and text content are not persisted.",
+        flush=True,
+    )
     if not args.no_open:
-        threading.Timer(0.4, lambda: webbrowser.open(url)).start()
+        threading.Timer(0.4, lambda: webbrowser.open_new_tab(url)).start()
     try:
         server.serve_forever(poll_interval=0.2)
     except KeyboardInterrupt:

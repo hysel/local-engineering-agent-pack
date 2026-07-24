@@ -10,7 +10,7 @@ The project began as a reusable pack for coding agents. It now provides a provid
 
 | Capability | Status | What that means |
 | --- | --- | --- |
-| Local browser assistant | **Available** | An accessible first-run wizard offers Guided setup, Connect existing setup, and Explore. Guided setup performs an explicit read-only hardware/software scan and builds a review-only plan; installation remains disabled. Existing users can connect Ollama and use capability-specific model selection for chat, writing, and summarization. |
+| Local browser assistant | **Available; portable development builds available** | The shared browser UI runs from source or an unsigned PyInstaller one-folder package. Guided setup remains read-only, installation remains disabled, and chat, writing, and summarization use an explicitly connected Ollama endpoint. |
 | Software engineering | **Available** | Continue, Aider, and OpenCode support guided setup, repository analysis, planning, review, and carefully scoped changes. |
 | Local image generation | **Limited** | `media.image.create` is available for one bounded profile: Linux ComfyUI/SDXL is validated. Other operating-system and GPU combinations remain gated. |
 | Model and inference selection | **Evidence-gated** | Hardware-aware recommendations are available. Ollama and specific llama.cpp CUDA/HIP profiles have passed; unsupported combinations fail closed. |
@@ -85,7 +85,7 @@ For software work, the pack supplies repeatable discovery, implementation planni
 
 ## Run The Local Web App
 
-The first Haven 42 product slice needs Python 3. Ollama and an installed model are required only when you want to run chat, writing, or summarization; Explore and the read-only readiness scan do not require Ollama.
+The source form needs Python 3. Unsigned one-folder development packages include their Python runtime and require no global Python installation, administrator access, installer, or system service. Ollama and an installed model are required only for chat, writing, or summarization; Explore and the read-only readiness scan do not require Ollama.
 
 Windows:
 
@@ -104,6 +104,8 @@ macOS:
 ```bash
 ./scripts/start-haven42-web.macos.sh
 ```
+
+Developers can build the native portable package with `python scripts/build-portable-development-package.py`. See [Portable Development Package](docs/portable-development-package.md) for security boundaries, smoke/parity tests, checksums, dependency inventory, notices, SBOM evidence, and the unsigned-development limitation.
 
 Haven 42 opens a browser on `http://127.0.0.1:4242`. Its keyboard-accessible first-run wizard provides three paths: **Guided setup** scans a registered, bounded, read-only set of system facts and produces a disabled installation plan; **Connect existing setup** accepts a same-machine or private-network Ollama IP address; and **Explore** opens the product without a provider or scan. The scan excludes host identity, usernames, private paths, environment variables, credentials, and network addresses. Its snapshot stays in memory.
 
